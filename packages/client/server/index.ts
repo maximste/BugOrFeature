@@ -39,9 +39,7 @@ async function createServer() {
     try {
       // Получаем файл client/index.html который мы правили ранее
       // Создаём переменные
-      let render: (
-        req: ExpressRequest
-      ) => Promise<{
+      let render: (req: ExpressRequest) => Promise<{
         html: string
         initialState: unknown
         helmet: HelmetData
@@ -61,7 +59,7 @@ async function createServer() {
         // он будет рендерить HTML-код
         render = (
           await vite.ssrLoadModule(
-            path.join(clientPath, 'src/entry-server.tsx')
+            path.join(clientPath, 'src/app/entry-server.tsx')
           )
         ).render
       } else {
