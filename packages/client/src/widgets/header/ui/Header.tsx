@@ -12,6 +12,11 @@ export const Header = () => {
           </Link>
         </li>
         <li>
+          <Link to="/forum" className={styles.link}>
+            Форум
+          </Link>
+        </li>
+        <li>
           <Link to="/404" className={styles.link}>
             404
           </Link>
