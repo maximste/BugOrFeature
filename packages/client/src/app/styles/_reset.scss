@@ -13,7 +13,6 @@ body {
   font-family: $font-family-base;
   color: $color-title;
   background-color: $color-page-bg;
-  /* Base fill + two soft radial glows (pink top-left, cyan bottom-right) per Figma */
   background-image:
     radial-gradient(
       ellipse 85% 70% at 95% 92%,

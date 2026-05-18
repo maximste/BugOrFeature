@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom/server'
 import { Provider } from 'react-redux'
 import { Helmet } from 'react-helmet'
@@ -11,7 +10,7 @@ import {
 import { matchRoutes } from 'react-router-dom'
 import { configureStore } from '@reduxjs/toolkit'
 
-import { routes } from '@/app/routes'
+import { routes, type AppRouteObject } from '@/app/routes'
 import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
 import { reducer } from '@/app/store'
 
@@ -43,18 +42,21 @@ export const render = async (req: ExpressRequest) => {
     throw new Error('Страница не найдена!')
   }
 
-  const [
-    {
-      route: { fetchData },
-    },
-  ] = foundRoutes
+  const leafRoute = foundRoutes[foundRoutes.length - 1].route as AppRouteObject
+  const fetchData = leafRoute.fetchData
+
+  if (!fetchData) {
+    console.log('Страница без fetchData:', url)
+  }
 
   try {
-    await fetchData({
-      dispatch: store.dispatch,
-      state: store.getState(),
-      ctx: createContext(req),
-    })
+    if (fetchData) {
+      await fetchData({
+        dispatch: store.dispatch,
+        state: store.getState(),
+        ctx: createContext(req),
+      })
+    }
   } catch (e) {
     console.log('Инициализация страницы произошла с ошибкой', e)
   }
