@@ -4,35 +4,26 @@ import {
   TypedUseSelectorHook,
   useStore as useStoreBase,
 } from 'react-redux'
-import { combineReducers } from 'redux'
 import { configureStore } from '@reduxjs/toolkit'
 
-import friendsReducer from './slices/friendsSlice'
-import ssrReducer from './slices/ssrSlice'
-import userReducer from './slices/userSlice'
+import { rootReducer } from './rootReducer'
 
-// Глобально декларируем в window наш ключик
-// и задаем ему тип такой же как у стейта в сторе
 declare global {
   interface Window {
     APP_INITIAL_STATE: RootState
   }
 }
 
-export const reducer = combineReducers({
-  friends: friendsReducer,
-  ssr: ssrReducer,
-  user: userReducer,
-})
-
 export const store = configureStore({
-  reducer,
+  reducer: rootReducer,
   preloadedState:
     typeof window === 'undefined' ? undefined : window.APP_INITIAL_STATE,
 })
 
-export type RootState = ReturnType<typeof reducer>
+export type RootState = ReturnType<typeof rootReducer>
 export type AppDispatch = typeof store.dispatch
+
+export const reducer = rootReducer
 
 export const useDispatch: () => AppDispatch = useDispatchBase
 export const useSelector: TypedUseSelectorHook<RootState> = useSelectorBase

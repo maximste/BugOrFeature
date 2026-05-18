@@ -1,22 +1,12 @@
 import { useEffect } from 'react'
-import { useDispatch, useSelector, useStore } from '../store'
-import {
-  setPageHasBeenInitializedOnServer,
-  selectPageHasBeenInitializedOnServer,
-} from '../slices/ssrSlice'
-import { PageInitArgs, PageInitContext } from '../routes'
 
-const getCookie = (name: string) => {
-  const matches = document.cookie.match(
-    new RegExp(
-      '(?:^|; )' +
-      // eslint-disable-next-line
-      name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') +
-      '=([^;]*)'
-    )
-  )
-  return matches ? decodeURIComponent(matches[1]) : undefined
-}
+import { useDispatch, useSelector, useStore } from '@/app/store'
+import {
+  selectPageHasBeenInitializedOnServer,
+  setPageHasBeenInitializedOnServer,
+} from '@/app/ssr'
+import type { PageInitArgs, PageInitContext } from '@/app/routes'
+import { getCookie } from '@/shared/lib/cookie'
 
 const createContext = (): PageInitContext => ({
   clientToken: getCookie('token'),

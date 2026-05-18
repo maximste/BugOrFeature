@@ -6,12 +6,24 @@ dotenv.config()
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
   server: {
     port: Number(process.env.CLIENT_PORT) || 3000,
   },
   define: {
     __EXTERNAL_SERVER_URL__: JSON.stringify(process.env.EXTERNAL_SERVER_URL),
     __INTERNAL_SERVER_URL__: JSON.stringify(process.env.INTERNAL_SERVER_URL),
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@/app/styles/variables" as *;\n`,
+      },
+    },
   },
   build: {
     outDir: path.join(__dirname, 'dist/client'),

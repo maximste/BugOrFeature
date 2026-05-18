@@ -1,7 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/server'
 import { Provider } from 'react-redux'
-import { ServerStyleSheet } from 'styled-components'
 import { Helmet } from 'react-helmet'
 import { Request as ExpressRequest } from 'express'
 import {
@@ -12,15 +11,17 @@ import {
 import { matchRoutes } from 'react-router-dom'
 import { configureStore } from '@reduxjs/toolkit'
 
+import { routes } from '@/app/routes'
+import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
+import { reducer } from '@/app/store'
+
 import {
   createContext,
   createFetchRequest,
-  createUrl
+  createUrl,
 } from './entry-server.utils'
-import { reducer } from './store'
-import { routes } from './routes'
-import './index.css'
-import { setPageHasBeenInitializedOnServer } from './slices/ssrSlice'
+
+import '@/app/styles/index.scss'
 
 export const render = async (req: ExpressRequest) => {
   const { query, dataRoutes } = createStaticHandler(routes)
@@ -42,7 +43,11 @@ export const render = async (req: ExpressRequest) => {
     throw new Error('Страница не найдена!')
   }
 
-  const [{route: { fetchData }}] = foundRoutes
+  const [
+    {
+      route: { fetchData },
+    },
+  ] = foundRoutes
 
   try {
     await fetchData({
@@ -57,24 +62,19 @@ export const render = async (req: ExpressRequest) => {
   store.dispatch(setPageHasBeenInitializedOnServer(true))
 
   const router = createStaticRouter(dataRoutes, context)
-  const sheet = new ServerStyleSheet()
-  try {
-    const html = ReactDOM.renderToString(sheet.collectStyles(
-      <Provider store={store}>
-        <StaticRouterProvider router={router} context={context} />
-      </Provider>
-    ));
-    const styleTags = sheet.getStyleTags();
 
-    const helmet = Helmet.renderStatic();
+  const html = ReactDOM.renderToString(
+    <Provider store={store}>
+      <StaticRouterProvider router={router} context={context} />
+    </Provider>
+  )
 
-    return {
-      html,
-      helmet,
-      styleTags,
-      initialState: store.getState(),
-    }
-  } finally {
-    sheet.seal()
+  const helmet = Helmet.renderStatic()
+
+  return {
+    html,
+    helmet,
+    styleTags: '',
+    initialState: store.getState(),
   }
 }

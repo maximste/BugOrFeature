@@ -1,5 +1,6 @@
 import { Request as ExpressRequest } from 'express'
-import { PageInitContext } from './routes'
+
+import type { PageInitContext } from '@/app/routes'
 
 export const createContext = (req: ExpressRequest): PageInitContext => ({
   clientToken: req.cookies.token,
@@ -31,19 +32,14 @@ export const createFetchRequest = (req: ExpressRequest) => {
     }
   }
 
-  const init: {
-    method: string
-    headers: Headers
-    signal: AbortSignal
-    body?: any
-  } = {
+  const init: RequestInit = {
     method: req.method,
     headers,
     signal: controller.signal,
   }
 
-  if (req.method !== 'GET' && req.method !== 'HEAD') {
-    init.body = req.body
+  if (req.method !== 'GET' && req.method !== 'HEAD' && req.body != null) {
+    init.body = req.body as BodyInit
   }
 
   return new Request(url.href, init)
