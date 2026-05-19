@@ -9,6 +9,7 @@ import {
 } from '@/pages/forum-topic-new'
 import { MainPage, initMainPage } from '@/pages/main'
 import { initNotFoundPage, NotFoundPage } from '@/pages/not-found'
+import { initServerErrorPage, ServerErrorPage } from '@/pages/server-error'
 
 export type PageInitContext = {
   clientToken?: string
@@ -46,6 +47,11 @@ export const routes: AppRouteObject[] = [
         fetchData: initForumPage,
       },
     ],
+  },
+  {
+    path: '500',
+    element: <ServerErrorPage />,
+    fetchData: initServerErrorPage,
   },
   {
     path: '*',
