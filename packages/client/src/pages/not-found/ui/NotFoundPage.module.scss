@@ -1,3 +1,5 @@
+@use '@/app/styles/mixins' as *;
+
 .errorPageContainer{
     text-align: center;    
     max-width: 448px;
@@ -30,26 +32,9 @@
   }
 }
 
-.button {  
-  background-color: $color-button-bg;
-  border-radius: 16px;
-  padding: 8px 16px;
-  border: none;
-  font-family: $font-family-base;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  color: $color-button-text;
-  text-decoration: none;
+.errorPageButton{
+  @include button-shared;
   display: block;
   width: fit-content;
   margin: auto;
-
-  &:hover {
-    filter: brightness(1.03);
-  }
-
-  &:active {
-    transform: translateY(1px);
-  }
 }

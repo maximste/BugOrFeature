@@ -28,7 +28,7 @@ export const NotFoundPage = () => {
             Такой странички не существует. Может, она ушла гулять по крышам.
           </p>
         </div>
-        <Link className={styles.button} to="/">
+        <Link className={styles.errorPageButton} to="/">
           На главную
         </Link>
       </section>
