@@ -45,11 +45,11 @@ export const routes: AppRouteObject[] = [
         element: <ForumPage />,
         fetchData: initForumPage,
       },
-      {
-        path: '*',
-        element: <NotFoundPage />,
-        fetchData: initNotFoundPage,
-      },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
+    fetchData: initNotFoundPage,
   },
 ]

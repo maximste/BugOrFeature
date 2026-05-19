@@ -8,7 +8,7 @@ export const NotFoundPage = () => {
   usePage({ initPage: initNotFoundPage })
 
   return (
-    <>
+    <main className={styles.noHeaderMain}>
       <Helmet>
         <meta charSet="utf-8" />
         <title>404</title>
@@ -32,6 +32,6 @@ export const NotFoundPage = () => {
           На главную
         </Link>
       </section>
-    </>
+    </main>
   )
 }
