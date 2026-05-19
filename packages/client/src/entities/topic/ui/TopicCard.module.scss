@@ -5,8 +5,22 @@
   border-radius: 16px;
   box-shadow: 0 8px 30px -10px rgb(from #{$color-button-bg} r g b / 35%);
   background-color: $color-card-bg;
-}
+  cursor: pointer;
+  transition:
+    transform 0.22s ease,
+    box-shadow 0.22s ease;
 
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow:
+      0 12px 36px -8px rgb(from #{$color-button-bg} r g b / 40%),
+      0 4px 12px -4px rgb(0 0 0 / 8%);
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+}
 .header {
   display: flex;
   align-items: center;

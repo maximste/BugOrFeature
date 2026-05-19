@@ -2,12 +2,12 @@ import { Helmet } from 'react-helmet'
 
 import { usePage } from '@/app/hooks/usePage'
 import type { Topic } from '@/entities/topic'
-import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page-heading'
 import { ForumTopicsList } from '@/widgets/forum-topics-list'
 import { initForumPage } from '../model/initForumPage'
 
 import styles from './ForumPage.module.scss'
+import { Link } from 'react-router-dom'
 
 const MOCK_TOPICS: Topic[] = [
   {
@@ -48,7 +48,9 @@ export const ForumPage = () => {
           title="Форум"
           subtitle="Делитесь опытом и кото-историями"
         />
-        <Button type="button">+ Новая тема</Button>
+        <Link to="/forum/new" className={styles.newTopicButton}>
+          + Новая тема
+        </Link>
       </div>
       <ForumTopicsList topics={MOCK_TOPICS} />
     </>

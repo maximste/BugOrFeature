@@ -1,6 +1,12 @@
+@use '@/app/styles/mixins' as *;
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
+}
+
+.newTopicButton {
+  @include button-shared;
 }

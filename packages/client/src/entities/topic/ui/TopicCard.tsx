@@ -11,6 +11,7 @@ export const TopicCard = ({
   date,
 }: TopicCardProps) => {
   return (
+    // Пока что просто li, но в будущем будет ссылка!!!
     <li className={styles.item}>
       <div className={styles.header}>
         <img
