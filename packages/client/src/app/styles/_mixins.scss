@@ -1,0 +1,39 @@
+@use './variables' as *;
+
+@mixin typography-ui($size: 14px, $weight: 400) {
+  font-family: $font-family-base;
+  font-size: $size;
+  font-weight: $weight;
+  text-decoration: none;
+}
+
+@mixin surface-pill(
+  $background: $color-button-bg,
+  $padding: 8px 16px,
+  $radius: 16px
+) {
+  background-color: $background;
+  padding: $padding;
+  border-radius: $radius;
+}
+
+@mixin button-shared(
+  $background: $color-button-bg,
+  $padding: 8px 16px,
+  $radius: 16px
+) {
+  @include typography-ui(14px, 500);
+  @include surface-pill($background, $padding, $radius);
+
+  cursor: pointer;
+  border: none;
+  color: $color-button-text;
+
+  &:hover {
+    filter: brightness(1.03);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
