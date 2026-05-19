@@ -1,18 +1,37 @@
+import styles from './NotFoundPage.module.scss'
 import { Helmet } from 'react-helmet'
 import { usePage } from '@/app/hooks/usePage'
 import { initNotFoundPage } from '../model/initNotFoundPage'
+import { Link } from 'react-router-dom'
 
 export const NotFoundPage = () => {
   usePage({ initPage: initNotFoundPage })
 
   return (
-    <div>
+    <>
       <Helmet>
         <meta charSet="utf-8" />
         <title>404</title>
         <meta name="description" content="Страница не найдена" />
       </Helmet>
-      <p>404 — страница не найдена</p>
-    </div>
+
+      <section className={styles.errorPageContainer}>
+        <img
+          className={styles.errorIcon}
+          src="/img/not-found-icon.png"
+          alt=""
+        />
+        <h1 className={styles.errorHeader}>404</h1>
+        <h2 className={styles.errorSubHeader}>Котик потерялся</h2>
+        <div className={styles.errorText}>
+          <p>
+            Такой странички не существует. Может, она ушла гулять по крышам.
+          </p>
+        </div>
+        <Link className={styles.button} to="/">
+          На главную
+        </Link>
+      </section>
+    </>
   )
 }

@@ -1,0 +1,55 @@
+.errorPageContainer{
+    text-align: center;    
+    max-width: 448px;
+    margin: auto;
+}
+
+.errorIcon{
+    display: block;
+    margin: 0 auto 12px;
+}
+
+.errorHeader{    
+    font-family: 'Fredoka', Nunito, sans-serif;
+    font-size: 72px;
+    font-weight: 700;   
+    margin: 0 0 24px;
+}
+
+.errorSubHeader{
+    font-size: 20px;
+    margin: 0 0 24px;
+}
+
+.errorText{
+  margin-bottom: 24px;
+  font-size: 14px;
+
+  p{
+    margin: 0;
+  }
+}
+
+.button {  
+  background-color: $color-button-bg;
+  border-radius: 16px;
+  padding: 8px 16px;
+  border: none;
+  font-family: $font-family-base;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  color: $color-button-text;
+  text-decoration: none;
+  display: block;
+  width: fit-content;
+  margin: auto;
+
+  &:hover {
+    filter: brightness(1.03);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
