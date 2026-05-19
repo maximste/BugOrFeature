@@ -1,5 +1,5 @@
 @use '@/app/styles/mixins' as *;
 
 .root {
-  @include button-shared;
+  @include form-input;
 }

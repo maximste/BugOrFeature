@@ -1,0 +1,12 @@
+@use '@/app/styles/mixins' as *;
+
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.label {
+  @include typography-ui(14px, 700);
+  color: $color-title;
+}

@@ -1,0 +1,9 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: $color-card-bg;
+  border-radius: 24px;
+  padding: 35px 25px 25px;
+  box-shadow: 0 8px 30px -10px rgb(from #{$color-button-bg} r g b / 35%);
+}

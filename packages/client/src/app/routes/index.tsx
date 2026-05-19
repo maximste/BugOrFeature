@@ -3,6 +3,10 @@ import type { RouteObject } from 'react-router-dom'
 import type { AppDispatch, RootState } from '@/app/store'
 import { MainLayout } from '@/app/layouts'
 import { ForumPage, initForumPage } from '@/pages/forum'
+import {
+  ForumTopicNewPage,
+  initForumTopicNewPage,
+} from '@/pages/forum-topic-new'
 import { MainPage, initMainPage } from '@/pages/main'
 import { initNotFoundPage, NotFoundPage } from '@/pages/not-found'
 
@@ -30,6 +34,11 @@ export const routes: AppRouteObject[] = [
         index: true,
         element: <MainPage />,
         fetchData: initMainPage,
+      },
+      {
+        path: 'forum/new',
+        element: <ForumTopicNewPage />,
+        fetchData: initForumTopicNewPage,
       },
       {
         path: 'forum',
