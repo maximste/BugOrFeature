@@ -1,6 +1,8 @@
-import type { ComponentType } from 'react'
+import type { RouteObject } from 'react-router-dom'
 
 import type { AppDispatch, RootState } from '@/app/store'
+import { MainLayout } from '@/app/layouts'
+import { ForumPage, initForumPage } from '@/pages/forum'
 import { MainPage, initMainPage } from '@/pages/main'
 import { initNotFoundPage, NotFoundPage } from '@/pages/not-found'
 
@@ -14,21 +16,31 @@ export type PageInitArgs = {
   ctx: PageInitContext
 }
 
-export type AppRoute = {
-  path: string
-  Component: ComponentType
-  fetchData: (args: PageInitArgs) => Promise<unknown>
+export type AppRouteObject = RouteObject & {
+  fetchData?: (args: PageInitArgs) => Promise<unknown>
+  children?: AppRouteObject[]
 }
 
-export const routes: AppRoute[] = [
+export const routes: AppRouteObject[] = [
   {
     path: '/',
-    Component: MainPage,
-    fetchData: initMainPage,
-  },
-  {
-    path: '*',
-    Component: NotFoundPage,
-    fetchData: initNotFoundPage,
+    element: <MainLayout />,
+    children: [
+      {
+        index: true,
+        element: <MainPage />,
+        fetchData: initMainPage,
+      },
+      {
+        path: 'forum',
+        element: <ForumPage />,
+        fetchData: initForumPage,
+      },
+      {
+        path: '*',
+        element: <NotFoundPage />,
+        fetchData: initNotFoundPage,
+      },
+    ],
   },
 ]

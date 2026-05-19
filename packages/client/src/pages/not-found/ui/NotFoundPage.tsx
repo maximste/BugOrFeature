@@ -1,8 +1,5 @@
 import { Helmet } from 'react-helmet'
-
 import { usePage } from '@/app/hooks/usePage'
-import { Header } from '@/widgets/header'
-
 import { initNotFoundPage } from '../model/initNotFoundPage'
 
 export const NotFoundPage = () => {
@@ -15,7 +12,6 @@ export const NotFoundPage = () => {
         <title>404</title>
         <meta name="description" content="Страница не найдена" />
       </Helmet>
-      <Header />
       <p>404 — страница не найдена</p>
     </div>
   )
