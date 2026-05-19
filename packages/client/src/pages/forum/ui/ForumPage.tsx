@@ -1,11 +1,37 @@
 import { Helmet } from 'react-helmet'
 
 import { usePage } from '@/app/hooks/usePage'
+import type { Topic } from '@/entities/topic'
 import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page-heading'
+import { ForumTopicsList } from '@/widgets/forum-topics-list'
 import { initForumPage } from '../model/initForumPage'
 
 import styles from './ForumPage.module.scss'
+
+const MOCK_TOPICS: Topic[] = [
+  {
+    id: '1',
+    title: 'Топик номер три',
+    description: 'Какой-то насущный вопрос',
+    author: 'Барсик',
+    date: '2026-05-13',
+  },
+  {
+    id: '2',
+    title: 'Топик номер два',
+    description: 'Очень смешной анекдот',
+    author: 'Рыжик',
+    date: '2026-05-13',
+  },
+  {
+    id: '3',
+    title: 'Топик номер один',
+    description: 'Подробнее о главном.',
+    author: 'Мурзик',
+    date: '2026-05-13',
+  },
+]
 
 export const ForumPage = () => {
   usePage({ initPage: initForumPage })
@@ -17,13 +43,14 @@ export const ForumPage = () => {
         <title>BugOrFeature</title>
         <meta name="description" content="BugOrFeature" />
       </Helmet>
-      <>
+      <div className={styles.header}>
         <PageHeading
           title="Форум"
           subtitle="Делитесь опытом и кото-историями"
         />
         <Button type="button">+ Новая тема</Button>
-      </>
+      </div>
+      <ForumTopicsList topics={MOCK_TOPICS} />
     </>
   )
 }
