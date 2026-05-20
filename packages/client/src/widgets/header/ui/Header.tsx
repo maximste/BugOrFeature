@@ -13,8 +13,28 @@ export const Header = () => {
             </Link>
           </li>
           <li>
+            <Link to="/game" className={styles.link}>
+              Игра
+            </Link>
+          </li>
+          <li>
+            <Link to="/leaderboard" className={styles.link}>
+              Лидерборд
+            </Link>
+          </li>
+          <li>
             <Link to="/forum" className={styles.link}>
               Форум
+            </Link>
+          </li>
+          <li>
+            <Link to="/signin" className={styles.link}>
+              Вход
+            </Link>
+          </li>
+          <li>
+            <Link to="/signup" className={styles.link}>
+              Регистрация
             </Link>
           </li>
           <li>
