@@ -12,6 +12,7 @@ import { GamePage, initGamePage } from '@/pages/game'
 import { LeaderboardPage, initLeaderboardPage } from '@/pages/leaderboard'
 import { MainPage, initMainPage } from '@/pages/main'
 import { initNotFoundPage, NotFoundPage } from '@/pages/not-found'
+import { initServerErrorPage, ServerErrorPage } from '@/pages/server-error'
 import { SignInPage, initSignInPage } from '@/pages/signin'
 import { SignUpPage, initSignUpPage } from '@/pages/signup'
 
@@ -76,6 +77,11 @@ export const routes: AppRouteObject[] = [
         fetchData: initSignUpPage,
       },
     ],
+  },
+  {
+    path: '500',
+    element: <ServerErrorPage />,
+    fetchData: initServerErrorPage,
   },
   {
     path: '*',
