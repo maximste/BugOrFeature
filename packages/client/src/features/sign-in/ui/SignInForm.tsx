@@ -19,7 +19,7 @@ export const SignInForm = () => {
   return (
     <form className={styles.form} onSubmit={handleSubmit} noValidate>
       <div className={styles.iconWrap} aria-hidden>
-        <img className={styles.icon} src="/icons/logo.svg" alt="Logo" />
+        <img className={styles.icon} src="/icons/logo.svg" alt="" />
       </div>
       <div className={styles.heading}>
         <h1 className={styles.title}>С возвращением</h1>
