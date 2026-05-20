@@ -1,8 +1,8 @@
 import { Helmet } from 'react-helmet'
-import { Link } from 'react-router-dom'
 
 import { usePage } from '@/app/hooks/usePage'
 import { SignInForm } from '@/features/sign-in'
+import { BackLink } from '@/shared/ui/back-link'
 
 import { initSignInPage } from '../model/initSignInPage'
 
@@ -20,9 +20,7 @@ export const SignInPage = () => {
       </Helmet>
       <section className={styles.page}>
         <SignInForm />
-        <Link className={styles.back} to="/">
-          ← На главную
-        </Link>
+        <BackLink />
       </section>
     </>
   )
