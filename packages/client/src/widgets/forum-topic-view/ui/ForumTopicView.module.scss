@@ -1,0 +1,39 @@
+@use '@/app/styles/mixins' as *;
+
+.back {
+  @include typography-ui;
+
+  color: $color-text;
+
+  &:hover {
+    color: $color-primary;
+  }
+}
+
+.commentsHeading {
+  @include typography-ui(20px, 800);
+  color: $color-title;
+  margin: 0;
+}
+
+.commentList {
+  display: flex;
+  flex-direction: column;
+  gap: 13.5px;
+  margin: 13.5px 0;
+}
+
+.commentsEmpty {
+  display: flex;
+  margin: 16px 0 13.5px;
+  gap: 4px;
+}
+
+.commentsEmptyText {
+  @include typography-ui;
+
+  margin: 0;
+  max-width: 22rem;
+  color: $color-text;
+  opacity: 0.92;
+}
