@@ -65,7 +65,7 @@
 }
 
 @mixin white-button-shared{
-  @include button-shared($color-white-bg);
+  @include button-shared($color-card-bg);
   border: 1px solid $color-border;
 
   &:hover {
