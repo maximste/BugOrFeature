@@ -42,3 +42,7 @@
   width: fit-content;
   margin: auto;
 }
+
+.errorPageWhiteButton{
+  @include white-button-shared;
+}

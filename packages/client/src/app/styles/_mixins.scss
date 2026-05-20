@@ -63,3 +63,12 @@
     transform: translateY(1px);
   }
 }
+
+@mixin white-button-shared{
+  @include button-shared($color-white-bg);
+  border: 1px solid $color-border;
+
+  &:hover {
+    color: $color-button-bg;
+  }
+}

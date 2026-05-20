@@ -1,4 +1,5 @@
 import styles from './ServerErrorPage.module.scss'
+import { useNavigate } from 'react-router-dom'
 import { Helmet } from 'react-helmet'
 import { usePage } from '@/app/hooks/usePage'
 import { initServerErrorPage } from '../model/initServerErrorPage'
@@ -7,6 +8,7 @@ import { Button } from '@/shared/ui/button'
 
 export const ServerErrorPage = () => {
   usePage({ initPage: initServerErrorPage })
+  const navigate = useNavigate()
 
   return (
     <main className={styles.noHeaderMain}>
@@ -30,10 +32,12 @@ export const ServerErrorPage = () => {
             убираем.
           </p>
         </div>
-        <Button className={`${styles.errorPageButton} ${styles.reloadButton}`}>
+        <Button
+          className={`${styles.errorPageButton} ${styles.reloadButton}`}
+          onClick={() => navigate(-1)}>
           Попробовать снова
         </Button>
-        <Link className={styles.errorPageButton} to="/">
+        <Link className={styles.errorPageWhiteButton} to="/">
           На главную
         </Link>
       </section>
