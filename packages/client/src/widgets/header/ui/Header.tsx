@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom'
 import styles from './Header.module.scss'
 
 export const Header = () => {
-  throw new Error('suagdu')
   return (
     <header className={styles.shell}>
       <nav className={styles.nav}>

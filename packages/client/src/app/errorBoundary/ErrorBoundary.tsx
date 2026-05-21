@@ -23,7 +23,7 @@ class ErrorBoundary extends React.Component<
   }
 
   componentDidCatch(error: Error, info: any) {
-    console.log('Возникла ошибка!', error, info)
+    console.error('Возникла ошибка!', error, info)
   }
 
   render() {
