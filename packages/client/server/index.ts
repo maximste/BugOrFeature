@@ -1,11 +1,12 @@
 import dotenv from 'dotenv'
-dotenv.config()
-
-import { HelmetData } from 'react-helmet'
-import express, { Request as ExpressRequest } from 'express'
 import path from 'path'
+dotenv.config({ path: path.resolve(__dirname, '../../../.env') })
+
+import type { HelmetServerState } from 'react-helmet-async'
+import express, { Request as ExpressRequest } from 'express'
 
 import fs from 'fs/promises'
+import http from 'http'
 import { createServer as createViteServer, ViteDevServer } from 'vite'
 import serialize from 'serialize-javascript'
 import cookieParser from 'cookie-parser'
@@ -16,12 +17,13 @@ const isDev = process.env.NODE_ENV === 'development'
 
 async function createServer() {
   const app = express()
+  const httpServer = http.createServer(app)
 
   app.use(cookieParser())
   let vite: ViteDevServer | undefined
   if (isDev) {
     vite = await createViteServer({
-      server: { middlewareMode: true },
+      server: { middlewareMode: true, hmr: { server: httpServer } },
       root: clientPath,
       appType: 'custom',
     })
@@ -42,7 +44,7 @@ async function createServer() {
       let render: (req: ExpressRequest) => Promise<{
         html: string
         initialState: unknown
-        helmet: HelmetData
+        helmet: HelmetServerState | undefined
         styleTags: string
       }>
       let template: string
@@ -91,7 +93,9 @@ async function createServer() {
         .replace('<!--ssr-styles-->', styleTags)
         .replace(
           `<!--ssr-helmet-->`,
-          `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`
+          helmet
+            ? `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`
+            : ''
         )
         .replace(`<!--ssr-outlet-->`, appHtml)
         .replace(
@@ -104,12 +108,12 @@ async function createServer() {
       // Завершаем запрос и отдаём HTML-страницу
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
-      vite.ssrFixStacktrace(e as Error)
+      vite?.ssrFixStacktrace(e as Error)
       next(e)
     }
   })
 
-  app.listen(port, () => {
+  httpServer.listen(port, () => {
     console.log(`Client is listening on port: ${port}`)
   })
 }

@@ -1,21 +1,102 @@
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 
 import { usePage } from '@/app/hooks/usePage'
 
 import { initGamePage } from '../model/initGamePage'
+import { useEffect, useRef, useState } from 'react'
+import { TDifficulty } from '../types/game'
+import { useMinesweeper } from '../hooks/useMinesweeper'
+import { Box, Heading, Button, Text } from '@chakra-ui/react'
+import { ControlPanel } from './ControlPanel'
+import MinesweeperCanvas from './MinesweeperCanvas'
+import { GameStatusBanner } from './GameStatusBanner'
 
 export const GamePage = () => {
   usePage({ initPage: initGamePage })
 
+  const [currentDifficulty, setCurrentDifficulty] =
+    useState<TDifficulty>('easy')
+
+  const {
+    grid,
+    rows,
+    cols,
+    status,
+    minesLeft,
+    time,
+    reveal,
+    flag,
+    chord,
+    reset,
+    tick,
+    cheat,
+  } = useMinesweeper(currentDifficulty)
+
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    if (timerRef.current) clearInterval(timerRef.current)
+    if (status === 'playing') timerRef.current = setInterval(tick, 1000)
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+  }, [status, tick])
+
   return (
-    <div>
+    <>
       <Helmet>
         <meta charSet="utf-8" />
-        <title>Игра — BugOrFeature</title>
-        <meta name="description" content="Сапёр" />
+        <title>Котосапёр</title>
+        <meta name="description" content="Игра Котосапёр" />
       </Helmet>
-      <h1>Сапёр</h1>
-      <p>Игровое поле (заглушка)</p>
-    </div>
+
+      <Heading fontSize="2rem" fontWeight={800}>
+        Котосапёр 🐾
+      </Heading>
+      <Text mt={1}>Не разбудите пёсиков и соберите всех котиков</Text>
+
+      <ControlPanel
+        currentDifficulty={currentDifficulty}
+        setCurrentDifficulty={setCurrentDifficulty}
+        minesLeft={minesLeft}
+        time={time}
+        reset={reset}
+      />
+
+      <GameStatusBanner status={status} onReset={reset} />
+
+      <Box
+        border="12px solid white"
+        borderRadius="2xl"
+        overflow="hidden"
+        maxW="100%"
+        overflowX="auto"
+        shadow="card">
+        <MinesweeperCanvas
+          grid={grid}
+          rows={rows}
+          cols={cols}
+          status={status}
+          onReveal={reveal}
+          onFlag={flag}
+          onChord={chord}
+        />
+      </Box>
+
+      <Text
+        maxW="28rem"
+        fontWeight={400}
+        fontSize="0.875rem"
+        mt={4}
+        textAlign="center">
+        Клик — открыть клетку. Правый клик — поставить рыбку-флажок. Не
+        разбудите спящих пёсиков!
+      </Text>
+
+      {/* TODO: убрать после тестирования */}
+      <Button onClick={cheat} mt={8} opacity={0.4}>
+        победить (debug)
+      </Button>
+    </>
   )
 }

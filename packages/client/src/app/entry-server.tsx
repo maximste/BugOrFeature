@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/server'
 import { Provider } from 'react-redux'
-import { Helmet } from 'react-helmet'
+import { HelmetProvider, HelmetServerState } from 'react-helmet-async'
 import { Request as ExpressRequest } from 'express'
 import {
   createStaticHandler,
@@ -19,6 +19,8 @@ import {
   createFetchRequest,
   createUrl,
 } from './entry-server.utils'
+import { ChakraProvider } from '@chakra-ui/react'
+import { system } from '@/theme'
 
 import '@/app/styles/index.scss'
 
@@ -65,13 +67,19 @@ export const render = async (req: ExpressRequest) => {
 
   const router = createStaticRouter(dataRoutes, context)
 
+  const helmetContext: { helmet?: HelmetServerState } = {}
+
   const html = ReactDOM.renderToString(
-    <Provider store={store}>
-      <StaticRouterProvider router={router} context={context} />
-    </Provider>
+    <HelmetProvider context={helmetContext}>
+      <ChakraProvider value={system}>
+        <Provider store={store}>
+          <StaticRouterProvider router={router} context={context} />
+        </Provider>
+      </ChakraProvider>
+    </HelmetProvider>
   )
 
-  const helmet = Helmet.renderStatic()
+  const { helmet } = helmetContext
 
   return {
     html,

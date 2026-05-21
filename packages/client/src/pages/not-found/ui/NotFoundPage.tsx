@@ -1,5 +1,5 @@
 import styles from './NotFoundPage.module.scss'
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { usePage } from '@/app/hooks/usePage'
 import { initNotFoundPage } from '../model/initNotFoundPage'
 import { Link } from 'react-router-dom'

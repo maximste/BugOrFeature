@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet'
+import { Helmet } from 'react-helmet-async'
 import { usePage } from '@/app/hooks/usePage'
 import { initMainPage } from '../model/initMainPage'
 
