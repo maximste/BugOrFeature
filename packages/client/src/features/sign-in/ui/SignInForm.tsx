@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { Button } from '@/shared/ui/button'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
+import { PageHeading } from '@/shared/ui/page-heading'
 
 import styles from './SignInForm.module.scss'
 
@@ -21,10 +22,11 @@ export const SignInForm = () => {
       <div className={styles.iconWrap} aria-hidden>
         <img className={styles.icon} src="/icons/logo.svg" alt="" />
       </div>
-      <div className={styles.heading}>
-        <h1 className={styles.title}>С возвращением</h1>
-        <p className={styles.subtitle}>Войдите, чтобы общаться на форуме</p>
-      </div>
+      <PageHeading
+        title="С возвращением"
+        subtitle="Войдите, чтобы общаться на форуме"
+        className={styles.heading}
+      />
       <FormField label="Email" htmlFor="signin-email">
         <Input
           id="signin-email"
