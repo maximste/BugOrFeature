@@ -44,9 +44,9 @@ export const SignUpPage = () => {
             Присоединяйтесь к пушистому сообществу
           </span>
         </div>
-        <FormField label="Имя" htmlFor="new-topic-title">
+        <FormField label="Имя" htmlFor="signup-name">
           <Input
-            id="new-topic-title"
+            id="signup-name"
             name="name"
             value={name}
             onChange={e => setName(e.target.value)}
@@ -54,9 +54,9 @@ export const SignUpPage = () => {
             autoComplete="off"
           />
         </FormField>
-        <FormField label="Фамилия" htmlFor="new-topic-body">
+        <FormField label="Фамилия" htmlFor="signup-lastname">
           <Input
-            id="new-topic-title"
+            id="signup-lastname"
             name="lastname"
             value={lastname}
             onChange={e => setLastname(e.target.value)}
@@ -64,9 +64,9 @@ export const SignUpPage = () => {
             autoComplete="off"
           />
         </FormField>
-        <FormField label="Логин" htmlFor="new-topic-body">
+        <FormField label="Логин" htmlFor="signup-login">
           <Input
-            id="new-topic-title"
+            id="signup-login"
             name="login"
             value={login}
             onChange={e => setLogin(e.target.value)}
@@ -74,9 +74,9 @@ export const SignUpPage = () => {
             autoComplete="off"
           />
         </FormField>
-        <FormField label="Телефон" htmlFor="new-topic-body">
+        <FormField label="Телефон" htmlFor="signup-phone">
           <Input
-            id="new-topic-title"
+            id="signup-phone"
             name="phone"
             value={phone}
             onChange={e => setPhone(e.target.value)}
@@ -84,9 +84,9 @@ export const SignUpPage = () => {
             autoComplete="off"
           />
         </FormField>
-        <FormField label="Email" htmlFor="new-topic-body">
+        <FormField label="Email" htmlFor="signup-email">
           <Input
-            id="new-topic-title"
+            id="signup-email"
             name="email"
             value={email}
             type="email"
@@ -95,9 +95,9 @@ export const SignUpPage = () => {
             autoComplete="off"
           />
         </FormField>
-        <FormField label="Пароль" htmlFor="new-topic-body">
+        <FormField label="Пароль" htmlFor="signup-password">
           <Input
-            id="new-topic-title"
+            id="signup-password"
             name="password"
             value={password}
             type="password"
