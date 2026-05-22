@@ -28,6 +28,11 @@ export const Header = () => {
             </Link>
           </li>
           <li>
+            <Link to="/profile" className={styles.link}>
+              Профиль
+            </Link>
+          </li>
+          <li>
             <Link to="/signin" className={styles.link}>
               Вход
             </Link>

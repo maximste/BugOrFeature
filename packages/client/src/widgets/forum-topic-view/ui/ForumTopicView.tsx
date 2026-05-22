@@ -1,10 +1,9 @@
-import { Link } from 'react-router-dom'
-
 import { CommentCard } from '@/entities/comment'
 import type { Comment } from '@/entities/comment'
 import { TopicDetailCard } from '@/entities/topic'
 import type { TopicDetail } from '@/entities/topic'
 import { AddCommentForm } from '@/features/add-comment'
+import { BackLink } from '@/shared/ui/back-link'
 
 import styles from './ForumTopicView.module.scss'
 
@@ -20,9 +19,9 @@ export const ForumTopicView = ({ topic, comments }: ForumTopicViewProps) => {
 
   return (
     <>
-      <Link className={styles.back} to="/forum">
+      <BackLink to="/forum" className={styles.back}>
         ← К темам
-      </Link>
+      </BackLink>
       <TopicDetailCard
         title={topic.title}
         author={topic.author}

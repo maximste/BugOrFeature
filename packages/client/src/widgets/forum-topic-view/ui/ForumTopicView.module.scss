@@ -8,25 +8,29 @@
   &:hover {
     color: $color-primary;
   }
+
+  align-self: flex-start;
 }
 
 .commentsHeading {
   @include typography-ui(20px, 800);
   color: $color-title;
   margin: 0;
+  align-self: flex-start;
 }
 
 .commentList {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  margin: 14px 0;
+  width: 100%;
 }
 
 .commentsEmpty {
   display: flex;
   margin: 16px 0 14px;
   gap: 4px;
+  align-self: flex-start;
 }
 
 .commentsEmptyText {
