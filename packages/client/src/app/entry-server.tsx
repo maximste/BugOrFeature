@@ -21,6 +21,7 @@ import {
 } from './entry-server.utils'
 
 import '@/app/styles/index.scss'
+import ErrorBoundary from './errorBoundary/ErrorBoundary'
 
 export const render = async (req: ExpressRequest) => {
   const { query, dataRoutes } = createStaticHandler(routes)
@@ -65,11 +66,18 @@ export const render = async (req: ExpressRequest) => {
 
   const router = createStaticRouter(dataRoutes, context)
 
-  const html = ReactDOM.renderToString(
-    <Provider store={store}>
-      <StaticRouterProvider router={router} context={context} />
-    </Provider>
-  )
+  let html = ''
+  try {
+    html = ReactDOM.renderToString(
+      <ErrorBoundary>
+        <Provider store={store}>
+          <StaticRouterProvider router={router} context={context} />
+        </Provider>
+      </ErrorBoundary>
+    )
+  } catch (e) {
+    console.error(e)
+  }
 
   const helmet = Helmet.renderStatic()
 

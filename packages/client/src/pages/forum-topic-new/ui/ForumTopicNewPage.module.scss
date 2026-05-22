@@ -1,18 +1,6 @@
-@use '@/app/styles/mixins' as *;
-
 .page {
   max-width: 640px;
   margin: 0 auto;
-}
-
-.back {
-  @include typography-ui(14px, 400);
-
-  color: $color-text;
-
-  &:hover {
-    color: $color-primary;
-  }
 }
 
 .title {
