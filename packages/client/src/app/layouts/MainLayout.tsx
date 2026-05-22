@@ -1,9 +1,10 @@
 import { Outlet } from 'react-router-dom'
 import { Header } from '@/widgets/header'
 import { Flex } from '@chakra-ui/react'
+import ErrorBoundary from '../errorBoundary/ErrorBoundary'
 
 export const MainLayout = () => (
-  <>
+  <ErrorBoundary>
     <Header />
     <Flex
       as="main"
@@ -16,5 +17,5 @@ export const MainLayout = () => (
       maxW="1200px">
       <Outlet />
     </Flex>
-  </>
+  </ErrorBoundary>
 )

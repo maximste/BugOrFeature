@@ -23,6 +23,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { system } from '@/theme'
 
 import '@/app/styles/index.scss'
+import ErrorBoundary from './errorBoundary/ErrorBoundary'
 
 export const render = async (req: ExpressRequest) => {
   const { query, dataRoutes } = createStaticHandler(routes)
@@ -69,15 +70,23 @@ export const render = async (req: ExpressRequest) => {
 
   const helmetContext: { helmet?: HelmetServerState } = {}
 
-  const html = ReactDOM.renderToString(
-    <HelmetProvider context={helmetContext}>
-      <ChakraProvider value={system}>
-        <Provider store={store}>
-          <StaticRouterProvider router={router} context={context} />
-        </Provider>
-      </ChakraProvider>
-    </HelmetProvider>
-  )
+  let html = ''
+
+  try {
+    html = ReactDOM.renderToString(
+      <HelmetProvider context={helmetContext}>
+        <ChakraProvider value={system}>
+          <ErrorBoundary>
+            <Provider store={store}>
+              <StaticRouterProvider router={router} context={context} />
+            </Provider>
+          </ErrorBoundary>
+        </ChakraProvider>
+      </HelmetProvider>
+    )
+  } catch (e) {
+    console.error(e)
+  }
 
   const { helmet } = helmetContext
 

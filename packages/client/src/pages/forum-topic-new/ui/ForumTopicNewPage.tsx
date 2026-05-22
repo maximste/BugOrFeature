@@ -1,8 +1,8 @@
 import { Helmet } from 'react-helmet-async'
-import { Link } from 'react-router-dom'
 
 import { usePage } from '@/app/hooks/usePage'
 import { CreateTopicForm } from '@/features/create-topic'
+import { BackLink } from '@/shared/ui/back-link'
 import { PageHeading } from '@/shared/ui/page-heading'
 
 import { initForumTopicNewPage } from '../model/initForumTopicNewPage'
@@ -20,9 +20,7 @@ export const ForumTopicNewPage = () => {
         <meta name="description" content="Создать тему на форуме" />
       </Helmet>
       <section className={styles.page}>
-        <Link className={styles.back} to="/forum">
-          ← К темам
-        </Link>
+        <BackLink to="/forum">← К темам</BackLink>
         <PageHeading title="Новая тема" className={styles.title} />
         <CreateTopicForm />
       </section>

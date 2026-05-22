@@ -1,0 +1,12 @@
+@use '@/app/styles/mixins' as *;
+
+.root {
+  @include typography-ui(14px, 400);
+
+  color: $color-subtitle;
+  text-decoration: none;
+
+  &:hover {
+    color: $color-title;
+  }
+}
