@@ -80,30 +80,30 @@ const LEVEL_DATA_MAP = {
   Hard: MOCK_DATA_HARD,
 }
 
+const LEVEL_BUTTONS: { label: string; level: Level }[] = [
+  { label: 'Котенок', level: 'Simple' },
+  { label: 'Кот', level: 'Medium' },
+  { label: 'Дикий кот', level: 'Hard' },
+]
+
+const tableColumns = [
+  {
+    key: 'rating',
+    title: 'Место',
+  },
+  {
+    key: 'playerEl',
+    title: 'Игрок',
+  },
+  {
+    key: 'timeStr',
+    title: 'Результат',
+  },
+]
+
 type Level = keyof typeof LEVEL_DATA_MAP
 
 export const LeaderboardPage = () => {
-  const LEVEL_BUTTONS: { label: string; level: Level }[] = [
-    { label: 'Котенок', level: 'Simple' },
-    { label: 'Кот', level: 'Medium' },
-    { label: 'Дикий кот', level: 'Hard' },
-  ]
-
-  const tableColumns = [
-    {
-      key: 'rating',
-      title: 'Место',
-    },
-    {
-      key: 'playerEl',
-      title: 'Игрок',
-    },
-    {
-      key: 'timeStr',
-      title: 'Результат',
-    },
-  ]
-
   usePage({ initPage: initLeaderboardPage })
 
   const [activeLevel, setActiveLevel] = useState<Level>('Simple')
@@ -120,7 +120,7 @@ export const LeaderboardPage = () => {
       return newEl
     })
 
-    setLeadersData(data || [])
+    setLeadersData(data)
   }, [activeLevel])
 
   return (
