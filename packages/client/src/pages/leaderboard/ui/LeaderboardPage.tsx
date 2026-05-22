@@ -1,3 +1,4 @@
+import styles from './LeaderboardPage.module.scss'
 import { Helmet } from 'react-helmet'
 
 import { usePage } from '@/app/hooks/usePage'
@@ -24,6 +25,14 @@ const MOCK_DATA_SIMPLE = [
   {
     player: 'Мурка',
     time: 161,
+  },
+  {
+    player: 'Шапокляк',
+    time: 170,
+  },
+  {
+    player: 'Гена',
+    time: 180,
   },
 ]
 
@@ -90,7 +99,7 @@ export const LeaderboardPage = () => {
       title: 'Игрок',
     },
     {
-      key: 'time',
+      key: 'timeStr',
       title: 'Результат',
     },
   ]
@@ -101,7 +110,15 @@ export const LeaderboardPage = () => {
   const [leadersData, setLeadersData] = useState<typeof MOCK_DATA_SIMPLE>([])
 
   useEffect(() => {
-    const data = LEVEL_DATA_MAP[activeLevel]
+    const data = LEVEL_DATA_MAP[activeLevel].map((el, i) => {
+      const newEl = {
+        ...el,
+        rating: i + 1,
+        timeStr: `${el.time} сек`,
+      }
+      return newEl
+    })
+
     setLeadersData(data || [])
   }, [activeLevel])
 
@@ -112,24 +129,35 @@ export const LeaderboardPage = () => {
         <title>Лидерборд</title>
         <meta name="description" content="Таблица лидеров" />
       </Helmet>
-      <section>
-        <div>
-          <h2>Зал котославы</h2>
+      <section className={styles.pageSection}>
+        <div className={styles.pageTop}>
+          <h2 className={styles.subHeader}>Зал котославы</h2>
           <PageHeading
+            className={styles.headerBlock}
             title="Топ игроков"
             subtitle="Самые быстрые лапки в каждом уровне."
           />
         </div>
 
-        <ul>
+        <ul className={styles.tabsList}>
           {LEVEL_BUTTONS.map(({ label, level }) => (
             <li key={level}>
-              <Button onClick={() => setActiveLevel(level)}>{label}</Button>
+              <Button
+                className={`${styles.tab}${
+                  activeLevel === level ? '_active' : ''
+                }`}
+                onClick={() => setActiveLevel(level)}>
+                {label}
+              </Button>
             </li>
           ))}
         </ul>
 
-        <Table columns={tableColumns} rows={leadersData} />
+        <Table
+          className={styles.table}
+          columns={tableColumns}
+          rows={leadersData}
+        />
       </section>
     </>
   )
