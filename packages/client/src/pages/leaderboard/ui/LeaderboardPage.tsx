@@ -7,7 +7,7 @@ import { initLeaderboardPage } from '../model/initLeaderboardPage'
 import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page-heading'
 import { Table } from '@/shared/ui/table'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 const MOCK_DATA_SIMPLE = [
   {
@@ -110,18 +110,19 @@ export const LeaderboardPage = () => {
   const [leadersData, setLeadersData] = useState<typeof MOCK_DATA_SIMPLE>([])
 
   useEffect(() => {
-    const data = LEVEL_DATA_MAP[activeLevel].map((el, i) => {
-      const newEl = {
+    setLeadersData(LEVEL_DATA_MAP[activeLevel])
+  }, [activeLevel])
+
+  const tableRows = useMemo(
+    () =>
+      leadersData.map((el, i) => ({
         ...el,
         playerEl: <div className={styles.playerFlex}>{el.player}</div>,
         rating: i + 1,
         timeStr: `${el.time} сек`,
-      }
-      return newEl
-    })
-
-    setLeadersData(data)
-  }, [activeLevel])
+      })),
+    [leadersData]
+  )
 
   return (
     <>
@@ -157,7 +158,7 @@ export const LeaderboardPage = () => {
         <Table
           className={styles.table}
           columns={tableColumns}
-          rows={leadersData}
+          rows={tableRows}
         />
       </section>
     </>
