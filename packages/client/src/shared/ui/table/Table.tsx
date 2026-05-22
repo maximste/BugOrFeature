@@ -1,3 +1,4 @@
+import React from 'react'
 import { ReactElement } from 'react'
 
 type Row = Record<string, unknown>
@@ -6,16 +7,18 @@ type TableProps = {
   className?: string
   rows: Row[]
   columns?: { key: string; title: string }[]
+  showHeader?: boolean
 }
 
 export const Table = ({
   className = '',
   rows = [],
   columns = [],
+  showHeader = false,
 }: TableProps): ReactElement => {
   return (
     <table className={className}>
-      {columns.length > 0 && (
+      {columns.length > 0 && showHeader && (
         <thead>
           <tr>
             {columns.map(({ key, title }) => (
@@ -28,7 +31,9 @@ export const Table = ({
         {rows.map((row, rowIndex) => (
           <tr key={`row-${rowIndex}`}>
             {columns.map(({ key }) => (
-              <td key={`cell-${rowIndex}-${key}`}>{renderCell(row[key])}</td>
+              <td className={key} key={`cell-${rowIndex}-${key}`}>
+                {renderCell(row[key])}
+              </td>
             ))}
           </tr>
         ))}
@@ -41,6 +46,10 @@ export const Table = ({
 const renderCell = (value: unknown): ReactElement | string => {
   if (value === null || value === undefined) {
     return '-'
+  }
+
+  if (React.isValidElement(value)) {
+    return value
   }
 
   if (typeof value === 'object') {
