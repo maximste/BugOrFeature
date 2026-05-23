@@ -49,7 +49,7 @@ main {
   width: 56px;
   height: 56px;
   border-radius: 16px;
-  background-color: #FB98904D;
+  background-color: #fb98904d;
 }
 
 .title {
@@ -63,6 +63,13 @@ main {
 .titleSubtitle {
   @include typography-ui(12px, 400);
 
+  text-align: center;
+}
+
+.error {
+  margin: 0;
+  font-size: 14px;
+  color: $color-primary;
   text-align: center;
 }
 
