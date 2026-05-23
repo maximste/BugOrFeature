@@ -79,3 +79,11 @@
     color: $color-button-bg;
   }
 }
+
+@mixin magenta-button-shared{
+  @include button-shared($color-button-magenta);    
+}
+
+@mixin cyan-button-shared{
+  @include button-shared($color-button-cyan);    
+}
