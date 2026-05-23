@@ -1,21 +1,111 @@
+import styles from './LeaderboardPage.module.scss'
 import { Helmet } from 'react-helmet'
-
+import { useEffect, useMemo, useState } from 'react'
 import { usePage } from '@/app/hooks/usePage'
 
 import { initLeaderboardPage } from '../model/initLeaderboardPage'
+import { Button } from '@/shared/ui/button'
+import { PageHeading } from '@/shared/ui/page-heading'
+import { Table } from '@/shared/ui/table'
+
+import {
+  MOCK_DATA_SIMPLE,
+  MOCK_DATA_MEDIUM,
+  MOCK_DATA_HARD,
+} from './LeaderbordMock'
+
+const LEVEL_DATA_MAP = {
+  Simple: MOCK_DATA_SIMPLE,
+  Medium: MOCK_DATA_MEDIUM,
+  Hard: MOCK_DATA_HARD,
+}
+
+const LEVEL_BUTTONS: { label: string; level: Level }[] = [
+  { label: 'Котенок', level: 'Simple' },
+  { label: 'Кот', level: 'Medium' },
+  { label: 'Дикий кот', level: 'Hard' },
+]
+
+const tableColumns = [
+  {
+    key: 'rating',
+    title: 'Место',
+  },
+  {
+    key: 'playerEl',
+    title: 'Игрок',
+  },
+  {
+    key: 'timeStr',
+    title: 'Результат',
+  },
+]
+
+type LeaderboardUnit = {
+  player: string
+  time: number
+}
+
+type Level = keyof typeof LEVEL_DATA_MAP
 
 export const LeaderboardPage = () => {
   usePage({ initPage: initLeaderboardPage })
 
+  const [activeLevel, setActiveLevel] = useState<Level>('Simple')
+  const [leadersData, setLeadersData] = useState<LeaderboardUnit[]>([])
+
+  useEffect(() => {
+    setLeadersData(LEVEL_DATA_MAP[activeLevel])
+  }, [activeLevel])
+
+  const tableRows = useMemo(
+    () =>
+      leadersData.map((el, i) => ({
+        ...el,
+        playerEl: <div className={styles.playerFlex}>{el.player}</div>,
+        rating: i + 1,
+        timeStr: `${el.time} сек`,
+      })),
+    [leadersData]
+  )
+
   return (
-    <div>
+    <>
       <Helmet>
         <meta charSet="utf-8" />
         <title>Лидерборд</title>
         <meta name="description" content="Таблица лидеров" />
       </Helmet>
-      <h1>Лидерборд</h1>
-      <p>Таблица лидеров (заглушка)</p>
-    </div>
+      <section className={styles.pageSection}>
+        <div className={styles.pageTop}>
+          <h2 className={styles.subHeader}>Зал котославы</h2>
+          <PageHeading
+            className={styles.headerBlock}
+            title="Топ игроков"
+            subtitle="Самые быстрые лапки в каждом уровне."
+          />
+        </div>
+
+        <ul className={styles.tabsList}>
+          {LEVEL_BUTTONS.map(({ label, level }) => (
+            <li key={level}>
+              <Button
+                className={`${styles.tab}${
+                  activeLevel === level ? '_active' : ''
+                }`}
+                onClick={() => setActiveLevel(level)}>
+                {label}
+              </Button>
+            </li>
+          ))}
+        </ul>
+
+        <Table
+          className={styles.table}
+          columns={tableColumns}
+          rows={tableRows}
+        />
+      </section>
+    </>
   )
 }
