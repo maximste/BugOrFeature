@@ -1,78 +1,18 @@
 import styles from './LeaderboardPage.module.scss'
 import { Helmet } from 'react-helmet'
-
+import { useEffect, useMemo, useState } from 'react'
 import { usePage } from '@/app/hooks/usePage'
 
 import { initLeaderboardPage } from '../model/initLeaderboardPage'
 import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page-heading'
 import { Table } from '@/shared/ui/table'
-import { useEffect, useMemo, useState } from 'react'
 
-const MOCK_DATA_SIMPLE = [
-  {
-    player: 'Мурзик',
-    time: 69,
-  },
-  {
-    player: 'Барсик',
-    time: 72,
-  },
-  {
-    player: 'Рыжик',
-    time: 151,
-  },
-  {
-    player: 'Мурка',
-    time: 161,
-  },
-  {
-    player: 'Шапокляк',
-    time: 170,
-  },
-  {
-    player: 'Гена',
-    time: 180,
-  },
-]
-
-const MOCK_DATA_MEDIUM = [
-  {
-    player: 'Кот',
-    time: 50,
-  },
-  {
-    player: 'Шарик',
-    time: 72,
-  },
-  {
-    player: 'Матроскин',
-    time: 151,
-  },
-  {
-    player: 'Мурка',
-    time: 161,
-  },
-]
-
-const MOCK_DATA_HARD = [
-  {
-    player: 'Барбос',
-    time: 47,
-  },
-  {
-    player: 'Тузик',
-    time: 72,
-  },
-  {
-    player: 'Рыжик',
-    time: 151,
-  },
-  {
-    player: 'Бобик',
-    time: 161,
-  },
-]
+import {
+  MOCK_DATA_SIMPLE,
+  MOCK_DATA_MEDIUM,
+  MOCK_DATA_HARD,
+} from './LeaderbordMock'
 
 const LEVEL_DATA_MAP = {
   Simple: MOCK_DATA_SIMPLE,
@@ -101,13 +41,18 @@ const tableColumns = [
   },
 ]
 
+type LeaderboardUnit = {
+  player: string
+  time: number
+}
+
 type Level = keyof typeof LEVEL_DATA_MAP
 
 export const LeaderboardPage = () => {
   usePage({ initPage: initLeaderboardPage })
 
   const [activeLevel, setActiveLevel] = useState<Level>('Simple')
-  const [leadersData, setLeadersData] = useState<typeof MOCK_DATA_SIMPLE>([])
+  const [leadersData, setLeadersData] = useState<LeaderboardUnit[]>([])
 
   useEffect(() => {
     setLeadersData(LEVEL_DATA_MAP[activeLevel])
