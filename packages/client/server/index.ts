@@ -1,9 +1,10 @@
 import dotenv from 'dotenv'
-dotenv.config()
+import path from 'path'
+
+dotenv.config({ path: path.join(__dirname, '../../../.env') })
 
 import { HelmetData } from 'react-helmet'
 import express, { Request as ExpressRequest } from 'express'
-import path from 'path'
 
 import fs from 'fs/promises'
 import { createServer as createViteServer, ViteDevServer } from 'vite'
