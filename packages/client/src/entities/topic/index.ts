@@ -1,2 +1,6 @@
 export { TopicCard, type TopicCardProps } from './ui/TopicCard'
-export type { Topic } from './model/types'
+export {
+  TopicDetailCard,
+  type TopicDetailCardProps,
+} from './ui/TopicDetailCard'
+export type { Topic, TopicDetail } from './model/types'

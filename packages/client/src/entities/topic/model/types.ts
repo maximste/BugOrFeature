@@ -5,3 +5,7 @@ export type Topic = {
   author: string
   date: string
 }
+
+export type TopicDetail = Topic & {
+  content: string
+}

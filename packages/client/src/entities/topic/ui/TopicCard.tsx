@@ -11,8 +11,7 @@ export const TopicCard = ({
   date,
 }: TopicCardProps) => {
   return (
-    // Пока что просто li, но в будущем будет ссылка!!!
-    <li className={styles.item}>
+    <article className={styles.item}>
       <div className={styles.header}>
         <img
           src={TOPIC_ICON_SRC}
@@ -31,6 +30,6 @@ export const TopicCard = ({
         <span aria-hidden>·</span>
         <time dateTime={date}>{date}</time>
       </div>
-    </li>
+    </article>
   )
 }

@@ -31,6 +31,13 @@ const MOCK_TOPICS: Topic[] = [
     author: 'Мурзик',
     date: '2026-05-13',
   },
+  {
+    id: '4',
+    title: 'Без комментариев (демо)',
+    description: 'Пустой список для проверки UI.',
+    author: 'Мурзик',
+    date: '2026-05-13',
+  },
 ]
 
 export const ForumPage = () => {
