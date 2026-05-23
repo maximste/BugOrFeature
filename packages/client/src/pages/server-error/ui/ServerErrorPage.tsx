@@ -1,6 +1,6 @@
 import styles from './ServerErrorPage.module.scss'
 import { useNavigate } from 'react-router-dom'
-import { Helmet } from 'react-helmet-async'
+import { Helmet } from 'react-helmet'
 import { usePage } from '@/app/hooks/usePage'
 import { initServerErrorPage } from '../model/initServerErrorPage'
 import { Link } from 'react-router-dom'

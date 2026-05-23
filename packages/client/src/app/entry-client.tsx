@@ -8,20 +8,18 @@ import { routes } from '@/app/routes'
 import { store } from '@/app/store'
 import { ChakraProvider } from '@chakra-ui/react'
 import { system } from '@/theme'
-import { HelmetProvider } from 'react-helmet-async'
 import ErrorBoundary from './errorBoundary/ErrorBoundary'
 
 const router = createBrowserRouter(routes)
 
 ReactDOM.hydrateRoot(
   document.getElementById('root') as HTMLElement,
-  <HelmetProvider>
-    <ChakraProvider value={system}>
-      <ErrorBoundary>
-        <Provider store={store}>
-          <RouterProvider router={router} />
-        </Provider>{' '}
-      </ErrorBoundary>
-    </ChakraProvider>
-  </HelmetProvider>
+
+  <ChakraProvider value={system}>
+    <ErrorBoundary>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+      </Provider>
+    </ErrorBoundary>
+  </ChakraProvider>
 )

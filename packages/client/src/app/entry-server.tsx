@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/server'
 import { Provider } from 'react-redux'
-import { HelmetProvider, HelmetServerState } from 'react-helmet-async'
+import { Helmet } from 'react-helmet'
 import { Request as ExpressRequest } from 'express'
 import {
   createStaticHandler,
@@ -13,14 +13,14 @@ import { configureStore } from '@reduxjs/toolkit'
 import { routes, type AppRouteObject } from '@/app/routes'
 import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
 import { reducer } from '@/app/store'
+import { ChakraProvider } from '@chakra-ui/react'
+import { system } from '@/theme'
 
 import {
   createContext,
   createFetchRequest,
   createUrl,
 } from './entry-server.utils'
-import { ChakraProvider } from '@chakra-ui/react'
-import { system } from '@/theme'
 
 import '@/app/styles/index.scss'
 import ErrorBoundary from './errorBoundary/ErrorBoundary'
@@ -68,27 +68,22 @@ export const render = async (req: ExpressRequest) => {
 
   const router = createStaticRouter(dataRoutes, context)
 
-  const helmetContext: { helmet?: HelmetServerState } = {}
-
   let html = ''
-
   try {
     html = ReactDOM.renderToString(
-      <HelmetProvider context={helmetContext}>
-        <ChakraProvider value={system}>
-          <ErrorBoundary>
-            <Provider store={store}>
-              <StaticRouterProvider router={router} context={context} />
-            </Provider>
-          </ErrorBoundary>
-        </ChakraProvider>
-      </HelmetProvider>
+      <ChakraProvider value={system}>
+        <ErrorBoundary>
+          <Provider store={store}>
+            <StaticRouterProvider router={router} context={context} />
+          </Provider>
+        </ErrorBoundary>
+      </ChakraProvider>
     )
   } catch (e) {
     console.error(e)
   }
 
-  const { helmet } = helmetContext
+  const helmet = Helmet.renderStatic()
 
   return {
     html,

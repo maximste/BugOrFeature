@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async'
+import { Helmet } from 'react-helmet'
 
 import { usePage } from '@/app/hooks/usePage'
 import type { Topic } from '@/entities/topic'

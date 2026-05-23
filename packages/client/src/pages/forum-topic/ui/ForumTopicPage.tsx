@@ -1,4 +1,4 @@
-import { Helmet } from 'react-helmet-async'
+import { Helmet } from 'react-helmet'
 import { useParams } from 'react-router-dom'
 
 import { usePage } from '@/app/hooks/usePage'

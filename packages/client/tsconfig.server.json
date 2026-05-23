@@ -6,7 +6,7 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "lib": ["es2019", "DOM", "esnext.disposable"]
+    "lib": ["es2019", "DOM"]
   },
   "include": ["server/index.ts"]
 }

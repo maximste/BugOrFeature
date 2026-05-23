@@ -1,12 +1,17 @@
-import dotenv from 'dotenv'
 import path from 'path'
+import dotenv from 'dotenv'
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') })
 
-import type { HelmetServerState } from 'react-helmet-async'
+// @zag-js/store (used by Chakra UI v3) references `File` at module init time.
+// File is only a Node.js global from v20+; polyfill it for older runtimes.
+if (typeof (globalThis as Record<string, unknown>).File === 'undefined') {
+  ;(globalThis as Record<string, unknown>).File = class File {}
+}
+
+import { HelmetData } from 'react-helmet'
 import express, { Request as ExpressRequest } from 'express'
 
 import fs from 'fs/promises'
-import http from 'http'
 import { createServer as createViteServer, ViteDevServer } from 'vite'
 import serialize from 'serialize-javascript'
 import cookieParser from 'cookie-parser'
@@ -17,13 +22,12 @@ const isDev = process.env.NODE_ENV === 'development'
 
 async function createServer() {
   const app = express()
-  const httpServer = http.createServer(app)
 
   app.use(cookieParser())
   let vite: ViteDevServer | undefined
   if (isDev) {
     vite = await createViteServer({
-      server: { middlewareMode: true, hmr: { server: httpServer } },
+      server: { middlewareMode: true },
       root: clientPath,
       appType: 'custom',
     })
@@ -44,7 +48,7 @@ async function createServer() {
       let render: (req: ExpressRequest) => Promise<{
         html: string
         initialState: unknown
-        helmet: HelmetServerState | undefined
+        helmet: HelmetData
         styleTags: string
       }>
       let template: string
@@ -93,9 +97,7 @@ async function createServer() {
         .replace('<!--ssr-styles-->', styleTags)
         .replace(
           `<!--ssr-helmet-->`,
-          helmet
-            ? `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`
-            : ''
+          `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`
         )
         .replace(`<!--ssr-outlet-->`, appHtml)
         .replace(
@@ -108,12 +110,12 @@ async function createServer() {
       // Завершаем запрос и отдаём HTML-страницу
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
-      vite?.ssrFixStacktrace(e as Error)
+      vite.ssrFixStacktrace(e as Error)
       next(e)
     }
   })
 
-  httpServer.listen(port, () => {
+  app.listen(port, () => {
     console.log(`Client is listening on port: ${port}`)
   })
 }
