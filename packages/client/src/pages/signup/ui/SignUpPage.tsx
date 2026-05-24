@@ -151,9 +151,9 @@ export const SignUpPage = () => {
         </div>
       </form>
       <div className={styles.footer}>
-        <Link className={styles.footerLink} to="/">
+        <Link className={styles.footerLink} to="/signin">
           <span className={styles.footerLinkIcon}>←</span>
-          На главную
+          Авторизоваться
         </Link>
       </div>
     </main>
