@@ -1,7 +1,9 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
+import { useAuth } from '@/app/providers'
+import { signIn, toAuthError } from '@/shared/auth'
 import { Button } from '@/shared/ui/button'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
@@ -10,11 +12,27 @@ import { PageHeading } from '@/shared/ui/page-heading'
 import styles from './SignInForm.module.scss'
 
 export const SignInForm = () => {
-  const [email, setEmail] = useState('')
+  const navigate = useNavigate()
+  const { refreshAuth } = useAuth()
+  const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setError(null)
+    setLoading(true)
+
+    try {
+      await signIn(login, password)
+      refreshAuth()
+      navigate('/', { replace: true })
+    } catch (err) {
+      setError(err instanceof Error ? err.message : toAuthError(err))
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
@@ -27,31 +45,38 @@ export const SignInForm = () => {
         subtitle="Войдите, чтобы общаться на форуме"
         className={styles.heading}
       />
-      <FormField label="Email" htmlFor="signin-email">
+      {!error ? null : (
+        <p className={styles.error} role="alert">
+          {error}
+        </p>
+      )}
+      <FormField label="Логин" htmlFor="login">
         <Input
-          id="signin-email"
-          name="email"
-          type="email"
+          id="login"
+          name="login"
+          type="text"
           className={styles.input}
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          placeholder="cat@meow.com"
-          autoComplete="email"
+          value={login}
+          onChange={e => setLogin(e.target.value)}
+          placeholder="cat"
+          autoComplete="username"
+          disabled={loading}
         />
       </FormField>
-      <FormField label="Пароль" htmlFor="signin-password">
+      <FormField label="Пароль" htmlFor="password">
         <Input
-          id="signin-password"
+          id="password"
           name="password"
           type="password"
           className={styles.input}
           value={password}
           onChange={e => setPassword(e.target.value)}
-          autoComplete="current-password"
+          autoComplete="off"
+          disabled={loading}
         />
       </FormField>
-      <Button type="submit" className={styles.submit}>
-        Войти
+      <Button type="submit" className={styles.submit} disabled={loading}>
+        {loading ? 'Вход…' : 'Войти'}
       </Button>
       <p className={styles.footer}>
         Нет аккаунта?{' '}
