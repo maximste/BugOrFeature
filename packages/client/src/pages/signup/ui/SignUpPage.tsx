@@ -134,7 +134,7 @@ export const SignUpPage = () => {
             value={password}
             onChange={e => setPassword(e.target.value)}
             placeholder="********"
-            autoComplete="new-password"
+            autoComplete="off"
             disabled={loading}
           />
         </FormField>

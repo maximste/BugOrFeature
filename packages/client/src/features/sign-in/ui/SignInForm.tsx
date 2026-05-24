@@ -71,7 +71,7 @@ export const SignInForm = () => {
           className={styles.input}
           value={password}
           onChange={e => setPassword(e.target.value)}
-          autoComplete="current-password"
+          autoComplete="off"
           disabled={loading}
         />
       </FormField>
