@@ -1,7 +1,8 @@
 import { Helmet } from 'react-helmet'
-import { Link, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
 import { usePage } from '@/app/hooks/usePage'
+import { BackLink } from '@/shared/ui/back-link'
 import { ForumTopicView } from '@/widgets/forum-topic-view'
 
 import { getForumTopicDetailMock } from '../model/mockForumTopicData'
@@ -22,7 +23,7 @@ export const ForumTopicPage = () => {
           <meta name="description" content="Топик не найден" />
         </Helmet>
         <p>Топик не найден.</p>
-        <Link to="/forum">← К темам</Link>
+        <BackLink to="/forum">← К темам</BackLink>
       </section>
     )
   }

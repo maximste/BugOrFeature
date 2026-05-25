@@ -47,6 +47,9 @@ export const Header = () => {
             <List.Item>
               <Link to="/forum">Форум</Link>
             </List.Item>
+            <List.Item>
+              <Link to="/profile">Профиль</Link>
+            </List.Item>
             {!isAuthenticated ? (
               <>
                 <List.Item>

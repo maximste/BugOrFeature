@@ -20,7 +20,9 @@ export const ForumTopicNewPage = () => {
         <meta name="description" content="Создать тему на форуме" />
       </Helmet>
       <section className={styles.page}>
-        <BackLink to="/forum">← К темам</BackLink>
+        <BackLink to="/forum" className={styles.backLink}>
+          ← К темам
+        </BackLink>
         <PageHeading title="Новая тема" className={styles.title} />
         <CreateTopicForm />
       </section>

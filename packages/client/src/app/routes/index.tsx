@@ -12,6 +12,7 @@ import {
 import { GamePage, initGamePage } from '@/pages/game'
 import { LeaderboardPage, initLeaderboardPage } from '@/pages/leaderboard'
 import { MainPage, initMainPage } from '@/pages/main'
+import { ProfilePage, initProfilePage } from '@/pages/profile'
 import { initNotFoundPage, NotFoundPage } from '@/pages/not-found'
 import { initServerErrorPage, ServerErrorPage } from '@/pages/server-error'
 import { SignInPage, initSignInPage } from '@/pages/signin'
@@ -84,6 +85,11 @@ export const routes: AppRouteObject[] = [
       {
         element: <AuthGate />,
         children: authGateChildren,
+      },
+      {
+        path: 'profile',
+        element: <ProfilePage />,
+        fetchData: initProfilePage,
       },
     ],
   },
