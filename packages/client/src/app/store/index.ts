@@ -11,6 +11,8 @@ import { rootReducer } from './rootReducer'
 declare global {
   interface Window {
     APP_INITIAL_STATE: RootState
+    /** SSR: совпадает с req.cookies.token для гидратации */
+    APP_INITIAL_AUTH?: boolean
   }
 }
 

@@ -49,6 +49,7 @@ async function createServer() {
       let render: (req: ExpressRequest) => Promise<{
         html: string
         initialState: unknown
+        initialIsAuthenticated: boolean
         helmet: HelmetData
         styleTags: string
       }>
@@ -89,6 +90,7 @@ async function createServer() {
       const {
         html: appHtml,
         initialState,
+        initialIsAuthenticated,
         helmet,
         styleTags,
       } = await render(req)
@@ -103,9 +105,12 @@ async function createServer() {
         .replace(`<!--ssr-outlet-->`, appHtml)
         .replace(
           `<!--ssr-initial-state-->`,
-          `<script>window.APP_INITIAL_STATE = ${serialize(initialState, {
-            isJSON: true,
-          })}</script>`
+          `<script>window.APP_INITIAL_AUTH = ${serialize(
+            initialIsAuthenticated
+          )}</script>` +
+            `<script>window.APP_INITIAL_STATE = ${serialize(initialState, {
+              isJSON: true,
+            })}</script>`
         )
 
       // Завершаем запрос и отдаём HTML-страницу

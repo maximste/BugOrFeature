@@ -12,6 +12,7 @@ import { configureStore } from '@reduxjs/toolkit'
 
 import { AuthProvider } from '@/app/providers'
 import { routes, type AppRouteObject } from '@/app/routes'
+import { TOKEN_COOKIE } from '@/shared/auth'
 import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
 import { reducer } from '@/app/store'
 import { ChakraProvider } from '@chakra-ui/react'
@@ -68,6 +69,7 @@ export const render = async (req: ExpressRequest) => {
   store.dispatch(setPageHasBeenInitializedOnServer(true))
 
   const router = createStaticRouter(dataRoutes, context)
+  const initialIsAuthenticated = Boolean(req.cookies?.[TOKEN_COOKIE])
 
   let html = ''
   try {
@@ -75,7 +77,7 @@ export const render = async (req: ExpressRequest) => {
       <ChakraProvider value={system}>
         <ErrorBoundary>
           <Provider store={store}>
-            <AuthProvider>
+            <AuthProvider initialIsAuthenticated={initialIsAuthenticated}>
               <StaticRouterProvider router={router} context={context} />
             </AuthProvider>
           </Provider>
@@ -93,5 +95,6 @@ export const render = async (req: ExpressRequest) => {
     helmet,
     styleTags: '',
     initialState: store.getState(),
+    initialIsAuthenticated,
   }
 }

@@ -12,12 +12,21 @@ const AuthContext = createContext<AuthContextValue | null>(null)
 
 type AuthProviderProps = {
   children: ReactNode
+  /** SSR: из req.cookies.token */
+  initialIsAuthenticated?: boolean
 }
 
-export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() =>
-    Boolean(getCookie(TOKEN_COOKIE))
-  )
+export const AuthProvider = ({
+  children,
+  initialIsAuthenticated = false,
+}: AuthProviderProps) => {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof document === 'undefined') {
+      return initialIsAuthenticated
+    }
+
+    return window.APP_INITIAL_AUTH ?? Boolean(getCookie(TOKEN_COOKIE))
+  })
 
   const refreshAuth = () => {
     setIsAuthenticated(isAuthCookieSet())
