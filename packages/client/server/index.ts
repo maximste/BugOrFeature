@@ -1,7 +1,13 @@
-import dotenv from 'dotenv'
 import path from 'path'
+import dotenv from 'dotenv'
 
 dotenv.config({ path: path.join(__dirname, '../../../.env') })
+
+// @zag-js/store (used by Chakra UI v3) references `File` at module init time.
+// File is only a Node.js global from v20+; polyfill it for older runtimes.
+if (typeof (globalThis as Record<string, unknown>).File === 'undefined') {
+  ;(globalThis as Record<string, unknown>).File = class File {}
+}
 
 import { HelmetData } from 'react-helmet'
 import express, { Request as ExpressRequest } from 'express'

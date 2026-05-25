@@ -50,16 +50,18 @@ export const ForumPage = () => {
         <title>BugOrFeature</title>
         <meta name="description" content="BugOrFeature" />
       </Helmet>
-      <div className={styles.header}>
-        <PageHeading
-          title="Форум"
-          subtitle="Делитесь опытом и кото-историями"
-        />
-        <Link to="/forum/new" className={styles.newTopicButton}>
-          + Новая тема
-        </Link>
-      </div>
-      <ForumTopicsList topics={MOCK_TOPICS} />
+      <section className={styles.page}>
+        <div className={styles.header}>
+          <PageHeading
+            title="Форум"
+            subtitle="Делитесь опытом и кото-историями"
+          />
+          <Link to="/forum/new" className={styles.newTopicButton}>
+            + Новая тема
+          </Link>
+        </div>
+        <ForumTopicsList topics={MOCK_TOPICS} />
+      </section>
     </>
   )
 }

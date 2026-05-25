@@ -1,6 +1,7 @@
+import path from 'path'
 import dotenv from 'dotenv'
 import cors from 'cors'
-dotenv.config()
+dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
 import express from 'express'
 import { createClientAndConnect } from './db'
