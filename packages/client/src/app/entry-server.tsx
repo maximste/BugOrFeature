@@ -14,6 +14,8 @@ import { AuthProvider } from '@/app/providers'
 import { routes, type AppRouteObject } from '@/app/routes'
 import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
 import { reducer } from '@/app/store'
+import { ChakraProvider } from '@chakra-ui/react'
+import { system } from '@/theme'
 
 import {
   createContext,
@@ -70,13 +72,15 @@ export const render = async (req: ExpressRequest) => {
   let html = ''
   try {
     html = ReactDOM.renderToString(
-      <ErrorBoundary>
-        <Provider store={store}>
-          <AuthProvider>
-            <StaticRouterProvider router={router} context={context} />
-          </AuthProvider>
-        </Provider>
-      </ErrorBoundary>
+      <ChakraProvider value={system}>
+        <ErrorBoundary>
+          <Provider store={store}>
+            <AuthProvider>
+              <StaticRouterProvider router={router} context={context} />
+            </AuthProvider>
+          </Provider>
+        </ErrorBoundary>
+      </ChakraProvider>
     )
   } catch (e) {
     console.error(e)

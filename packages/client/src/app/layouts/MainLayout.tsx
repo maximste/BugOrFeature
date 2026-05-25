@@ -1,13 +1,21 @@
 import { Outlet } from 'react-router-dom'
 import { Header } from '@/widgets/header'
-import styles from './MainLayout.module.scss'
+import { Flex } from '@chakra-ui/react'
 import ErrorBoundary from '../errorBoundary/ErrorBoundary'
 
 export const MainLayout = () => (
   <ErrorBoundary>
     <Header />
-    <main className={styles.main}>
+    <Flex
+      as="main"
+      direction="column"
+      align="center"
+      px={4}
+      pt={8}
+      pb={10}
+      mx="auto"
+      maxW="1200px">
       <Outlet />
-    </main>
+    </Flex>
   </ErrorBoundary>
 )
