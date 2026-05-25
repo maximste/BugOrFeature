@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react'
 
 import { isAuthCookieSet, TOKEN_COOKIE } from '@/shared/auth'
 import { getCookie } from '@/shared/lib/cookie'
@@ -15,9 +21,11 @@ type AuthProviderProps = {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() =>
-    Boolean(getCookie(TOKEN_COOKIE))
-  )
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+
+  useEffect(() => {
+    setIsAuthenticated(Boolean(getCookie(TOKEN_COOKIE)))
+  }, [])
 
   const refreshAuth = () => {
     setIsAuthenticated(isAuthCookieSet())
