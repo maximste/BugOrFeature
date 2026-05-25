@@ -1,9 +1,14 @@
 import { Link } from 'react-router-dom'
 import { Box, Flex, List, Text } from '@chakra-ui/react'
 
+import { useAuth } from '@/app/providers'
+import { LogoutButton } from '@/features/logout'
+
 import LogoIcon from '@/assets/icons/logo.svg?react'
 
 export const Header = () => {
+  const { isAuthenticated } = useAuth()
+
   return (
     <Flex
       bg="background/70"
@@ -42,12 +47,20 @@ export const Header = () => {
             <List.Item>
               <Link to="/forum">Форум</Link>
             </List.Item>
-            <List.Item>
-              <Link to="/signin">Вход</Link>
-            </List.Item>
-            <List.Item>
-              <Link to="/signup">Регистрация</Link>
-            </List.Item>
+            {!isAuthenticated ? (
+              <>
+                <List.Item>
+                  <Link to="/signin">Вход</Link>
+                </List.Item>
+                <List.Item>
+                  <Link to="/signup">Регистрация</Link>
+                </List.Item>
+              </>
+            ) : (
+              <List.Item>
+                <LogoutButton />
+              </List.Item>
+            )}
             <List.Item>
               <Link to="/404">404</Link>
             </List.Item>

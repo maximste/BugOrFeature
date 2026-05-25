@@ -1,6 +1,7 @@
 import path from 'path'
 import dotenv from 'dotenv'
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') })
+
+dotenv.config({ path: path.join(__dirname, '../../../.env') })
 
 // @zag-js/store (used by Chakra UI v3) references `File` at module init time.
 // File is only a Node.js global from v20+; polyfill it for older runtimes.

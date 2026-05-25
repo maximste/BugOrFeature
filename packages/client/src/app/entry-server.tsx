@@ -10,6 +10,7 @@ import {
 import { matchRoutes } from 'react-router-dom'
 import { configureStore } from '@reduxjs/toolkit'
 
+import { AuthProvider } from '@/app/providers'
 import { routes, type AppRouteObject } from '@/app/routes'
 import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
 import { reducer } from '@/app/store'
@@ -74,7 +75,9 @@ export const render = async (req: ExpressRequest) => {
       <ChakraProvider value={system}>
         <ErrorBoundary>
           <Provider store={store}>
-            <StaticRouterProvider router={router} context={context} />
+            <AuthProvider>
+              <StaticRouterProvider router={router} context={context} />
+            </AuthProvider>
           </Provider>
         </ErrorBoundary>
       </ChakraProvider>
