@@ -7,9 +7,10 @@ import {
 } from '@/app/ssr'
 import type { PageInitArgs, PageInitContext } from '@/app/routes'
 import { getCookie } from '@/shared/lib/cookie'
+import { TOKEN_COOKIE } from '@/shared/auth'
 
 const createContext = (): PageInitContext => ({
-  clientToken: getCookie('token'),
+  clientToken: getCookie(TOKEN_COOKIE),
 })
 
 type PageProps = {
