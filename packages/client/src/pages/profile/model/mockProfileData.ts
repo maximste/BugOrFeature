@@ -1,6 +1,5 @@
 import type { UserProfile } from '@/entities/user'
 
-/** Replace with auth / API when backend exists */
 export const mockCurrentUserProfile: UserProfile = {
   id: 'demo-user',
   displayName: 'Мурзик',
