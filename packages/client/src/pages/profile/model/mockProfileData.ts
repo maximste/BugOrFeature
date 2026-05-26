@@ -1,15 +1,12 @@
 import type { UserProfile } from '@/entities/user'
 
 export const mockCurrentUserProfile: UserProfile = {
-  id: 'demo-user',
-  displayName: 'Мурзик',
-  handle: 'murzik',
-  joinedLabel: 'на сайте с мая 2026',
-  bio: 'На форуме делюсь опытом, в игре — за рекорды.',
-  avatarUrl: null,
-  stats: {
-    forumTopicsCount: 3,
-    forumCommentsCount: 12,
-    bestGameScore: 18420,
-  },
+  id: 123,
+  first_name: 'Петя',
+  second_name: 'Пупкин',
+  display_name: 'Петя Пупкин',
+  login: 'userLogin',
+  email: 'string@ya.ru',
+  phone: '+79001001100',
+  avatar: null,
 }
