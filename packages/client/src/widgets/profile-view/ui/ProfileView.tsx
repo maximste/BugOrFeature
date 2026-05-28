@@ -28,6 +28,30 @@ function initials(firstName: string, secondName: string) {
   return `${a}${b}`.toUpperCase()
 }
 
+function formatIdentity(
+  firstName: string,
+  secondName: string,
+  displayName: string,
+  login: string
+) {
+  const fullName = [firstName.trim(), secondName.trim()]
+    .filter(Boolean)
+    .join(' ')
+  const nickname = displayName.trim()
+  const primary = nickname || fullName || login.trim()
+
+  const showFullName =
+    fullName.length > 0 &&
+    fullName !== primary &&
+    (nickname.length > 0 || fullName !== login.trim())
+
+  return {
+    primary,
+    fullName: showFullName ? fullName : null,
+    login: login.trim(),
+  }
+}
+
 export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -215,6 +239,7 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
   }
 
   const formBusy = profileLoading || avatarLoading || passwordLoading
+  const identity = formatIdentity(firstName, secondName, displayName, login)
 
   return (
     <div className={styles.root}>
@@ -248,6 +273,16 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
                 {initials(firstName, secondName)}
               </div>
             )}
+
+            <div className={styles.identity}>
+              <p className={styles.identityName}>{identity.primary}</p>
+              {identity.fullName != null ? (
+                <p className={styles.identityFullName}>{identity.fullName}</p>
+              ) : null}
+              {identity.login.length > 0 ? (
+                <p className={styles.identityLogin}>@{identity.login}</p>
+              ) : null}
+            </div>
 
             <div className={styles.avatarActions}>
               <input
