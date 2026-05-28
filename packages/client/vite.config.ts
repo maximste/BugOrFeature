@@ -9,8 +9,8 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
 const PRACTICUM_AUTH_API_BASE = 'https://ya-praktikum.tech/api/v2'
 
-// Сервер отдаёт куки для домена ya-praktikum.tech — на localhost они не приживаются.
-// Убираем Domain и Secure, чтобы браузер принял куку на http://localhost:3000.
+// Сервер отдаёт куки для ya-praktikum.tech: Domain, Secure, SameSite=None.
+// На http://localhost:3000 без правок браузер часто отбрасывает authCookie после F5.
 const rewriteSetCookieForLocalhost = (proxy: HttpProxy.Server) => {
   proxy.on('proxyRes', proxyRes => {
     const setCookie = proxyRes.headers['set-cookie']
@@ -20,7 +20,11 @@ const rewriteSetCookieForLocalhost = (proxy: HttpProxy.Server) => {
     }
 
     proxyRes.headers['set-cookie'] = setCookie.map(cookie =>
-      cookie.replace(/; ?Domain=[^;]+/gi, '').replace(/; ?Secure/gi, '')
+      cookie
+        .replace(/; ?Domain=[^;]+/gi, '')
+        .replace(/; ?Secure/gi, '')
+        // SameSite=None без Secure на http — cookie не живёт после перезагрузки
+        .replace(/; ?SameSite=None/gi, '; SameSite=Lax')
     )
   })
 }
@@ -34,7 +38,7 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     port: Number(process.env.CLIENT_PORT) || 3000,
-    // В dev пересылаем /auth/* на API Практикума через Vite, чтобы логин работал с localhost
+    // В dev пересылаем /auth/* и /user/* на API Практикума через Vite (localhost + куки)
     // (без ошибок CORS и с рабочими куками). В собранном приложении прокси нет.
     proxy: {
       '/auth': {
@@ -42,6 +46,18 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
         secure: true,
         configure: rewriteSetCookieForLocalhost,
+      },
+      '/user': {
+        target: PRACTICUM_AUTH_API_BASE,
+        changeOrigin: true,
+        secure: true,
+        timeout: 120_000,
+        configure: rewriteSetCookieForLocalhost,
+      },
+      '/api/v2/resources': {
+        target: 'https://ya-praktikum.tech',
+        changeOrigin: true,
+        secure: true,
       },
     },
   },

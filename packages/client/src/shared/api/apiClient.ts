@@ -3,14 +3,17 @@ import axios, { isAxiosError } from 'axios'
 import { API_FETCH_BASE_URL } from '@/shared/config/env'
 
 import type {
+  ChangePasswordBody,
   ReasonBody,
   SignInBody,
   SignUpBody,
   SignUpResponse,
+  UpdateUserProfileBody,
+  UserProfileResponse,
 } from './types'
 
 /**
- * Общий слой для запросов к API (логин, регистрация и т.д.).
+ * Общий слой HTTP-запросов к API Практикума.
  * Ошибки приводим к ApiError с понятным текстом для форм.
  */
 
@@ -46,7 +49,7 @@ const toApiError = (err: unknown): ApiError => {
   const reason = getReason(err.response?.data)
 
   if (status === 401) {
-    return new ApiError(401, 'Неверный логин или пароль', reason)
+    return new ApiError(401, reason ?? 'Требуется авторизация', reason)
   }
 
   if (status === 400) {
@@ -80,3 +83,43 @@ export const postSignUp = (body: SignUpBody) =>
   request(() => api.post<SignUpResponse>('/auth/signup', body))
 
 export const postLogout = () => request(() => api.post<void>('/auth/logout'))
+
+export const getAuthUser = () =>
+  request(() => api.get<UserProfileResponse>('/auth/user'))
+
+export const putUserProfile = (body: UpdateUserProfileBody) =>
+  request(() => api.put<UserProfileResponse>('/user/profile', body))
+
+export const putUserProfileAvatar = (file: File) => {
+  const formData = new FormData()
+  formData.append('avatar', file)
+
+  return request(() =>
+    api.put<UserProfileResponse>('/user/profile/avatar', formData, {
+      headers: { Accept: 'application/json' },
+      // Иначе уходит Content-Type: application/json из defaults → connection reset
+      transformRequest: [
+        (data, headers) => {
+          if (data instanceof FormData && headers) {
+            delete headers['Content-Type']
+          }
+
+          return data
+        },
+      ],
+    })
+  )
+}
+
+export const putUserPassword = (body: ChangePasswordBody) =>
+  request(() => api.put<void>('/user/password', body))
+
+/** Загрузка картинки (аватар) с cookie сессии — надёжнее, чем <img src> на другой origin */
+export const fetchResourceBlob = async (path: string): Promise<Blob> => {
+  try {
+    const { data } = await api.get<Blob>(path, { responseType: 'blob' })
+    return data
+  } catch (err) {
+    throw toApiError(err)
+  }
+}
