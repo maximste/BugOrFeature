@@ -1,0 +1,109 @@
+@use '@/app/styles/mixins' as *;
+
+@mixin flex-column-center($gap: 16px) {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $gap;
+}
+
+@mixin flex-row-center($gap: 0) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: $gap;
+}
+
+@mixin main-action-button($background: $color-button-bg) {
+  @include typography-ui(12px, 400);
+  @include surface-pill($background, 0 32px, 9999px);
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  height: 40px;
+}
+
+.mainPage {
+  @include flex-column-center(32px);
+  width: 100%;
+}
+
+.mainPageContent {
+  padding-bottom: 32px;
+  padding-top: 32px;
+}
+
+.mainTitleContainer {
+  @include flex-column-center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.preTitle {
+  @include flex-row-center(8px);
+  @include typography-ui(12px, 400);
+  @include surface-pill($color-button-magenta, 6px 16px, 16px);
+
+  height: 28px;
+  text-align: center;
+}
+
+.mainTitle {
+  @include typography-ui(4.5rem, 800);
+
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+}
+
+.mainTitleDescription {
+  width: 331px;
+  @include typography-ui(12px, 400);
+
+  line-height: 12px;
+  color: $color-subtitle;
+  text-align: center;
+}
+
+.mainTitleSpanCats {
+  color: $color-button-bg;
+}
+
+.mainTitleSpanFish {
+  @include flex-row-center(8px);
+  color: #0d3242;
+}
+
+.mainTitleButtons {
+  @include flex-row-center(16px);
+  padding-top: 12px;
+  padding-bottom: 36px;
+  justify-content: space-between;
+}
+
+.mainTitleButtonPlay {
+  @include main-action-button;
+}
+
+.mainTitleButtonForum {
+  @include main-action-button($color-button-cyan);
+}
+
+.mainTitleButtonIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.footer {
+  @include typography-ui(12px, 400);
+  @include flex-row-center;
+
+  width: 100%;
+  padding-top: 32px;
+  border-top: 1px solid $color-border;
+}
