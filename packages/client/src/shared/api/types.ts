@@ -25,7 +25,7 @@ export type UserProfileResponse = {
   id: number
   first_name: string
   second_name: string
-  display_name: string
+  display_name?: string | null
   login: string
   email: string
   phone: string
@@ -35,7 +35,7 @@ export type UserProfileResponse = {
 export type UpdateUserProfileBody = {
   first_name: string
   second_name: string
-  display_name: string
+  display_name?: string | null
   login: string
   email: string
   phone: string

@@ -22,45 +22,53 @@ export type ProfileViewProps = {
 
 const AVATAR_ACCEPT = 'image/jpeg,image/jpg,image/png,image/gif,image/webp'
 
-function initials(firstName: string, secondName: string) {
-  const a = firstName.trim()[0] ?? '?'
-  const b = secondName.trim()[0] ?? ''
+function safeTrim(value: string | null | undefined) {
+  return (value ?? '').trim()
+}
+
+function initials(
+  firstName: string | null | undefined,
+  secondName: string | null | undefined
+) {
+  const a = safeTrim(firstName)[0] ?? '?'
+  const b = safeTrim(secondName)[0] ?? ''
   return `${a}${b}`.toUpperCase()
 }
 
 function formatIdentity(
-  firstName: string,
-  secondName: string,
-  displayName: string,
-  login: string
+  firstName: string | null | undefined,
+  secondName: string | null | undefined,
+  displayName: string | null | undefined,
+  login: string | null | undefined
 ) {
-  const fullName = [firstName.trim(), secondName.trim()]
+  const fullName = [safeTrim(firstName), safeTrim(secondName)]
     .filter(Boolean)
     .join(' ')
-  const nickname = displayName.trim()
-  const primary = nickname || fullName || login.trim()
+  const nickname = safeTrim(displayName)
+  const loginValue = safeTrim(login)
+  const primary = nickname || fullName || loginValue
 
   const showFullName =
     fullName.length > 0 &&
     fullName !== primary &&
-    (nickname.length > 0 || fullName !== login.trim())
+    (nickname.length > 0 || fullName !== loginValue)
 
   return {
-    primary,
+    primary: primary || 'Пользователь',
     fullName: showFullName ? fullName : null,
-    login: login.trim(),
+    login: loginValue,
   }
 }
 
 export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const [firstName, setFirstName] = useState(profile.first_name)
-  const [secondName, setSecondName] = useState(profile.second_name)
-  const [displayName, setDisplayName] = useState(profile.display_name)
-  const [login, setLogin] = useState(profile.login)
-  const [email, setEmail] = useState(profile.email)
-  const [phone, setPhone] = useState(profile.phone)
+  const [firstName, setFirstName] = useState(profile.first_name ?? '')
+  const [secondName, setSecondName] = useState(profile.second_name ?? '')
+  const [displayName, setDisplayName] = useState(profile.display_name ?? '')
+  const [login, setLogin] = useState(profile.login ?? '')
+  const [email, setEmail] = useState(profile.email ?? '')
+  const [phone, setPhone] = useState(profile.phone ?? '')
 
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [avatarBroken, setAvatarBroken] = useState(false)
@@ -82,12 +90,12 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
   const [passwordLoading, setPasswordLoading] = useState(false)
 
   useEffect(() => {
-    setFirstName(profile.first_name)
-    setSecondName(profile.second_name)
-    setDisplayName(profile.display_name)
-    setLogin(profile.login)
-    setEmail(profile.email)
-    setPhone(profile.phone)
+    setFirstName(profile.first_name ?? '')
+    setSecondName(profile.second_name ?? '')
+    setDisplayName(profile.display_name ?? '')
+    setLogin(profile.login ?? '')
+    setEmail(profile.email ?? '')
+    setPhone(profile.phone ?? '')
   }, [profile])
 
   useEffect(() => {
@@ -425,7 +433,7 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
               type="password"
               value={oldPassword}
               onChange={e => setOldPassword(e.target.value)}
-              autoComplete="current-password"
+              autoComplete="off"
               disabled={formBusy}
             />
           </FormField>
@@ -436,7 +444,7 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
               type="password"
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
-              autoComplete="new-password"
+              autoComplete="off"
               disabled={formBusy}
             />
           </FormField>
