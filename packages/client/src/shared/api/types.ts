@@ -20,3 +20,28 @@ export type SignUpBody = {
 export type SignUpResponse = {
   id: number
 }
+
+export type UserProfileResponse = {
+  id: number
+  first_name: string
+  second_name: string
+  display_name?: string | null
+  login: string
+  email: string
+  phone: string
+  avatar?: string | null
+}
+
+export type UpdateUserProfileBody = {
+  first_name: string
+  second_name: string
+  display_name?: string | null
+  login: string
+  email: string
+  phone: string
+}
+
+export type ChangePasswordBody = {
+  oldPassword: string
+  newPassword: string
+}

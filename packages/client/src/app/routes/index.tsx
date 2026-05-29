@@ -75,6 +75,11 @@ const authGateChildren: AppRouteObject[] = [
     element: <ForumPage />,
     fetchData: initForumPage,
   },
+  {
+    path: 'profile',
+    element: <ProfilePage />,
+    fetchData: initProfilePage,
+  },
 ]
 
 export const routes: AppRouteObject[] = [
@@ -85,11 +90,6 @@ export const routes: AppRouteObject[] = [
       {
         element: <AuthGate />,
         children: authGateChildren,
-      },
-      {
-        path: 'profile',
-        element: <ProfilePage />,
-        fetchData: initProfilePage,
       },
     ],
   },
