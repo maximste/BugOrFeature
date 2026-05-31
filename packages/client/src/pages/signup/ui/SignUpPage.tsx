@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { usePage } from '@/app/hooks/usePage'
 import { signUp, toAuthError } from '@/shared/auth'
+import { useRequireAuth } from '@/shared/hooks'
 import { Button } from '@/shared/ui/button'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
@@ -14,6 +15,7 @@ import { initSignUpPage } from '../model/initSignUpPage'
 import styles from './SignUpPage.module.scss'
 
 export const SignUpPage = () => {
+  useRequireAuth('guest')
   usePage({ initPage: initSignUpPage })
   const navigate = useNavigate()
   const [firstName, setFirstName] = useState('')
