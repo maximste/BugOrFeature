@@ -40,14 +40,14 @@ export const MainPage = () => {
             </span>
             <img className={styles.mainTitleIcon} src="" alt="" />
           </h1>
-          <div className={styles.mainTitleDescription}>
+          <p className={styles.mainTitleDescription}>
             Открывайте пушистые клеточки, ставьте рыбки-флажки и берегитесь
             спящих пёсиков.
-          </div>
+          </p>
           <div className={styles.mainTitleButtons}>
             <Button
               className={styles.mainTitleButtonPlay}
-              type="submit"
+              type="button"
               onClick={() => {
                 navigate('/game')
               }}>
@@ -60,7 +60,7 @@ export const MainPage = () => {
             </Button>
             <Button
               className={styles.mainTitleButtonForum}
-              type="submit"
+              type="button"
               onClick={() => {
                 navigate('/forum')
               }}>
@@ -78,7 +78,7 @@ export const MainPage = () => {
           <MainFeatureCards cards={MAIN_FEATURE_CARDS} />
         </section>
       </main>
-      <section className={styles.footer}>Команда BugOrFeature. 2026</section>
+      <p className={styles.footer}>Команда BugOrFeature. 2026</p>
     </div>
   )
 }
