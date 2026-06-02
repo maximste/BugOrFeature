@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react'
-import { TDifficulty, TGameState, TMinesweeperApi } from '../types/game'
+import { TDifficulty, TDifficultyConfig, TGameState, TMinesweeperApi } from '../types/game'
 import { createGrid } from '../services/createGrid'
 import { DIFFICULTY } from '../constants/game'
 import { cloneGrid } from '../services/cloneGrid'
@@ -9,11 +9,20 @@ import { resolveChord } from '../services/resolveChord'
 import { resolveReveal } from '../services/resolveReveal'
 
 export const useMinesweeper = (
-  difficulty: TDifficulty = 'easy'
+  difficulty: TDifficulty = 'easy',
+  customConfig?: TDifficultyConfig
 ): TMinesweeperApi => {
-  const { rows, cols, mines } = DIFFICULTY[difficulty]
+  const config =
+    difficulty === 'custom' && customConfig
+      ? customConfig
+      : DIFFICULTY[difficulty as Exclude<TDifficulty, 'custom'>]
+  const { rows, cols, mines } = config
 
-  const prevDifficultyRef = useRef(difficulty)
+  const configKey =
+    difficulty === 'custom'
+      ? `custom:${rows}:${cols}:${mines}`
+      : difficulty
+  const prevConfigKeyRef = useRef(configKey)
 
   const [state, setState] = useState<TGameState>({
     grid: createGrid(rows, cols),
@@ -23,8 +32,8 @@ export const useMinesweeper = (
     time: 0,
   })
 
-  if (difficulty !== prevDifficultyRef.current) {
-    prevDifficultyRef.current = difficulty
+  if (configKey !== prevConfigKeyRef.current) {
+    prevConfigKeyRef.current = configKey
 
     setState({
       grid: createGrid(rows, cols),

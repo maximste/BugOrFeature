@@ -10,7 +10,7 @@ export type TGrid = TCell[][]
 
 export type TGameStatus = 'idle' | 'playing' | 'won' | 'lost'
 
-export type TDifficulty = 'easy' | 'medium' | 'hard'
+export type TDifficulty = 'easy' | 'medium' | 'hard' | 'custom'
 
 export type TDifficultyConfig = {
   rows: number
