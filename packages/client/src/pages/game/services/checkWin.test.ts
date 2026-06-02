@@ -8,7 +8,7 @@ describe('checkWin function', () => {
     expect(checkWin(grid, 0, 0)).toBe(true)
   })
 
-  it('should return false if there are unrevealed non‑mine cells', () => {
+  it('должен возвращать false, если ячейка не раскрыта и на ней нет мин', () => {
     const grid: TGrid = [
       [
         {
@@ -30,7 +30,7 @@ describe('checkWin function', () => {
     expect(checkWin(grid, 2, 1)).toBe(false)
   })
 
-  it('should return true if all non‑mine cells are revealed', () => {
+  it('Должен возвращать true, если все ячейки без мин открыты', () => {
     const grid: TGrid = [
       [
         {
@@ -64,7 +64,7 @@ describe('checkWin function', () => {
     expect(checkWin(grid, 2, 2)).toBe(true)
   })
 
-  it('should return true when all cells are mines', () => {
+  it('Должен возвращать true, если во всех ячейкахм мина', () => {
     const grid: TGrid = [
       [
         {
@@ -98,7 +98,7 @@ describe('checkWin function', () => {
     expect(checkWin(grid, 2, 2)).toBe(true)
   })
 
-  it('should handle single cell grid without mine', () => {
+  it('должен корректно обрабатывать сценарий с одной ячейкой без мины', () => {
     const grid: TGrid = [
       [
         {
@@ -112,7 +112,7 @@ describe('checkWin function', () => {
     expect(checkWin(grid, 1, 1)).toBe(true)
   })
 
-  it('should return false for single cell grid with unrevealed non‑mine cell', () => {
+  it('Должен возвращать false для сетки из одной ячейки с неоткрытой безопасной ячейкой', () => {
     const grid: TGrid = [
       [
         {
@@ -126,7 +126,7 @@ describe('checkWin function', () => {
     expect(checkWin(grid, 1, 1)).toBe(false)
   })
 
-  it('should handle grid with mixed revealed and unrevealed mine cells', () => {
+  it('Должен обрабатывать сетку, содержащую как открытые, так и закрытые ячейки с минами', () => {
     const grid: TGrid = [
       [
         {
@@ -160,7 +160,7 @@ describe('checkWin function', () => {
     expect(checkWin(grid, 2, 2)).toBe(true)
   })
 
-  it('should work correctly with larger grid', () => {
+  it('должен ввозвращать true, если все ячейки раскрыты и мин нет', () => {
     const grid: TGrid = Array(5)
       .fill(null)
       .map(() =>
@@ -176,7 +176,7 @@ describe('checkWin function', () => {
     expect(checkWin(grid, 5, 5)).toBe(true)
   })
 
-  it('should return false with larger grid containing unrevealed cells', () => {
+  it('должен возвращать false, если грид содержит нераскрытые ячейки', () => {
     const grid: TGrid = Array(3)
       .fill(null)
       .map((_, row) =>
