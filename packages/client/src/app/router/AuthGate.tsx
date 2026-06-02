@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { AUTH_TARGET, useRequireAuth } from '@/shared/hooks'
 
@@ -17,7 +17,13 @@ export const AuthGate = () => {
   const path = normalizePathname(pathname)
   const isGuestOnly = GUEST_ONLY_PATHS.includes(path)
 
-  useRequireAuth(isGuestOnly ? AUTH_TARGET.GUEST : AUTH_TARGET.PRIVATE)
+  const { redirect } = useRequireAuth(
+    isGuestOnly ? AUTH_TARGET.GUEST : AUTH_TARGET.PRIVATE
+  )
+
+  if (redirect != null) {
+    return <Navigate to={redirect} replace />
+  }
 
   return <Outlet />
 }
