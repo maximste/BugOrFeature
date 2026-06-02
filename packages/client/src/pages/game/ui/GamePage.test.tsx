@@ -2,13 +2,74 @@ import '@testing-library/jest-dom'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { GamePage } from './GamePage'
+import React from 'react'
 
-vi.mock('@chakra-ui/react', () => ({
-  Box: (props: any) => <div {...props} />,
-  Heading: (props: any) => <h1 {...props} />,
-  Button: (props: any) => <button {...props} />,
-  Text: (props: any) => <p {...props} />,
-}))
+vi.mock('@chakra-ui/react', async () => {
+  const actual = await vi.importActual('@chakra-ui/react')
+
+  const chakraStyleProps = [
+    'borderRadius',
+    'border',
+    'bg',
+    'color',
+    'p',
+    'm',
+    'w',
+    'h',
+    'maxW',
+    'minW',
+    'maxH',
+    'minH',
+    'padding',
+    'margin',
+    'width',
+    'height',
+    'fontSize',
+    'fontWeight',
+    'lineHeight',
+    'letterSpacing',
+    'textAlign',
+    'verticalAlign',
+    'display',
+    'alignItems',
+    'justifyContent',
+    'flexDirection',
+    'gap',
+    'gridTemplateColumns',
+    'gridTemplateRows',
+    'overflowX',
+    'overflowY',
+    'overflow',
+    'position',
+    'top',
+    'right',
+    'bottom',
+    'left',
+    'zIndex',
+    'boxShadow',
+    'opacity',
+  ]
+
+  const createFilteredComponent = (tag: string) => (props: any) => {
+    const filteredProps = Object.keys(props).reduce((acc, key) => {
+      if (!chakraStyleProps.includes(key)) {
+        acc[key] = props[key]
+      }
+      return acc
+    }, {} as any)
+    return React.createElement(tag, filteredProps)
+  }
+
+  return {
+    ...actual,
+    Box: createFilteredComponent('div'),
+    Heading: createFilteredComponent('h1'),
+    Button: createFilteredComponent('button'),
+    Text: createFilteredComponent('p'),
+    createSystem: vi.fn(),
+    defineConfig: vi.fn(),
+  }
+})
 
 vi.mock('@/app/hooks/usePage', () => ({
   usePage: vi.fn(),
