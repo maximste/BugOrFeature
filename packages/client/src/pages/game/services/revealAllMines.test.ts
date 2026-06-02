@@ -19,14 +19,14 @@ describe('revealAllMines - тест', () => {
     ]
   })
 
-  it('reveals cells with mines', () => {
+  it('Показывает ячейки с минами', () => {
     revealAllMines(grid, rows, cols)
 
     expect(grid[0][0].revealed).toBe(true)
     expect(grid[1][1].revealed).toBe(true)
   })
 
-  it('does not affect cells without mines', () => {
+  it('Функция не применяется на пустых ячейках', () => {
     revealAllMines(grid, rows, cols)
 
     expect(grid[0][1].revealed).toBe(false)
