@@ -3,7 +3,7 @@ import { cloneGrid } from './cloneGrid' // замените на реальны�
 import type { TGrid } from '../types/game'
 
 describe('cloneGrid', () => {
-  it('должно создавать глубокую копию простой сетки 2x2', () => {
+  it('должно создавать глубокую копию сетки', () => {
     const originalGrid: TGrid = [
       [
         {
@@ -156,29 +156,4 @@ describe('cloneGrid', () => {
     expect(originalGrid[0][0].adjacent).toBe(0)
     expect(originalGrid[1][1].revealed).toBe(true)
   })
-
-  /*
-  it('должно работать с сеткой любого размера', () => {
-    // Создаём большую сетку 5x5
-    const originalGrid: TGrid = Array.from({ length: 5 }, (_, row) =>
-      Array.from({ length: 5 }, (_, col) => ({
-        value: row * 5 + col,
-        isRevealed: (row + col) % 2 === 0
-      }))
-    );
-
-    const clonedGrid = cloneGrid(originalGrid);
-
-    // Проверяем ссылки
-    expect(clonedGrid).not.toBe(originalGrid);
-    originalGrid.forEach((row, i) => {
-      expect(clonedGrid[i]).not.toBe(row);
-      row.forEach((cell, j) => {
-        expect(clonedGrid[i][j]).not.toBe(cell);
-      });
-    });
-
-    // Проверяем данные
-    expect(clonedGrid).toEqual(originalGrid);
-  });*/
 })
