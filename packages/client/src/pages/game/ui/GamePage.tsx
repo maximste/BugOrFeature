@@ -10,12 +10,19 @@ import { Box, Heading, Button, Text } from '@chakra-ui/react'
 import { ControlPanel } from './ControlPanel'
 import MinesweeperCanvas from './MinesweeperCanvas'
 import { GameStatusBanner } from './GameStatusBanner'
+import { DEFAULT_DIFFICULTY } from '../constants/game'
 
 export const GamePage = () => {
   usePage({ initPage: initGamePage })
 
   const [currentDifficulty, setCurrentDifficulty] =
     useState<TDifficulty>('easy')
+  const [customConfig, setCustomConfig] = useState(DEFAULT_DIFFICULTY)
+
+  const onCustomStart = (rows: number, cols: number, mines: number) => {
+    setCustomConfig({ rows, cols, mines })
+    setCurrentDifficulty('custom')
+  }
 
   const {
     grid,
@@ -30,7 +37,7 @@ export const GamePage = () => {
     reset,
     tick,
     cheat,
-  } = useMinesweeper(currentDifficulty)
+  } = useMinesweeper(currentDifficulty, customConfig)
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
@@ -58,6 +65,7 @@ export const GamePage = () => {
       <ControlPanel
         currentDifficulty={currentDifficulty}
         setCurrentDifficulty={setCurrentDifficulty}
+        onCustomStart={onCustomStart}
         minesLeft={minesLeft}
         time={time}
         reset={reset}

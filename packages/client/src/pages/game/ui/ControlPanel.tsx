@@ -1,20 +1,30 @@
-import { Text, Button, HStack, Image } from '@chakra-ui/react'
+import { Text, Button, HStack } from '@chakra-ui/react'
 import { FC, Dispatch, SetStateAction } from 'react'
-import restartUrl from '@/assets/icons/restart.svg'
-import mineUrl from '@/assets/icons/fish.svg'
-import timerUrl from '@/assets/icons/timer.svg'
+import RestartIcon from '@/assets/icons/restart.svg?react'
+import MineIcon from '@/assets/icons/fish.svg?react'
+import TimerIcon from '@/assets/icons/timer.svg?react'
 import { TDifficulty, TMinesweeperApi } from '../types/game'
 import { TRANSITION } from '../../../theme'
 import { DIFFICULTY, DIFFICULTY_LABEL } from '../constants/game'
+import { CustomGamePopover } from './CustomGamePopover'
 
 type TProps = {
   currentDifficulty: TDifficulty
   setCurrentDifficulty: Dispatch<SetStateAction<TDifficulty>>
+  onCustomStart: (rows: number, cols: number, mines: number) => void
 } & Pick<TMinesweeperApi, 'minesLeft' | 'time' | 'reset'>
 
 export const ControlPanel: FC<TProps> = props => {
-  const { minesLeft, time, reset, currentDifficulty, setCurrentDifficulty } =
-    props
+  const {
+    minesLeft,
+    time,
+    reset,
+    currentDifficulty,
+    setCurrentDifficulty,
+    onCustomStart,
+  } = props
+
+  const presets = Object.keys(DIFFICULTY) as Exclude<TDifficulty, 'custom'>[]
 
   return (
     <HStack
@@ -25,7 +35,7 @@ export const ControlPanel: FC<TProps> = props => {
       my={4}
       gap={2}
       flexWrap="wrap">
-      {(Object.keys(DIFFICULTY) as TDifficulty[]).map(difficulty => (
+      {presets.map(difficulty => (
         <Button
           key={difficulty}
           unstyled
@@ -44,16 +54,21 @@ export const ControlPanel: FC<TProps> = props => {
         </Button>
       ))}
 
+      <CustomGamePopover
+        isActive={currentDifficulty === 'custom'}
+        onCustomStart={onCustomStart}
+      />
+
       <HStack gap={1} ml={8}>
-        <Image src={mineUrl} alt="mine" w={4} h={4} />
+        <MineIcon width={16} height={16} />
         <Text textStyle="stat" fontWeight={600}>
           {Math.max(minesLeft, 0)}
         </Text>
       </HStack>
 
       <HStack gap={1}>
-        <Image src={timerUrl} alt="timer" w={4} h={4} />
-        <Text textStyle="stat" minWidth={8}>
+        <TimerIcon width={16} height={16} />
+        <Text textStyle="stat" fontWeight={600} minWidth={8}>
           {Math.min(time, 999)}
         </Text>
       </HStack>
@@ -72,7 +87,7 @@ export const ControlPanel: FC<TProps> = props => {
         _hover={{ bg: 'purple' }}
         onClick={reset}
         title="Новая игра">
-        <Image src={restartUrl} alt="restart" w={4} h={4} />
+        <RestartIcon width={16} height={16} />
       </Button>
     </HStack>
   )
