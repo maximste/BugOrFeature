@@ -3,16 +3,21 @@ import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@/app/providers'
 
-type AuthTarget = 'private' | 'guest'
+export const AUTH_TARGET = {
+  PRIVATE: 'private',
+  GUEST: 'guest',
+} as const
 
-export const useRequireAuth = (target: AuthTarget = 'private') => {
+type AuthTarget = (typeof AUTH_TARGET)[keyof typeof AUTH_TARGET]
+
+export const useRequireAuth = (target: AuthTarget = AUTH_TARGET.PRIVATE) => {
   const { isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (target === 'private' && !isAuthenticated) {
+    if (target === AUTH_TARGET.PRIVATE && !isAuthenticated) {
       navigate('/signin', { replace: true })
-    } else if (target === 'guest' && isAuthenticated) {
+    } else if (target === AUTH_TARGET.GUEST && isAuthenticated) {
       navigate('/', { replace: true })
     }
   }, [isAuthenticated, target, navigate])

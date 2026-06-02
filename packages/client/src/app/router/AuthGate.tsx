@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from 'react-router-dom'
 
-import { useRequireAuth } from '@/shared/hooks'
+import { AUTH_TARGET, useRequireAuth } from '@/shared/hooks'
 
 const GUEST_ONLY_PATHS = ['/signin', '/signup']
 
@@ -17,7 +17,7 @@ export const AuthGate = () => {
   const path = normalizePathname(pathname)
   const isGuestOnly = GUEST_ONLY_PATHS.includes(path)
 
-  useRequireAuth(isGuestOnly ? 'guest' : 'private')
+  useRequireAuth(isGuestOnly ? AUTH_TARGET.GUEST : AUTH_TARGET.PRIVATE)
 
   return <Outlet />
 }
