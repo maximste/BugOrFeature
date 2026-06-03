@@ -9,9 +9,9 @@ import { ProfileView } from '@/widgets/profile-view'
 import { BackLink } from '@/shared/ui/back-link'
 import { PageHeading } from '@/shared/ui/page-heading'
 
+import { useIsOffline } from '../hooks/useIsOffline'
 import { initProfilePage } from '../model/initProfilePage'
 import {
-  isBrowserOffline,
   toProfileLoadError,
   type ProfileLoadError,
 } from '../model/profileLoadError'
@@ -21,6 +21,7 @@ import styles from './ProfilePage.module.scss'
 export const ProfilePage = () => {
   usePage({ initPage: initProfilePage })
 
+  const isOffline = useIsOffline()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loadError, setLoadError] = useState<ProfileLoadError | null>(null)
   const [loading, setLoading] = useState(true)
@@ -82,7 +83,7 @@ export const ProfilePage = () => {
 
         {!loading && profile != null ? (
           <>
-            {isBrowserOffline() ? (
+            {isOffline ? (
               <p className={styles.status} role="status">
                 Нет сети — сохранение изменений недоступно.
               </p>
