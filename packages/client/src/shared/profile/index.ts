@@ -50,22 +50,6 @@ export const toProfileError = (err: unknown): string => {
   return 'Что-то пошло не так. Попробуйте ещё раз.'
 }
 
-const throwProfileError = (err: ApiError): never => {
-  throw new Error(err.reason ?? err.message)
-}
-
-const withProfileError = async <T>(call: () => Promise<T>): Promise<T> => {
-  try {
-    return await call()
-  } catch (err) {
-    if (err instanceof ApiError) {
-      throwProfileError(err)
-    }
-
-    throw err
-  }
-}
-
 /** Путь для axios: dev — с ведущим / (Vite proxy), prod — относительно baseURL /api/v2 */
 export const getAvatarRequestPath = (avatar: string): string => {
   const resourcePath = toResourcePath(avatar)
@@ -104,7 +88,7 @@ export const loadAvatarPreviewUrl = async (
   }
 }
 
-export const fetchCurrentUser = () => withProfileError(() => getAuthUser())
+export const fetchCurrentUser = () => getAuthUser()
 
 export type UpdateProfileFields = {
   firstName: string
@@ -116,19 +100,16 @@ export type UpdateProfileFields = {
 }
 
 export const updateProfile = (fields: UpdateProfileFields) =>
-  withProfileError(() =>
-    putUserProfile({
-      first_name: fields.firstName.trim(),
-      second_name: fields.secondName.trim(),
-      display_name: fields.displayName.trim(),
-      login: fields.login.trim(),
-      email: fields.email.trim(),
-      phone: fields.phone.trim(),
-    })
-  )
+  putUserProfile({
+    first_name: fields.firstName.trim(),
+    second_name: fields.secondName.trim(),
+    display_name: fields.displayName.trim(),
+    login: fields.login.trim(),
+    email: fields.email.trim(),
+    phone: fields.phone.trim(),
+  })
 
-export const uploadAvatar = (file: File) =>
-  withProfileError(() => putUserProfileAvatar(file))
+export const uploadAvatar = (file: File) => putUserProfileAvatar(file)
 
 export type ChangePasswordFields = {
   oldPassword: string
@@ -136,9 +117,7 @@ export type ChangePasswordFields = {
 }
 
 export const changePassword = (fields: ChangePasswordFields) =>
-  withProfileError(() =>
-    putUserPassword({
-      oldPassword: fields.oldPassword,
-      newPassword: fields.newPassword,
-    })
-  )
+  putUserPassword({
+    oldPassword: fields.oldPassword,
+    newPassword: fields.newPassword,
+  })

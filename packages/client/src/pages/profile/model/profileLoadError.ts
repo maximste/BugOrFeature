@@ -14,11 +14,7 @@ const isNetworkFailure = (err: unknown): boolean => {
     return true
   }
 
-  if (err instanceof Error && err.message === 'Network Error') {
-    return true
-  }
-
-  return false
+  return err instanceof ApiError && err.status === 0
 }
 
 export const toProfileLoadError = (err: unknown): ProfileLoadError => {
