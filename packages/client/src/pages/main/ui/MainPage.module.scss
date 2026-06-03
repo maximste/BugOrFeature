@@ -76,7 +76,7 @@
 
 .mainTitleSpanFish {
   @include flex-row-center(8px);
-  color: #0d3242;
+  color: $color-accent-teal;
 }
 
 .mainTitleButtons {

@@ -56,7 +56,7 @@ export const MainPage = () => {
                 src="img/signup-icon.png"
                 alt="Иконка кнопки «Играть»"
               />{' '}
-              {'Играть'}
+              Играть
             </Button>
             <Button
               className={styles.mainTitleButtonForum}
@@ -69,7 +69,7 @@ export const MainPage = () => {
                 src="img/chat.png"
                 alt="Иконка кнопки «На форум»"
               />{' '}
-              {'На форум'}
+              На форум
             </Button>
           </div>
           <div>
@@ -78,7 +78,7 @@ export const MainPage = () => {
           <MainFeatureCards cards={MAIN_FEATURE_CARDS} />
         </section>
       </main>
-      <p className={styles.footer}>Команда BugOrFeature. 2026</p>
+      <footer className={styles.footer}>Команда BugOrFeature. 2026</footer>
     </div>
   )
 }
