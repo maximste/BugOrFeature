@@ -4,12 +4,17 @@ import { Link } from 'react-router-dom'
 
 import { usePage } from '@/app/hooks/usePage'
 import type { UserProfile } from '@/entities/user'
-import { fetchCurrentUser, toProfileError } from '@/shared/profile'
+import { fetchCurrentUser } from '@/shared/profile'
 import { ProfileView } from '@/widgets/profile-view'
 import { BackLink } from '@/shared/ui/back-link'
 import { PageHeading } from '@/shared/ui/page-heading'
 
 import { initProfilePage } from '../model/initProfilePage'
+import {
+  isBrowserOffline,
+  toProfileLoadError,
+  type ProfileLoadError,
+} from '../model/profileLoadError'
 
 import styles from './ProfilePage.module.scss'
 
@@ -17,7 +22,7 @@ export const ProfilePage = () => {
   usePage({ initPage: initProfilePage })
 
   const [profile, setProfile] = useState<UserProfile | null>(null)
-  const [loadError, setLoadError] = useState<string | null>(null)
+  const [loadError, setLoadError] = useState<ProfileLoadError | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -35,7 +40,7 @@ export const ProfilePage = () => {
         }
       } catch (err) {
         if (!cancelled) {
-          setLoadError(err instanceof Error ? err.message : toProfileError(err))
+          setLoadError(toProfileLoadError(err))
         }
       } finally {
         if (!cancelled) {
@@ -66,15 +71,24 @@ export const ProfilePage = () => {
 
         {!loading && loadError != null ? (
           <div className={styles.errorBlock} role="alert">
-            <p className={styles.error}>{loadError}</p>
-            <p className={styles.errorHint}>
-              <Link to="/signin">Войдите</Link>, если вы ещё не авторизованы.
-            </p>
+            <p className={styles.error}>{loadError.message}</p>
+            {loadError.showSignInHint ? (
+              <p className={styles.errorHint}>
+                <Link to="/signin">Войдите</Link>, если вы ещё не авторизованы.
+              </p>
+            ) : null}
           </div>
         ) : null}
 
         {!loading && profile != null ? (
-          <ProfileView profile={profile} onProfileChange={setProfile} />
+          <>
+            {isBrowserOffline() ? (
+              <p className={styles.status} role="status">
+                Нет сети — сохранение изменений недоступно.
+              </p>
+            ) : null}
+            <ProfileView profile={profile} onProfileChange={setProfile} />
+          </>
         ) : null}
       </section>
     </>
