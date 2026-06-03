@@ -48,4 +48,62 @@ sw.addEventListener('activate', (event: ExtendableEvent) => {
   )
 })
 
+const isNavigationRequest = (request: Request) =>
+  request.mode === 'navigate' ||
+  request.headers.get('accept')?.includes('text/html') === true
+
+const isSameOrigin = (request: Request) => {
+  try {
+    return new URL(request.url).origin === sw.location.origin
+  } catch {
+    return false
+  }
+}
+
+const shouldCacheResponse = (request: Request, response: Response) =>
+  response.ok && response.type === 'basic' && isSameOrigin(request)
+
+const putInCache = async (request: Request, response: Response) => {
+  const cache = await caches.open(CACHE_NAME)
+  await cache.put(request, response)
+}
+
+const networkFirstWithCacheFallback = async (
+  request: Request
+): Promise<Response> => {
+  try {
+    const response = await fetch(request)
+
+    if (shouldCacheResponse(request, response)) {
+      void putInCache(request, response.clone())
+    }
+
+    return response
+  } catch {
+    const cached = await caches.match(request)
+
+    if (cached) {
+      return cached
+    }
+
+    if (isNavigationRequest(request)) {
+      const shell = await caches.match('/index.html')
+
+      if (shell) {
+        return shell
+      }
+    }
+
+    throw new Error(`Offline and no cache for ${request.url}`)
+  }
+}
+
+sw.addEventListener('fetch', (event: FetchEvent) => {
+  if (event.request.method !== 'GET') {
+    return
+  }
+
+  event.respondWith(networkFirstWithCacheFallback(event.request))
+})
+
 export {}
