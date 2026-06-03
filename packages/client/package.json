@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "tsc --project tsconfig.server.json && cross-env NODE_ENV=development EXTERNAL_SERVER_URL='http://localhost:3001' INTERNAL_SERVER_URL='http://localhost:3001' node server/index.js",
     "dev:spa": "vite",
-    "build": "tsc --project tsconfig.server.json && vite build && vite build --ssr src/app/entry-server.tsx --outDir dist/server",
+    "build": "tsc --project tsconfig.server.json && vite build && vite build --config vite.sw.config.ts && vite build --ssr src/app/entry-server.tsx --outDir dist/server",
     "preview": "node server/index.js",
     "lint": "eslint .",
     "format": "prettier --write .",
