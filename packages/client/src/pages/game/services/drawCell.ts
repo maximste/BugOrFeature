@@ -11,6 +11,9 @@ type TProps = {
   imgs: TImgSet | null
 }
 
+const canDrawImage = (img: HTMLImageElement | null): img is HTMLImageElement =>
+  img != null && img.complete && img.naturalWidth > 0
+
 export const drawCell = (props: TProps): void => {
   const { ctx, x, y, cell, hoverAlpha, revealAlpha, imgs } = props
 
@@ -33,9 +36,10 @@ export const drawCell = (props: TProps): void => {
     ctx.fillRect(x, y, s, s)
 
     if (cell.mine) {
-      if (imgs?.mine) {
+      const mineImg = imgs?.mine ?? null
+      if (canDrawImage(mineImg)) {
         const m = s * 0.25
-        ctx.drawImage(imgs.mine, x + m, y + m, s - m * 2, s - m * 2)
+        ctx.drawImage(mineImg, x + m, y + m, s - m * 2, s - m * 2)
       }
     } else if (!cell.mine && cell.adjacent > 0) {
       ctx.fillStyle = CANVAS_COLORS.num[cell.adjacent] ?? '#000'
@@ -44,9 +48,10 @@ export const drawCell = (props: TProps): void => {
       ctx.textBaseline = 'middle'
       ctx.fillText(String(cell.adjacent), x + s / 2, y + s / 2 + 1)
     } else if (!cell.mine && cell.adjacent === 0) {
-      if (imgs?.emptyCell) {
+      const emptyCellImg = imgs?.emptyCell ?? null
+      if (canDrawImage(emptyCellImg)) {
         const m = s * 0.25
-        ctx.drawImage(imgs.emptyCell, x + m, y + m, s - m * 2, s - m * 2)
+        ctx.drawImage(emptyCellImg, x + m, y + m, s - m * 2, s - m * 2)
       }
     }
 
@@ -68,9 +73,10 @@ export const drawCell = (props: TProps): void => {
     ctx.ellipse(x + s / 2, y + s - 6, s * 0.38, 5, 0, 0, Math.PI)
     ctx.stroke()
 
-    if (cell.flagged && imgs?.flag) {
+    const flagImg = imgs?.flag ?? null
+    if (cell.flagged && canDrawImage(flagImg)) {
       const m = s * 0.25
-      ctx.drawImage(imgs.flag, x + m, y + m, s - m * 2, s - m * 2)
+      ctx.drawImage(flagImg, x + m, y + m, s - m * 2, s - m * 2)
     }
   }
 

@@ -24,13 +24,17 @@ export const useCanvasImages = (props: TProps): RefObject<TImgSet> => {
 
     let pending = entries.length
 
-    const onLoad = () => {
+    const onSettled = () => {
       if (--pending === 0 && drawRef.current) drawRef.current()
     }
 
     for (const [key, src] of entries) {
       const img = new Image()
-      img.onload = onLoad
+      img.onload = onSettled
+      img.onerror = () => {
+        imgsRef.current[key] = null
+        onSettled()
+      }
       img.src = src
       imgsRef.current[key] = img
     }
