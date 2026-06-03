@@ -25,9 +25,11 @@ const precacheUrls = (): string[] => [
 
 sw.addEventListener('install', (event: ExtendableEvent) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(precacheUrls()))
+    caches
+      .open(CACHE_NAME)
+      .then(cache => cache.addAll(precacheUrls()))
+      .then(() => sw.skipWaiting())
   )
-  sw.skipWaiting()
 })
 
 sw.addEventListener('activate', (event: ExtendableEvent) => {
