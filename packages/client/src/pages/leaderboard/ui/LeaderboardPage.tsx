@@ -90,9 +90,9 @@ export const LeaderboardPage = () => {
           {LEVEL_BUTTONS.map(({ label, level }) => (
             <li key={level}>
               <Button
-                className={`${styles.tab}${
-                  activeLevel === level ? '_active' : ''
-                }`}
+                className={`${styles.tab} ${
+                  activeLevel === level ? styles.tab_active : ''
+                }`.trim()}
                 onClick={() => setActiveLevel(level)}>
                 {label}
               </Button>
