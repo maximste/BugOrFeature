@@ -1,36 +1,31 @@
-const CACHE_VERSION = 'v1'
+/// <reference lib="webworker" />
+
+type PrecacheManifestEntry = {
+  url: string
+  revision: string | null
+}
+
+type SwScope = ServiceWorkerGlobalScope & {
+  __WB_MANIFEST: PrecacheManifestEntry[]
+}
+
+const CACHE_VERSION = 'v3'
 
 const CACHE_NAME = `sapper-cat-cache-${CACHE_VERSION}`
 
-const STATIC_URLS: readonly string[] = [
-  '/',
-  '/index.html',
+const sw = self as unknown as SwScope
 
-  '/fonts/nunito-cyrillic-ext.woff2',
-  '/fonts/nunito-cyrillic.woff2',
-  '/fonts/nunito-vietnamese.woff2',
-  '/fonts/nunito-latin-ext.woff2',
-  '/fonts/nunito-latin.woff2',
-  '/fonts/fredoka.woff2',
+// self.__WB_MANIFEST — точка injectManifest (vite-plugin-pwa подставляет массив при сборке)
+// @ts-expect-error плейсхолдер до сборки; после build здесь литерал массива
+const WB_MANIFEST: PrecacheManifestEntry[] = self.__WB_MANIFEST
 
-  '/icons/logo.svg',
-  '/icons/IconTopic.svg',
-  '/icons/Cup.svg',
-  '/icons/Fish.svg',
-
-  '/img/signup-icon.png',
-  '/img/not-found-icon.png',
-  '/img/server-error-icon.png',
-  '/img/rating1-icon.png',
-  '/img/rating2-icon.png',
-  '/img/rating3-icon.png',
+const precacheUrls = (): string[] => [
+  ...new Set(WB_MANIFEST.map(entry => entry.url)),
 ]
-
-const sw = self as unknown as ServiceWorkerGlobalScope
 
 sw.addEventListener('install', (event: ExtendableEvent) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll([...STATIC_URLS]))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(precacheUrls()))
   )
   sw.skipWaiting()
 })
