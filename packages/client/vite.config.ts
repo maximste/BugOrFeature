@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import svgr from 'vite-plugin-svgr'
+import { VitePWA } from 'vite-plugin-pwa'
 import dotenv from 'dotenv'
 import path from 'path'
 import type { HttpProxy } from 'vite'
@@ -83,5 +84,40 @@ export default defineConfig(({ mode }) => ({
   ssr: {
     format: 'cjs',
   },
-  plugins: [react(), svgr()],
+  plugins: [
+    react(),
+    svgr(),
+    VitePWA({
+      strategies: 'injectManifest',
+      srcDir: 'src',
+      filename: 'sw.ts',
+      injectRegister: false,
+      manifest: {
+        name: 'Котосапёр',
+        short_name: 'Котосапёр',
+        description: 'Игра Котосапёр',
+        start_url: '/',
+        display: 'standalone',
+        background_color: '#fff9ed',
+        theme_color: '#ffb6bc',
+        lang: 'ru',
+        icons: [
+          {
+            src: '/icons/logo.svg',
+            sizes: 'any',
+            type: 'image/svg+xml',
+            purpose: 'any',
+          },
+        ],
+      },
+      injectManifest: {
+        globDirectory: path.join(__dirname, 'dist/client'),
+        globPatterns: ['**/*.{js,css,html,svg,png,woff2,ico}'],
+        globIgnores: ['**/sw.js', '**/sw.js.map', '**/manifest.webmanifest'],
+      },
+      devOptions: {
+        enabled: false,
+      },
+    }),
+  ],
 }))
