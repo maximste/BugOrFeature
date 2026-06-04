@@ -17,7 +17,7 @@ vi.mock('../constants/game', () => ({
 vi.mock('../types/game', () => ({}))
 
 describe('drawCell', () => {
-  it('should call canvas context methods correctly for a revealed cell with a mine', () => {
+  it('Должен корректно вызывать методы контекста canvas для открытой ячейки с миной', () => {
     const mockCtx: Partial<CanvasRenderingContext2D> = {
       save: vi.fn(),
       beginPath: vi.fn(),
@@ -68,7 +68,7 @@ describe('drawCell', () => {
     expect(mockCtx.restore).toHaveBeenCalledTimes(1)
   })
 
-  it('should handle a hidden cell with hover effect and flag', () => {
+  it('Должен обрабатывать скрытую ячейку с эффектом наведения и флагом', () => {
     const mockCtx: Partial<CanvasRenderingContext2D> = {
       save: vi.fn(),
       beginPath: vi.fn(),
@@ -115,7 +115,7 @@ describe('drawCell', () => {
     expect(mockCtx.restore).toHaveBeenCalledTimes(1)
   })
 
-  it('should draw a revealed empty cell with adjacent number', () => {
+  it('Должен отображать открытую пустую ячейку с указанием количества соседних мин', () => {
     const mockCtx: Partial<CanvasRenderingContext2D> = {
       save: vi.fn(),
       beginPath: vi.fn(),
