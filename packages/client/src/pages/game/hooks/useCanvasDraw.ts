@@ -10,7 +10,7 @@ import { drawCell } from '../services/drawCell'
 import { TGrid, TImgSet } from '../types/game'
 import { getBoardSize } from '../services/getBoardSize'
 
-type TProps = {
+export type TProps = {
   canvasRef: RefObject<HTMLCanvasElement | null>
   drawRef: MutableRefObject<(() => void) | null>
   grid: TGrid
