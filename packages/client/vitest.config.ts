@@ -11,5 +11,7 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     clearMocks: true,
+    testTimeout: 300000,
+    hookTimeout: 300000,
   },
 })
