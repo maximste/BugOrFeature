@@ -1,0 +1,10 @@
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#492923" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+  <!-- верхний левый: изгиб радиусом 7 -->
+  <path d="M8 3 A 7 7 0 0 1 1 10"/>
+  <!-- верхний правый: изгиб радиусом 7 -->
+  <path d="M16 3 A 7 7 0 0 0 23 10"/>
+  <!-- нижний левый: изгиб радиусом 7 -->
+  <path d="M8 21 A 7 7 0 0 0 1 14"/>
+  <!-- нижний правый: изгиб радиусом 7 -->
+  <path d="M16 21 A 7 7 0 0 1 23 14"/>
+</svg>

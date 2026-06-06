@@ -1,0 +1,6 @@
+@use '@/app/styles/variables' as *;
+
+.fullscreenWrapper{
+    padding-top: 10vh;
+    background: $color-page-bg;    
+}
