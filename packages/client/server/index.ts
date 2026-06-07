@@ -1,16 +1,23 @@
+import path from 'path'
 import dotenv from 'dotenv'
-dotenv.config()
+
+dotenv.config({ path: path.join(__dirname, '../../../.env') })
+
+// @zag-js/store (used by Chakra UI v3) references `File` at module init time.
+// File is only a Node.js global from v20+; polyfill it for older runtimes.
+if (typeof (globalThis as Record<string, unknown>).File === 'undefined') {
+  ;(globalThis as Record<string, unknown>).File = class File {}
+}
 
 import { HelmetData } from 'react-helmet'
 import express, { Request as ExpressRequest } from 'express'
-import path from 'path'
 
 import fs from 'fs/promises'
 import { createServer as createViteServer, ViteDevServer } from 'vite'
 import serialize from 'serialize-javascript'
 import cookieParser from 'cookie-parser'
 
-const port = process.env.PORT || 80
+const port = process.env.CLIENT_PORT
 const clientPath = path.join(__dirname, '..')
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -39,9 +46,12 @@ async function createServer() {
     try {
       // Получаем файл client/index.html который мы правили ранее
       // Создаём переменные
-      let render: (
-        req: ExpressRequest
-      ) => Promise<{ html: string; initialState: unknown; helmet: HelmetData; styleTags: string }>
+      let render: (req: ExpressRequest) => Promise<{
+        html: string
+        initialState: unknown
+        helmet: HelmetData
+        styleTags: string
+      }>
       let template: string
       if (vite) {
         template = await fs.readFile(
@@ -56,7 +66,7 @@ async function createServer() {
         // он будет рендерить HTML-код
         render = (
           await vite.ssrLoadModule(
-            path.join(clientPath, 'src/entry-server.tsx')
+            path.join(clientPath, 'src/app/entry-server.tsx')
           )
         ).render
       } else {
@@ -76,12 +86,20 @@ async function createServer() {
       }
 
       // Получаем HTML-строку из JSX
-      const { html: appHtml, initialState, helmet, styleTags } = await render(req)
+      const {
+        html: appHtml,
+        initialState,
+        helmet,
+        styleTags,
+      } = await render(req)
 
       // Заменяем комментарий на сгенерированную HTML-строку
       const html = template
         .replace('<!--ssr-styles-->', styleTags)
-        .replace(`<!--ssr-helmet-->`, `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`)
+        .replace(
+          `<!--ssr-helmet-->`,
+          `${helmet.meta.toString()} ${helmet.title.toString()} ${helmet.link.toString()}`
+        )
         .replace(`<!--ssr-outlet-->`, appHtml)
         .replace(
           `<!--ssr-initial-state-->`,

@@ -1,0 +1,40 @@
+@use '@/app/styles/mixins' as *;
+
+.page {
+  max-width: 640px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.heading {
+  margin: 14px 0 8px;
+}
+
+.status {
+  @include typography-ui(15px, 500);
+  margin: 16px 0 0;
+  color: $color-subtitle;
+}
+
+.errorBlock {
+  @include form-card(20px);
+  margin-top: 16px;
+  border: 1px solid $color-border;
+}
+
+.error {
+  @include typography-ui(14px, 500);
+  margin: 0;
+  color: $color-primary;
+}
+
+.errorHint {
+  @include typography-ui(13px, 400);
+  margin: 10px 0 0;
+  color: $color-text;
+
+  a {
+    color: $color-title;
+    font-weight: 700;
+  }
+}

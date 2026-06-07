@@ -1,0 +1,119 @@
+@use '@/app/styles/mixins' as *;
+
+@mixin icon($img){
+    display: block;
+    flex-shrink: 0;
+    content: "";
+    width: 16px;
+    height: 16px;
+    background: url($img) center center no-repeat;
+}
+
+.pageSection{
+    width: 100%;
+}
+
+.pageTop{    
+    margin-bottom: 32px;
+}
+
+.headerBlock{
+    align-items: center
+}
+
+.subHeader{
+    @include magenta-button-shared;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: text;
+    margin: 0 auto 24px;
+
+    &::before{
+        @include icon('/icons/Cup.svg');
+    }
+}
+
+.tabsList{
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.tab{
+    @include cyan-button-shared;
+
+    &_active{
+        @include button-shared;
+    }
+}
+
+.table{
+    @include form-card;
+    padding: 0;
+    width: 100%;    
+    border-collapse: collapse;
+    overflow: hidden;
+}
+
+.table tbody tr td{
+    padding: 10px 20px;
+}
+
+
+:global(.rating){
+    width: 60px;
+    text-align: right;
+    font-family: 'Fredoka', Nunito, sans-serif;
+    font-weight: 800;
+}
+
+.playerFlex{
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    
+    &::before{
+        @include icon('/icons/Fish.svg');
+    }
+}
+
+:global(.timeStr){
+    text-align: right;
+}
+
+@mixin rating-top($order){
+    font-size: 0;    
+    background-image: url('/img/rating' + $order + '-icon.png');
+    background-position: right 16px center;
+    background-repeat: no-repeat;
+    background-size: 16px auto;
+}
+
+.table tbody tr:nth-child(1) td{
+    &:global(.rating){
+        @include rating-top(1)
+    }
+
+    background-color: $color-light-green;    
+}
+
+.table tbody tr:nth-child(2) td{
+    &:global(.rating){
+        @include rating-top(2)
+    }
+
+    background-color: $color-light-orange;
+}
+
+.table tbody tr:nth-child(3) td{
+    &:global(.rating){
+        @include rating-top(3)
+    }
+
+    background-color: $color-light-light-pink;
+}
+

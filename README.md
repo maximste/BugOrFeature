@@ -74,3 +74,8 @@
 
 Если вам понадобится только один сервис, просто уточните какой в команде
 `docker compose up {sevice_name}`, например `docker compose up server`
+
+## Структура клиента (FSD)
+
+Клиент организован по [Feature-Sliced Design](https://feature-sliced.design/).  
+Описание папок в `packages/client/src`: [src/README.md](packages/client/src/README.md).

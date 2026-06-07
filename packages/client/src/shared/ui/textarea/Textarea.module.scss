@@ -1,0 +1,8 @@
+@use '@/app/styles/mixins' as *;
+
+.root {
+  @include form-input;
+
+  min-height: 178px;
+  resize: vertical;
+}
