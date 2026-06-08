@@ -34,6 +34,13 @@ describe('drawCell', () => {
       stroke: vi.fn(),
     }
 
+    const validMineImage: HTMLImageElement = {
+      complete: true,
+      naturalWidth: 32,
+      width: 32,
+      height: 32,
+    } as HTMLImageElement
+
     // Данные для теста
     const testProps = {
       ctx: mockCtx as CanvasRenderingContext2D,
@@ -49,7 +56,7 @@ describe('drawCell', () => {
       hoverAlpha: 0.3,
       revealAlpha: 0.8,
       imgs: {
-        mine: {} as HTMLImageElement,
+        mine: validMineImage,
         flag: {} as HTMLImageElement,
         emptyCell: {} as HTMLImageElement,
       },
@@ -85,6 +92,13 @@ describe('drawCell', () => {
       stroke: vi.fn(),
     }
 
+    const validFlagImage: HTMLImageElement = {
+      complete: true,
+      naturalWidth: 32,
+      width: 32,
+      height: 32,
+    } as HTMLImageElement
+
     const testProps = {
       ctx: mockCtx as CanvasRenderingContext2D,
       x: 32,
@@ -100,7 +114,7 @@ describe('drawCell', () => {
       revealAlpha: 0,
       imgs: {
         mine: {} as HTMLImageElement,
-        flag: {} as HTMLImageElement,
+        flag: validFlagImage,
         emptyCell: {} as HTMLImageElement,
       },
     }

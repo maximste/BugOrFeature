@@ -56,16 +56,8 @@ describe('floodReveal', () => {
       ],
     ]
 
-    // Act
     floodReveal(grid, rows, cols, 0, 1)
 
-    // Assert
-    // стартовая ячейка откроется
-    //expect(grid[0][1].revealed).toBe(true);
-    // соседние ячейки с adjacent=0 тоже откроются
-    //expect(grid[1][1].revealed).toBe(true);
-    //expect(grid[1][0].revealed).toBe(true);
-    // но ячейка, которая уже была открыта, остаётся без изменений
     expect(grid[0][0].revealed).toBe(true)
   })
 
