@@ -1,0 +1,46 @@
+@use '@/app/styles/mixins' as *;
+
+@mixin feature-icon-tile($size: 48px) {
+  @include surface-pill($color-button-magenta, 0, 16px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: $size;
+  height: $size;
+}
+
+.root {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+}
+
+.card {
+  @include form-card(24px);
+  flex: 1 1 200px;
+  gap: 4px;
+}
+
+.title {
+  display: flex;
+  align-items: end;
+  justify-content: start;
+  @include typography-ui(18px, 800);
+
+  line-height: 28px;
+  height: 40px;
+}
+
+.icon {
+  @include feature-icon-tile;
+}
+
+.description {
+  @include typography-ui(12px, 400);
+
+  color: $color-subtitle;
+  text-align: start;
+  white-space: pre-line;
+}

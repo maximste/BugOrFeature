@@ -30,7 +30,7 @@
     margin: 0 auto 24px;
 
     &::before{
-        @include icon('/public/icons/cup.svg');        
+        @include icon('/icons/Cup.svg');
     }
 }
 
@@ -44,7 +44,7 @@
 .tab{
     @include cyan-button-shared;
 
-    & _active{
+    &_active{
         @include button-shared;
     }
 }
@@ -77,7 +77,7 @@
     font-weight: 700;
     
     &::before{
-        @include icon('/public/icons/fish.svg');        
+        @include icon('/icons/Fish.svg');
     }
 }
 
@@ -87,7 +87,7 @@
 
 @mixin rating-top($order){
     font-size: 0;    
-    background-image: url('/public/img/rating' + $order + '-icon.png');
+    background-image: url('/img/rating' + $order + '-icon.png');
     background-position: right 16px center;
     background-repeat: no-repeat;
     background-size: 16px auto;

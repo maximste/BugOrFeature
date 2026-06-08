@@ -32,3 +32,11 @@ if (rootElement.childElementCount > 0) {
 } else {
   ReactDOM.createRoot(rootElement).render(app)
 }
+
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(err => {
+      console.error('Service worker registration failed:', err)
+    })
+  })
+}

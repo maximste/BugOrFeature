@@ -3,6 +3,8 @@ import { FC, Dispatch, SetStateAction } from 'react'
 import RestartIcon from '@/assets/icons/restart.svg?react'
 import MineIcon from '@/assets/icons/fish.svg?react'
 import TimerIcon from '@/assets/icons/timer.svg?react'
+import FullscreenIcon from '@/assets/icons/fullscreen.svg?react'
+import ExitFullscreenIcon from '@/assets/icons/exitfullscreen.svg?react'
 import { TDifficulty, TMinesweeperApi } from '../types/game'
 import { TRANSITION } from '../../../theme'
 import { DIFFICULTY, DIFFICULTY_LABEL } from '../constants/game'
@@ -12,6 +14,8 @@ type TProps = {
   currentDifficulty: TDifficulty
   setCurrentDifficulty: Dispatch<SetStateAction<TDifficulty>>
   onCustomStart: (rows: number, cols: number, mines: number) => void
+  isFullscreen: boolean
+  toggleFullscreen: () => void
 } & Pick<TMinesweeperApi, 'minesLeft' | 'time' | 'reset'>
 
 export const ControlPanel: FC<TProps> = props => {
@@ -22,6 +26,8 @@ export const ControlPanel: FC<TProps> = props => {
     currentDifficulty,
     setCurrentDifficulty,
     onCustomStart,
+    isFullscreen,
+    toggleFullscreen,
   } = props
 
   const presets = Object.keys(DIFFICULTY) as Exclude<TDifficulty, 'custom'>[]
@@ -88,6 +94,31 @@ export const ControlPanel: FC<TProps> = props => {
         onClick={reset}
         title="Новая игра">
         <RestartIcon width={16} height={16} />
+      </Button>
+
+      <Button
+        unstyled
+        bg="card"
+        borderRadius="full"
+        px={3}
+        py={2}
+        cursor="pointer"
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        transition={TRANSITION}
+        _hover={{ bg: 'purple' }}
+        onClick={toggleFullscreen}
+        title={
+          isFullscreen
+            ? 'Выход из полноэкранного режима'
+            : 'Полноэкранный режим'
+        }>
+        {isFullscreen ? (
+          <ExitFullscreenIcon width={16} height={16} />
+        ) : (
+          <FullscreenIcon width={16} height={16} />
+        )}
       </Button>
     </HStack>
   )
