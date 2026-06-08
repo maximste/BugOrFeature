@@ -75,7 +75,7 @@ describe('useCanvasImages', () => {
 
     renderHook(() => useCanvasImages({ drawRef }))
 
-    act(() => {
+    await waitFor(() => {
       imageInstances.forEach(img => img.simulateLoad())
     })
 
@@ -86,12 +86,12 @@ describe('useCanvasImages', () => {
     })
   })
 
-  it('не вызывает drawRef, если он равен null', () => {
+  it('не вызывает drawRef, если он равен null', async () => {
     const drawRef: MutableRefObject<(() => void) | null> = { current: null }
 
     renderHook(() => useCanvasImages({ drawRef }))
 
-    act(() => {
+    await waitFor(() => {
       imageInstances.forEach(img => img.simulateLoad())
     })
 
