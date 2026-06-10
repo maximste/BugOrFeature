@@ -77,10 +77,8 @@ describe('floodReveal', () => {
       ],
     ]
 
-    // Act
     floodReveal(grid, rows, cols, 0, 1)
 
-    // Assert
     expect(grid[0][1].revealed).toBe(true) // стартовая откроется
     expect(grid[1][1].revealed).toBe(true) // сосед справа откроется
 
@@ -97,7 +95,6 @@ describe('floodReveal', () => {
       [{ revealed: false, flagged: false, mine: false, adjacent: 0 }],
     ]
 
-    // Act & Assert
     // вызов с координатами за пределами сетки не должен вызывать ошибок
     expect(() => floodReveal(grid, rows, cols, -1, -1)).not.toThrow()
     expect(() => floodReveal(grid, rows, cols, 10, 10)).not.toThrow()
