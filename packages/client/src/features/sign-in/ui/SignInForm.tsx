@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@/app/providers'
+import { fetchAuthUser, useDispatch } from '@/app/store'
 import { signIn, toAuthError } from '@/shared/auth'
 import { Button } from '@/shared/ui/button'
 import { FormField } from '@/shared/ui/form-field'
@@ -13,6 +14,7 @@ import styles from './SignInForm.module.scss'
 
 export const SignInForm = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { refreshAuth } = useAuth()
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
@@ -26,6 +28,7 @@ export const SignInForm = () => {
 
     try {
       await signIn(login, password)
+      await dispatch(fetchAuthUser()).unwrap()
       refreshAuth()
       navigate('/', { replace: true })
     } catch (err) {

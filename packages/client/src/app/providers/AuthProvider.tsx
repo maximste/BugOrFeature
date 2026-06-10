@@ -1,5 +1,12 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from 'react'
 
+import { fetchAuthUser, useDispatch } from '@/app/store'
 import { isAuthCookieSet, TOKEN_COOKIE } from '@/shared/auth'
 import { getCookie } from '@/shared/lib/cookie'
 
@@ -15,6 +22,7 @@ type AuthProviderProps = {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const dispatch = useDispatch()
   const [isAuthenticated, setIsAuthenticated] = useState(() =>
     Boolean(getCookie(TOKEN_COOKIE))
   )
@@ -22,6 +30,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const refreshAuth = () => {
     setIsAuthenticated(isAuthCookieSet())
   }
+
+  useEffect(() => {
+    if (isAuthCookieSet()) {
+      dispatch(fetchAuthUser())
+    }
+  }, [dispatch])
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, refreshAuth }}>
