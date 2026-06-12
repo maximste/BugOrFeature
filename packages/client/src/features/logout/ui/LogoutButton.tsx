@@ -2,12 +2,14 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@/app/providers'
+import { clearAuth, useDispatch } from '@/app/store'
 import { logout } from '@/shared/auth'
 
 import styles from './LogoutButton.module.scss'
 
 export const LogoutButton = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { refreshAuth } = useAuth()
   const [loggingOut, setLoggingOut] = useState(false)
 
@@ -20,6 +22,7 @@ export const LogoutButton = () => {
 
     try {
       await logout()
+      dispatch(clearAuth())
       refreshAuth()
       navigate('/signin', { replace: true })
     } finally {

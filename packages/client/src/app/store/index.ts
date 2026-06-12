@@ -28,3 +28,12 @@ export const reducer = rootReducer
 export const useDispatch: () => AppDispatch = useDispatchBase
 export const useSelector: TypedUseSelectorHook<RootState> = useSelectorBase
 export const useStore: () => typeof store = useStoreBase
+
+export {
+  fetchAuthUser,
+  setUser,
+  clearAuth,
+  selectAuthUser,
+  selectAuthStatus,
+  selectIsAuthUserLoading,
+} from './authSlice'

@@ -4,8 +4,15 @@ import { Link } from 'react-router-dom'
 
 import { usePage } from '@/app/hooks/usePage'
 import { useAuth } from '@/app/providers'
-import type { UserProfile } from '@/entities/user'
-import { fetchCurrentUser } from '@/shared/profile'
+import {
+  fetchAuthUser,
+  selectAuthStatus,
+  selectAuthUser,
+  selectIsAuthUserLoading,
+  setUser,
+  useDispatch,
+  useSelector,
+} from '@/app/store'
 import { ProfileView } from '@/widgets/profile-view'
 import { BackLink } from '@/shared/ui/back-link'
 import { PageHeading } from '@/shared/ui/page-heading'
@@ -21,45 +28,39 @@ import styles from './ProfilePage.module.scss'
 
 export const ProfilePage = () => {
   const { isAuthenticated } = useAuth()
+  const dispatch = useDispatch()
+  const user = useSelector(selectAuthUser)
+  const authStatus = useSelector(selectAuthStatus)
+  const isAuthUserLoading = useSelector(selectIsAuthUserLoading)
+
   usePage({ initPage: initProfilePage })
 
   const isOffline = useIsOffline()
-  const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loadError, setLoadError] = useState<ProfileLoadError | null>(null)
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!isAuthenticated) return
-
-    let cancelled = false
-
-    const loadProfile = async () => {
-      setLoadError(null)
-      setLoading(true)
-
-      try {
-        const user = await fetchCurrentUser()
-
-        if (!cancelled) {
-          setProfile(user)
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setLoadError(toProfileLoadError(err))
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false)
-        }
-      }
+    if (!isAuthenticated) {
+      return
     }
 
-    void loadProfile()
-
-    return () => {
-      cancelled = true
+    if (user != null || isAuthUserLoading) {
+      return
     }
-  }, [isAuthenticated])
+
+    if (authStatus === 'failed') {
+      setLoadError({
+        message: 'Не удалось загрузить профиль. Попробуйте войти снова.',
+        showSignInHint: true,
+      })
+      return
+    }
+
+    dispatch(fetchAuthUser())
+      .unwrap()
+      .catch(err => setLoadError(toProfileLoadError(err)))
+  }, [isAuthenticated, user, isAuthUserLoading, authStatus, dispatch])
+
+  const loading = isAuthenticated && user == null && isAuthUserLoading
 
   return (
     <>
@@ -85,14 +86,17 @@ export const ProfilePage = () => {
           </div>
         ) : null}
 
-        {!loading && profile != null ? (
+        {!loading && user != null ? (
           <>
             {isOffline ? (
               <p className={styles.status} role="status">
                 Нет сети — сохранение изменений недоступно.
               </p>
             ) : null}
-            <ProfileView profile={profile} onProfileChange={setProfile} />
+            <ProfileView
+              profile={user}
+              onProfileChange={profile => dispatch(setUser(profile))}
+            />
           </>
         ) : null}
       </section>
