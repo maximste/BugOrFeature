@@ -9,6 +9,11 @@ import { Button } from '@/shared/ui/button'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
 import { PageHeading } from '@/shared/ui/page-heading'
+import {
+  handleValidationBlur,
+  handleValidationFocus,
+  validateForm,
+} from '@/shared/lib/validations'
 
 import styles from './SignInForm.module.scss'
 
@@ -26,6 +31,12 @@ export const SignInForm = () => {
     setError(null)
     setLoading(true)
 
+    const { isValid, data } = validateForm(e.currentTarget)
+    if (!isValid) {
+      setLoading(false)
+      return
+    }
+
     try {
       await signIn(login, password)
       await dispatch(fetchAuthUser()).unwrap()
@@ -39,7 +50,12 @@ export const SignInForm = () => {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
+    <form
+      className={styles.form}
+      onSubmit={handleSubmit}
+      onFocus={e => handleValidationFocus(e.nativeEvent)}
+      onBlur={e => handleValidationBlur(e.nativeEvent)}
+      noValidate>
       <div className={styles.iconWrap} aria-hidden>
         <img className={styles.icon} src="/icons/logo.svg" alt="" />
       </div>

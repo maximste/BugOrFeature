@@ -8,6 +8,11 @@ import { signUp, toAuthError } from '@/shared/auth'
 import { Button } from '@/shared/ui/button'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
+import {
+  handleValidationBlur,
+  handleValidationFocus,
+  validateForm,
+} from '@/shared/lib/validations'
 
 import { initSignUpPage } from '../model/initSignUpPage'
 
@@ -30,14 +35,20 @@ export const SignUpPage = () => {
     setError(null)
     setLoading(true)
 
+    const { isValid, data } = validateForm(e.currentTarget)
+    if (!isValid) {
+      setLoading(false)
+      return
+    }
+
     try {
       await signUp({
-        firstName,
-        secondName,
-        login,
-        email,
-        password,
-        phone,
+        firstName: data.first_name,
+        secondName: data.second_name,
+        login: data.login,
+        email: data.email,
+        password: data.password,
+        phone: data.phone,
       })
       navigate('/signin', { replace: true })
     } catch (err) {
@@ -54,7 +65,12 @@ export const SignUpPage = () => {
         <title>Регистрация — Catsweeper</title>
         <meta name="description" content="Регистрация" />
       </Helmet>
-      <form className={styles.form} onSubmit={handleSubmit} noValidate>
+      <form
+        className={styles.form}
+        onSubmit={handleSubmit}
+        onFocus={e => handleValidationFocus(e.nativeEvent)}
+        onBlur={e => handleValidationBlur(e.nativeEvent)}
+        noValidate>
         <div className={styles.titleContainer}>
           <div className={styles.titleIconContainer}>
             <img src="/img/signup-icon.png" alt="" />

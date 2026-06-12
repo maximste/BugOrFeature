@@ -12,6 +12,11 @@ import {
 import { Button } from '@/shared/ui/button'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
+import {
+  handleValidationBlur,
+  handleValidationFocus,
+  validateForm,
+} from '@/shared/lib/validations'
 
 import styles from './ProfileView.module.scss'
 
@@ -182,14 +187,20 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
     setProfileSuccess(null)
     setProfileLoading(true)
 
+    const { isValid, data } = validateForm(e.currentTarget)
+    if (!isValid) {
+      setProfileLoading(false)
+      return
+    }
+
     try {
       const updated = await updateProfile({
-        firstName,
-        secondName,
-        displayName,
-        login,
-        email,
-        phone,
+        firstName: data.first_name,
+        secondName: data.second_name,
+        displayName: data.display_name,
+        login: data.login,
+        email: data.email,
+        phone: data.phone,
       })
       applyProfile(updated)
       setProfileSuccess('Профиль сохранён')
@@ -234,8 +245,17 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
     setPasswordSuccess(null)
     setPasswordLoading(true)
 
+    const { isValid, data } = validateForm(e.currentTarget)
+    if (!isValid) {
+      setPasswordLoading(false)
+      return
+    }
+
     try {
-      await changePassword({ oldPassword, newPassword })
+      await changePassword({
+        oldPassword: data.oldPassword,
+        newPassword: data.newPassword,
+      })
       setOldPassword('')
       setNewPassword('')
       setPasswordSuccess('Пароль изменён')
@@ -329,7 +349,12 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
         <h2 id="profile-heading" className={styles.sectionTitle}>
           Данные профиля
         </h2>
-        <form className={styles.form} onSubmit={handleProfileSubmit} noValidate>
+        <form
+          className={styles.form}
+          onSubmit={handleProfileSubmit}
+          onFocus={e => handleValidationFocus(e.nativeEvent)}
+          onBlur={e => handleValidationBlur(e.nativeEvent)}
+          noValidate>
           {profileError != null ? (
             <p className={styles.error} role="alert">
               {profileError}
@@ -415,6 +440,8 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
         <form
           className={styles.form}
           onSubmit={handlePasswordSubmit}
+          onFocus={e => handleValidationFocus(e.nativeEvent)}
+          onBlur={e => handleValidationBlur(e.nativeEvent)}
           noValidate>
           {passwordError != null ? (
             <p className={styles.error} role="alert">
