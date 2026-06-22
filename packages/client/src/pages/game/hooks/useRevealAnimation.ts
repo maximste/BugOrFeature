@@ -73,5 +73,14 @@ export const useRevealAnimation = (
     prevGridRef.current = grid
   }, [grid, rows, cols, startRevealAnim])
 
+  // отменяем незавершённую анимацию открытия при размонтировании
+  useEffect(() => {
+    return () => {
+      if (revealRafRef.current) {
+        cancelAnimationFrame(revealRafRef.current)
+      }
+    }
+  }, [])
+
   return revealMapRef
 }

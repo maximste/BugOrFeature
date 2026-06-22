@@ -1,4 +1,4 @@
-import { useRef, useCallback, MutableRefObject } from 'react'
+import { useRef, useCallback, useEffect, MutableRefObject } from 'react'
 
 type TProps = {
   drawRef: MutableRefObject<(() => void) | null>
@@ -40,6 +40,16 @@ export const useHoverAnimation = (props: TProps) => {
     },
     [drawRef]
   )
+
+  // отменяем незавершённую анимацию при размонтировании, иначе RAF-цикл
+  // продолжает дёргать drawRef уже после удаления канваса
+  useEffect(() => {
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current)
+      }
+    }
+  }, [])
 
   return { hoverRef, hoverAlphaRef, animateHover }
 }
