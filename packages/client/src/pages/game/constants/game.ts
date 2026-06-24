@@ -52,3 +52,5 @@ export const CANVAS_COLORS = {
   exploded: COLORS.pink,
   num: COLORS.num,
 } as const
+
+export const MUSIC_FADE_SECONDS = 1 as const
