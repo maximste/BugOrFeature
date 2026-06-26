@@ -7,8 +7,7 @@ import {
 } from 'react'
 
 import { fetchAuthUser, useDispatch } from '@/app/store'
-import { isAuthCookieSet, TOKEN_COOKIE } from '@/shared/auth'
-import { getCookie } from '@/shared/lib/cookie'
+import { isAuthCookieSet } from '@/shared/auth'
 
 type AuthContextValue = {
   isAuthenticated: boolean
@@ -23,16 +22,19 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const dispatch = useDispatch()
-  const [isAuthenticated, setIsAuthenticated] = useState(() =>
-    Boolean(getCookie(TOKEN_COOKIE))
-  )
+  // SSR: на сервере document нет — всегда false. На клиенте тоже стартуем с false,
+  // чтобы первый рендер совпал с сервером; cookie читаем после mount (9 спринт — с сервера).
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   const refreshAuth = () => {
     setIsAuthenticated(isAuthCookieSet())
   }
 
   useEffect(() => {
-    if (isAuthCookieSet()) {
+    const authenticated = isAuthCookieSet()
+    setIsAuthenticated(authenticated)
+
+    if (authenticated) {
       dispatch(fetchAuthUser())
     }
   }, [dispatch])
