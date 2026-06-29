@@ -97,7 +97,7 @@ export const GamePage = () => {
       const gameData = {
         player: store.getState().auth.user?.login,
         level: currentDifficulty,
-        BOFTimeTest: time * -1,
+        BOFTime: time * -1,
       }
       sendResultToLeaderbord(gameData)
     }

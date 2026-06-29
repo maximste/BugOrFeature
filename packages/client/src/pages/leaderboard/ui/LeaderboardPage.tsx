@@ -61,7 +61,7 @@ export const LeaderboardPage = () => {
         ...el,
         playerEl: <div className={styles.playerFlex}>{el.data.player}</div>,
         rating: i + 1,
-        timeStr: `${Math.abs(el.data.BOFTimeTest)} сек`,
+        timeStr: `${Math.abs(el.data.BOFTime)} сек`,
       })),
     [leadersData]
   )

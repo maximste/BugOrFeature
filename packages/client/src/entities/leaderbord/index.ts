@@ -4,13 +4,13 @@ import { api, request } from '@/shared/api/apiClient'
 export type LeaderboardUnit = {
   data: {
     player: string
-    BOFTimeTest: number
+    BOFTime: number
     level: TDifficulty
   }
 }
 
 //Лидерборд - отправка данных по окончании игры
-const ratingFieldName = 'BOFTimeTest'
+const ratingFieldName = 'BOFTime'
 const teamName = 'BugOrFeature'
 
 export const sendResultToLeaderbord = (data: any) => {
