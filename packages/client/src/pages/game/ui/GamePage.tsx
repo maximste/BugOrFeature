@@ -93,7 +93,7 @@ export const GamePage = () => {
 
   //отправить в лидерборд
   useEffect(() => {
-    if (status === 'won') {
+    if (status === 'won' && currentDifficulty !== 'custom') {
       const gameData = {
         player: store.getState().auth.user?.login,
         level: currentDifficulty,
