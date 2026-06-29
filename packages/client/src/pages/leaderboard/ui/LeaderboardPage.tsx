@@ -44,7 +44,8 @@ export const LeaderboardPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getLeaderbordData(activeLevel)
+        const rawData = await getLeaderbordData()
+        const data = rawData.filter(el => el.data.level === activeLevel)
 
         setLeadersData(data)
       } catch (err) {
@@ -61,7 +62,7 @@ export const LeaderboardPage = () => {
         ...el,
         playerEl: <div className={styles.playerFlex}>{el.data.player}</div>,
         rating: i + 1,
-        timeStr: `${el.data.time} сек`,
+        timeStr: `${Math.abs(el.data.BOFTimeTest)} сек`,
       })),
     [leadersData]
   )

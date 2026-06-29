@@ -126,7 +126,7 @@ export const fetchResourceBlob = async (path: string): Promise<Blob> => {
 }
 
 //Лидерборд - отправка данных по окончании игры
-const ratingFieldName = 'time'
+const ratingFieldName = 'BOFTimeTest'
 const teamName = 'BugOrFeature'
 
 export const sendResultToLeaderbord = (data: any) => {
@@ -141,13 +141,11 @@ export const sendResultToLeaderbord = (data: any) => {
   request(() => api.post<void>('/leaderboard', body))
 }
 
-export const getLeaderbordData = (level: string) => {
+export const getLeaderbordData = () => {
   const body = {
     ratingFieldName: ratingFieldName,
     cursor: 0,
     limit: 10,
   }
-  return request(() =>
-    api.post<LeaderboardUnit[]>(`/leaderboard/${teamName}`, body)
-  )
+  return request(() => api.post<LeaderboardUnit[]>(`/leaderboard/all`, body))
 }
