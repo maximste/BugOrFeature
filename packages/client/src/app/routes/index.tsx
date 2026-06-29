@@ -56,7 +56,7 @@ const authGateChildren: AppRouteObject[] = [
     fetchData: initGamePage,
   },
   {
-    path: 'leaderboard',
+    path: 'leaderboard-page',
     element: <LeaderboardPage />,
     fetchData: initLeaderboardPage,
   },

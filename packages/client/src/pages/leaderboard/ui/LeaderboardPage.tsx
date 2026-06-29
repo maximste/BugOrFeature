@@ -1,6 +1,6 @@
 import styles from './LeaderboardPage.module.scss'
 import { Helmet } from 'react-helmet'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { usePage } from '@/app/hooks/usePage'
 
 import { initLeaderboardPage } from '../model/initLeaderboardPage'
@@ -8,22 +8,14 @@ import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page-heading'
 import { Table } from '@/shared/ui/table'
 
-import {
-  MOCK_DATA_SIMPLE,
-  MOCK_DATA_MEDIUM,
-  MOCK_DATA_HARD,
-} from './LeaderbordMock'
-
-const LEVEL_DATA_MAP = {
-  Simple: MOCK_DATA_SIMPLE,
-  Medium: MOCK_DATA_MEDIUM,
-  Hard: MOCK_DATA_HARD,
-}
+import { getLeaderbordData } from '@/shared/api/apiClient'
+import { LeaderboardUnit } from '@/entities/leaderbord'
+import { TDifficulty } from '@/pages/game/types/game'
 
 const LEVEL_BUTTONS: { label: string; level: Level }[] = [
-  { label: 'Котенок', level: 'Simple' },
-  { label: 'Кот', level: 'Medium' },
-  { label: 'Дикий кот', level: 'Hard' },
+  { label: 'Котенок', level: 'easy' },
+  { label: 'Кот', level: 'medium' },
+  { label: 'Дикий кот', level: 'hard' },
 ]
 
 const tableColumns = [
@@ -41,30 +33,35 @@ const tableColumns = [
   },
 ]
 
-type LeaderboardUnit = {
-  player: string
-  time: number
-}
-
-type Level = keyof typeof LEVEL_DATA_MAP
+type Level = TDifficulty
 
 export const LeaderboardPage = () => {
   usePage({ initPage: initLeaderboardPage })
 
-  const [activeLevel, setActiveLevel] = useState<Level>('Simple')
+  const [activeLevel, setActiveLevel] = useState<Level>('easy')
   const [leadersData, setLeadersData] = useState<LeaderboardUnit[]>([])
 
   useEffect(() => {
-    setLeadersData(LEVEL_DATA_MAP[activeLevel])
+    const fetchData = async () => {
+      try {
+        const data = await getLeaderbordData(activeLevel)
+
+        setLeadersData(data)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    fetchData()
   }, [activeLevel])
 
   const tableRows = useMemo(
     () =>
       leadersData.map((el, i) => ({
         ...el,
-        playerEl: <div className={styles.playerFlex}>{el.player}</div>,
+        playerEl: <div className={styles.playerFlex}>{el.data.player}</div>,
         rating: i + 1,
-        timeStr: `${el.time} сек`,
+        timeStr: `${el.data.time} сек`,
       })),
     [leadersData]
   )

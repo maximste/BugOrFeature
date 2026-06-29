@@ -42,7 +42,7 @@ export const Header = () => {
               <Link to="/game">Игра</Link>
             </List.Item>
             <List.Item>
-              <Link to="/leaderboard">Лидерборд</Link>
+              <Link to="/leaderboard-page">Лидерборд</Link>
             </List.Item>
             <List.Item>
               <Link to="/forum">Форум</Link>
