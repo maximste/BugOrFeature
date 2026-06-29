@@ -39,16 +39,24 @@ export const LeaderboardPage = () => {
 
   const [activeLevel, setActiveLevel] = useState<Level>('easy')
   const [leadersData, setLeadersData] = useState<LeaderboardUnit[]>([])
+  const [noDataText, setNoDataText] = useState<string>('')
 
   useEffect(() => {
+    setNoDataText('')
     const fetchData = async () => {
       try {
         const rawData = await getLeaderbordData()
         const data = rawData.filter(el => el.data.level === activeLevel)
 
         setLeadersData(data)
+        if (!data.length) {
+          setNoDataText(
+            'Пока рекордов нет. Будьте первым! Но помните - один рекорд в одни лапки 🐾'
+          )
+        }
       } catch (err) {
         console.error(err)
+        setNoDataText('Не удалось загрузить данные')
       }
     }
 
@@ -102,6 +110,7 @@ export const LeaderboardPage = () => {
           columns={tableColumns}
           rows={tableRows}
         />
+        <p className={styles.noDataText}>{noDataText}</p>
       </section>
     </>
   )
