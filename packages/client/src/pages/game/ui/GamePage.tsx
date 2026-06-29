@@ -13,8 +13,8 @@ import MinesweeperCanvas from './MinesweeperCanvas'
 import { GameStatusBanner } from './GameStatusBanner'
 import { DEFAULT_DIFFICULTY } from '../constants/game'
 import { exitFullscreenMode, setFullscreenMode } from '@/shared/fullscreen'
-import { sendResultToLeaderbord } from '@/shared/api/apiClient'
 import { store } from '@/app/store'
+import { sendResultToLeaderbord } from '@/entities/leaderbord'
 
 export const GamePage = () => {
   usePage({ initPage: initGamePage })

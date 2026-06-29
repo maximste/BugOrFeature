@@ -8,8 +8,7 @@ import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page-heading'
 import { Table } from '@/shared/ui/table'
 
-import { getLeaderbordData } from '@/shared/api/apiClient'
-import { LeaderboardUnit } from '@/entities/leaderbord'
+import { getLeaderbordData, LeaderboardUnit } from '@/entities/leaderbord'
 import { TDifficulty } from '@/pages/game/types/game'
 
 const LEVEL_BUTTONS: { label: string; level: Level }[] = [

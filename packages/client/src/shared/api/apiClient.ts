@@ -31,7 +31,7 @@ export class ApiError extends Error {
   }
 }
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_FETCH_BASE_URL ?? '',
   withCredentials: true,
   headers: {
@@ -68,7 +68,9 @@ const toApiError = (err: unknown): ApiError => {
   )
 }
 
-const request = async <T>(call: () => Promise<{ data: T }>): Promise<T> => {
+export const request = async <T>(
+  call: () => Promise<{ data: T }>
+): Promise<T> => {
   try {
     const { data } = await call()
     return data
@@ -123,29 +125,4 @@ export const fetchResourceBlob = async (path: string): Promise<Blob> => {
   } catch (err) {
     throw toApiError(err)
   }
-}
-
-//Лидерборд - отправка данных по окончании игры
-const ratingFieldName = 'BOFTimeTest'
-const teamName = 'BugOrFeature'
-
-export const sendResultToLeaderbord = (data: any) => {
-  const body = {
-    data: {
-      ...data,
-    },
-    ratingFieldName: ratingFieldName,
-    teamName: teamName,
-  }
-
-  request(() => api.post<void>('/leaderboard', body))
-}
-
-export const getLeaderbordData = () => {
-  const body = {
-    ratingFieldName: ratingFieldName,
-    cursor: 0,
-    limit: 10,
-  }
-  return request(() => api.post<LeaderboardUnit[]>(`/leaderboard/all`, body))
 }
