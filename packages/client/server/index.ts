@@ -114,9 +114,12 @@ async function createServer() {
     } catch (e) {
       if (e instanceof Response) {
         const location = e.headers.get('Location')
+
         if (location) {
           return res.redirect(e.status, location)
         }
+
+        return res.status(e.status).end()
       }
       if (vite) vite.ssrFixStacktrace(e as Error)
       next(e)
