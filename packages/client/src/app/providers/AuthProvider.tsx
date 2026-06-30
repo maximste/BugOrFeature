@@ -11,6 +11,7 @@ import { isAuthCookieSet } from '@/shared/auth'
 
 type AuthContextValue = {
   isAuthenticated: boolean
+  isAuthChecked: boolean
   refreshAuth: () => void
 }
 
@@ -25,14 +26,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   // SSR: на сервере document нет — всегда false. На клиенте тоже стартуем с false,
   // чтобы первый рендер совпал с сервером; cookie читаем после mount (9 спринт — с сервера).
   const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthChecked, setIsAuthChecked] = useState(false)
 
   const refreshAuth = () => {
     setIsAuthenticated(isAuthCookieSet())
+    setIsAuthChecked(true)
   }
 
   useEffect(() => {
     const authenticated = isAuthCookieSet()
     setIsAuthenticated(authenticated)
+    setIsAuthChecked(true)
 
     if (authenticated) {
       dispatch(fetchAuthUser())
@@ -40,7 +44,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [dispatch])
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, refreshAuth }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, isAuthChecked, refreshAuth }}>
       {children}
     </AuthContext.Provider>
   )
