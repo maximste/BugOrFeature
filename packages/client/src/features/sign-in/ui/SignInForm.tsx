@@ -3,7 +3,12 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@/app/providers'
+import { getOauthYandexServiceId } from '@/shared/api'
 import { signIn, toAuthError } from '@/shared/auth'
+import {
+  buildYandexOAuthAuthorizeUrl,
+  getYandexOAuthRedirectUri,
+} from '@/shared/config/oauth'
 import { Button } from '@/shared/ui/button'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
@@ -17,12 +22,33 @@ export const SignInForm = () => {
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const [signInLoading, setSignInLoading] = useState(false)
+  const [yandexLoading, setYandexLoading] = useState(false)
+  const loading = yandexLoading || signInLoading
+  const displayError = error
+
+  const authOrRegisterFromYandex = async () => {
+    setError(null)
+    setYandexLoading(true)
+
+    try {
+      const REDIRECT_URI = getYandexOAuthRedirectUri()
+      const { service_id: CLIENT_ID } = await getOauthYandexServiceId(
+        REDIRECT_URI
+      )
+      const URL = buildYandexOAuthAuthorizeUrl(CLIENT_ID, REDIRECT_URI)
+
+      document.location.href = URL
+    } catch (err) {
+      setError(toAuthError(err))
+      setYandexLoading(false)
+    }
+  }
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError(null)
-    setLoading(true)
+    setSignInLoading(true)
 
     try {
       await signIn(login, password)
@@ -31,7 +57,7 @@ export const SignInForm = () => {
     } catch (err) {
       setError(err instanceof Error ? err.message : toAuthError(err))
     } finally {
-      setLoading(false)
+      setSignInLoading(false)
     }
   }
 
@@ -45,9 +71,9 @@ export const SignInForm = () => {
         subtitle="Войдите, чтобы общаться на форуме"
         className={styles.heading}
       />
-      {!error ? null : (
+      {!displayError ? null : (
         <p className={styles.error} role="alert">
-          {error}
+          {displayError}
         </p>
       )}
       <FormField label="Логин" htmlFor="login">
@@ -76,13 +102,19 @@ export const SignInForm = () => {
         />
       </FormField>
       <Button type="submit" className={styles.submit} disabled={loading}>
-        {loading ? 'Вход…' : 'Войти'}
+        {signInLoading ? 'Вход…' : 'Войти'}
       </Button>
       <p className={styles.footer}>
         Нет аккаунта?{' '}
         <Link className={styles.registerLink} to="/signup">
           Зарегистрироваться
         </Link>
+      </p>
+      <p
+        className={styles.authYandexLink}
+        onClick={loading ? undefined : authOrRegisterFromYandex}
+        aria-disabled={loading}>
+        {yandexLoading ? 'Вход через Яндекс…' : 'Войти через Яндекс'}
       </p>
     </form>
   )

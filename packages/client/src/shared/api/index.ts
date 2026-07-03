@@ -4,6 +4,8 @@ export {
   getAuthUser,
   postLogout,
   postSignIn,
+  getOauthYandexServiceId,
+  oauthYandex,
   postSignUp,
   putUserPassword,
   putUserProfile,
@@ -11,6 +13,7 @@ export {
 } from './apiClient'
 export type {
   ChangePasswordBody,
+  OauthServiceIdResponse,
   ReasonBody,
   SignInBody,
   SignUpBody,

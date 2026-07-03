@@ -48,6 +48,12 @@ export default defineConfig(({ mode }) => ({
         secure: true,
         configure: rewriteSetCookieForLocalhost,
       },
+      '/oauth/yandex': {
+        target: PRACTICUM_AUTH_API_BASE,
+        changeOrigin: true,
+        secure: true,
+        configure: rewriteSetCookieForLocalhost,
+      },
       '/user': {
         target: PRACTICUM_AUTH_API_BASE,
         changeOrigin: true,

@@ -14,6 +14,7 @@ import { LeaderboardPage, initLeaderboardPage } from '@/pages/leaderboard'
 import { MainPage, initMainPage } from '@/pages/main'
 import { ProfilePage, initProfilePage } from '@/pages/profile'
 import { initNotFoundPage, NotFoundPage } from '@/pages/not-found'
+import { OauthPage, initOauthPage } from '@/pages/oauth'
 import { initServerErrorPage, ServerErrorPage } from '@/pages/server-error'
 import { SignInPage, initSignInPage } from '@/pages/signin'
 import { SignUpPage, initSignUpPage } from '@/pages/signup'
@@ -35,6 +36,11 @@ export type AppRouteObject = RouteObject & {
 }
 
 const authGateChildren: AppRouteObject[] = [
+  {
+    path: 'oauth',
+    element: <OauthPage />,
+    fetchData: initOauthPage,
+  },
   {
     path: 'signin',
     element: <SignInPage />,
