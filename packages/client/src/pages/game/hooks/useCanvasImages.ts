@@ -23,8 +23,11 @@ export const useCanvasImages = (props: TProps): RefObject<TImgSet> => {
     ]
 
     let pending = entries.length
+    let cancelled = false
+    const loaded: HTMLImageElement[] = []
 
     const onSettled = () => {
+      if (cancelled) return
       if (--pending === 0 && drawRef.current) drawRef.current()
     }
 
@@ -37,6 +40,17 @@ export const useCanvasImages = (props: TProps): RefObject<TImgSet> => {
       }
       img.src = src
       imgsRef.current[key] = img
+      loaded.push(img)
+    }
+
+    // при размонтировании снимаем обработчики, чтобы onload/onerror не
+    // дёргали drawRef после удаления компонента и не держали замыкание
+    return () => {
+      cancelled = true
+      for (const img of loaded) {
+        img.onload = null
+        img.onerror = null
+      }
     }
   }, [drawRef])
 

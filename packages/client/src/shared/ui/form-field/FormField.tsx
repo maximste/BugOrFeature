@@ -16,7 +16,7 @@ export const FormField = ({
   className = '',
 }: FormFieldProps) => {
   return (
-    <div className={`${styles.root} ${className}`.trim()}>
+    <div className={`${styles.root} input-field ${className}`.trim()}>
       <label className={styles.label} htmlFor={htmlFor}>
         {label}
       </label>

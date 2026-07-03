@@ -11,6 +11,7 @@
   - [useHoverAnimation](#usehoveranimation)
   - [useRevealAnimation](#userevealanimation)
   - [useCanvasImages](#usecanvasimages)
+  - [useGameAudio](#usegameaudio)
 - [Компонент игрового поля](#компонент-игрового-поля)
   - [MinesweeperCanvas](#minesweepercanvas)
 - [Сервисы](#сервисы)
@@ -22,6 +23,8 @@
   - [floodReveal](#floodreveal)
   - [drawCell](#drawcell)
   - [getBoardSize](#getboardsize)
+  - [loadAudioBuffer](#loadaudiobuffer)
+  - [playAudioBuffer](#playaudiobuffer)
 - [Константы](#константы)
 
 ## Обзор архитектуры
@@ -177,6 +180,32 @@ const imgsRef = useCanvasImages({ drawRef })
 
 Все три изображения загружаются параллельно. `draw()` вызывается только когда загружены все три (`pending` счётчик).
 
+### useGameAudio
+
+Управляет фоновой музыкой через Web Audio API. Реагирует на статус игры и состояние mute.
+
+```typescript
+const { isMuted, toggleMute } = useGameAudio(status)
+```
+
+| Возвращаемое значение | Описание                  |
+| :-------------------: | :------------------------ |
+|      **isMuted**      | текущее состояние звука   |
+|   **toggleMute()**    | включить / выключить звук |
+
+Поведение по статусу:
+
+|     Статус      | Действие                                                                    |
+| :-------------: | :-------------------------------------------------------------------------- |
+|     `'won'`     | плавный фейд-ин `happy-cat-song.mp3`                                        |
+|    `'lost'`     | плавный фейд-ин `sad-meow-song.mp3`                                         |
+|    `'idle'`     | плавный фейд-аут текущего трека (срабатывает при сбросе игры через `reset`) |
+| `isMuted: true` | плавный фейд-аут, новые треки не запускаются                                |
+
+Трек фейдится автоматически перед естественным концом — планирование через `linearRampToValueAtTime` по `buffer.duration`. Если mute включается или игра сбрасывается в середине фейд-ина — текущий gain переопределяется через `cancelScheduledValues`.
+
+Буферы обоих треков декодируются один раз при монтировании через [`loadAudioBuffer`](#loadaudiobuffer) и хранятся в ref. Воспроизведение делегируется [`playAudioBuffer`](#playaudiobuffer).
+
 ## Компонент игрового поля
 
 ### MinesweeperCanvas
@@ -316,6 +345,31 @@ getBoardSize(count: number): number
 size = count * CELL_SIZE + (count - 1) * GAP + GAP * 2
      = count * (CELL_SIZE + GAP) + GAP
 ```
+
+### loadAudioBuffer
+
+```typescript
+loadAudioBuffer(ctx: AudioContext, url: string): Promise<AudioBuffer>
+```
+
+Загружает аудиофайл по URL через `fetch` и декодирует его в `AudioBuffer` для воспроизведения через Web Audio API. Используется в [`useGameAudio`](#usegameaudio) при монтировании для предзагрузки обоих треков.
+
+### playAudioBuffer
+
+```typescript
+playAudioBuffer(
+  ctx: AudioContext,
+  buffer: AudioBuffer,
+  onEnded: () => void
+): { gain: GainNode; source: AudioBufferSourceNode }
+```
+
+Создаёт аудио-граф `AudioBufferSourceNode → GainNode → destination` и запускает воспроизведение. Планирует на шкале времени `AudioContext` два рампа через `linearRampToValueAtTime`:
+
+- **фейд-ин** — от `0` до `1` за `MUSIC_FADE_SECONDS` от момента вызова
+- **фейд-аут** — от `1` до `0` за `MUSIC_FADE_SECONDS` перед концом трека (`buffer.duration`)
+
+Возвращает `gain` и `source`, чтобы вызывающий код мог отменить запланированные рампы через `cancelScheduledValues` при необходимости досрочной остановки.
 
 ## Константы
 

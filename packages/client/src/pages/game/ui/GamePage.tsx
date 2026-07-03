@@ -6,6 +6,7 @@ import { initGamePage } from '../model/initGamePage'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { TDifficulty } from '../types/game'
 import { useMinesweeper } from '../hooks/useMinesweeper'
+import { useGameAudio } from '../hooks/useGameAudio'
 import { Box, Heading, Button, Text, Flex } from '@chakra-ui/react'
 import { ControlPanel } from './ControlPanel'
 import MinesweeperCanvas from './MinesweeperCanvas'
@@ -40,6 +41,7 @@ export const GamePage = () => {
     cheat,
   } = useMinesweeper(currentDifficulty, customConfig)
 
+  const { isMuted, toggleMute } = useGameAudio(status)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
@@ -113,6 +115,8 @@ export const GamePage = () => {
           reset={reset}
           isFullscreen={isFullscreen}
           toggleFullscreen={toggleFullscreen}
+          isMuted={isMuted}
+          toggleMute={toggleMute}
         />
 
         <GameStatusBanner status={status} onReset={reset} />

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 
 import { useAuth } from '@/app/providers'
 import { getOauthYandexServiceId } from '@/shared/api'
+import { fetchAuthUser, useDispatch } from '@/app/store'
 import { signIn, toAuthError } from '@/shared/auth'
 import {
   buildYandexOAuthAuthorizeUrl,
@@ -13,11 +14,17 @@ import { Button } from '@/shared/ui/button'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
 import { PageHeading } from '@/shared/ui/page-heading'
+import {
+  handleValidationBlur,
+  handleValidationFocus,
+  validateForm,
+} from '@/shared/lib/validations'
 
 import styles from './SignInForm.module.scss'
 
 export const SignInForm = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
   const { refreshAuth } = useAuth()
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
@@ -50,8 +57,15 @@ export const SignInForm = () => {
     setError(null)
     setSignInLoading(true)
 
+    const { isValid, data } = validateForm(e.currentTarget)
+    if (!isValid) {
+      setSignInLoading(false)
+      return
+    }
+
     try {
       await signIn(login, password)
+      await dispatch(fetchAuthUser()).unwrap()
       refreshAuth()
       navigate('/', { replace: true })
     } catch (err) {
@@ -62,7 +76,12 @@ export const SignInForm = () => {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
+    <form
+      className={styles.form}
+      onSubmit={handleSubmit}
+      onFocus={e => handleValidationFocus(e.nativeEvent)}
+      onBlur={e => handleValidationBlur(e.nativeEvent)}
+      noValidate>
       <div className={styles.iconWrap} aria-hidden>
         <img className={styles.icon} src="/icons/logo.svg" alt="" />
       </div>
