@@ -11,6 +11,7 @@ import type {
   UpdateUserProfileBody,
   UserProfileResponse,
 } from './types'
+import { LeaderboardUnit } from '@/entities/leaderbord'
 
 /**
  * Общий слой HTTP-запросов к API Практикума.
@@ -30,7 +31,7 @@ export class ApiError extends Error {
   }
 }
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_FETCH_BASE_URL ?? '',
   withCredentials: true,
   headers: {
@@ -67,7 +68,9 @@ const toApiError = (err: unknown): ApiError => {
   )
 }
 
-const request = async <T>(call: () => Promise<{ data: T }>): Promise<T> => {
+export const request = async <T>(
+  call: () => Promise<{ data: T }>
+): Promise<T> => {
   try {
     const { data } = await call()
     return data
