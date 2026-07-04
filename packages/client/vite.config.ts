@@ -66,6 +66,13 @@ export default defineConfig(({ mode }) => ({
         changeOrigin: true,
         secure: true,
       },
+      '/leaderboard': {
+        target: PRACTICUM_AUTH_API_BASE,
+        changeOrigin: true,
+        secure: true,
+        timeout: 120_000,
+        configure: rewriteSetCookieForLocalhost,
+      },
     },
   },
   define: {
