@@ -17,3 +17,9 @@
   background-color: $color-card-bg;
   box-shadow: 0 8px 30px -10px rgb(from #{$color-button-bg} r g b / 25%);
 }
+
+.error {
+  @include typography-ui(14px, 500);
+  margin: 0;
+  color: $color-primary;
+}

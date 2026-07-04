@@ -1,20 +1,70 @@
+import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { useParams } from 'react-router-dom'
 
 import { usePage } from '@/app/hooks/usePage'
+import { getTopicDetail, putReaction } from '@/shared/api'
+import type {
+  CommentResponse,
+  Emotion,
+  ReplyResponse,
+  TopicDetailResponse,
+} from '@/shared/api'
 import { BackLink } from '@/shared/ui/back-link'
 import { ForumTopicView } from '@/widgets/forum-topic-view'
 
-import { getForumTopicDetailMock } from '../model/mockForumTopicData'
 import { initForumTopicPage } from '../model/initForumTopicPage'
+import {
+  addReplyToComments,
+  updateCommentReaction,
+} from '../model/updateComments'
 
 export const ForumTopicPage = () => {
   const { topicId } = useParams<{ topicId: string }>()
   usePage({ initPage: initForumTopicPage })
 
-  const data = getForumTopicDetailMock(topicId)
+  const [topic, setTopic] = useState<TopicDetailResponse | null>(null)
+  const [comments, setComments] = useState<CommentResponse[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  if (!data) {
+  useEffect(() => {
+    if (!topicId) {
+      return
+    }
+
+    let cancelled = false
+    setLoading(true)
+
+    getTopicDetail(topicId)
+      .then(data => {
+        if (cancelled) {
+          return
+        }
+        setTopic(data)
+        setComments(data.comments)
+      })
+      .catch(err => {
+        if (!cancelled) {
+          setError(err instanceof Error ? err.message : 'Топик не найден')
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setLoading(false)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [topicId])
+
+  if (loading) {
+    return <p>Загрузка…</p>
+  }
+
+  if (error != null || !topic) {
     return (
       <section>
         <Helmet>
@@ -22,13 +72,30 @@ export const ForumTopicPage = () => {
           <title>Топик не найден — BugOrFeature</title>
           <meta name="description" content="Топик не найден" />
         </Helmet>
-        <p>Топик не найден.</p>
+        <p>{error ?? 'Топик не найден.'}</p>
         <BackLink to="/forum">← К темам</BackLink>
       </section>
     )
   }
 
-  const { topic, comments } = data
+  const handleCommentAdded = (comment: CommentResponse) => {
+    setComments(prev => [...prev, comment])
+  }
+
+  const handleReplyAdded = (
+    commentId: string,
+    parentReplyId: string | null,
+    reply: ReplyResponse
+  ) => {
+    setComments(prev =>
+      addReplyToComments(prev, commentId, parentReplyId, reply)
+    )
+  }
+
+  const handleReact = async (commentId: string, emotion: Emotion) => {
+    const result = await putReaction(commentId, emotion)
+    setComments(prev => updateCommentReaction(prev, commentId, result))
+  }
 
   return (
     <>
@@ -37,7 +104,13 @@ export const ForumTopicPage = () => {
         <title>{topic.title} — BugOrFeature</title>
         <meta name="description" content={topic.description} />
       </Helmet>
-      <ForumTopicView topic={topic} comments={comments} />
+      <ForumTopicView
+        topic={topic}
+        comments={comments}
+        onCommentAdded={handleCommentAdded}
+        onReplyAdded={handleReplyAdded}
+        onReact={handleReact}
+      />
     </>
   )
 }

@@ -21,10 +21,10 @@ export const sequelize = new Sequelize({
 export const connectDb = async (): Promise<boolean> => {
   try {
     await sequelize.authenticate()
-    console.log('  ➜ 🎸 Connected to the database')
+    console.log('Connected to the database')
     return true
   } catch (e) {
-    console.error('  ➜ 🎸 Unable to connect to the database:', e)
+    console.error('Unable to connect to the database:', e)
     return false
   }
 }

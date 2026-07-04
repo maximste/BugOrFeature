@@ -19,11 +19,28 @@ app.use(cors({ origin: true, credentials: true }))
 app.use(express.json())
 const port = Number(process.env.SERVER_PORT) || 3001
 
+// при холодном старте (особенно в docker-compose) Postgres может ещё не принимать
+// соединения в момент запуска сервера — пробуем несколько раз с паузой
+const DB_CONNECT_ATTEMPTS = 10
+const DB_CONNECT_RETRY_DELAY_MS = 2000
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
 const bootstrapDb = async () => {
-  const connected = await connectDb()
-  if (connected) {
-    await syncModels()
+  for (let attempt = 1; attempt <= DB_CONNECT_ATTEMPTS; attempt += 1) {
+    if (await connectDb()) {
+      await syncModels()
+      return
+    }
+
+    if (attempt < DB_CONNECT_ATTEMPTS) {
+      await wait(DB_CONNECT_RETRY_DELAY_MS)
+    }
   }
+
+  console.error(
+    `Не удалось подключиться к базе данных после ${DB_CONNECT_ATTEMPTS} попыток`
+  )
 }
 
 bootstrapDb()
@@ -47,5 +64,5 @@ const errorHandler: ErrorRequestHandler = (
 app.use(errorHandler)
 
 app.listen(port, () => {
-  console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
+  console.log(`Server is listening on port: ${port}`)
 })

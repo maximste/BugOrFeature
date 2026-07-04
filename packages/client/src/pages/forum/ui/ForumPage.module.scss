@@ -17,3 +17,8 @@
 .newTopicButton {
   @include button-shared;
 }
+
+.status {
+  @include typography-ui;
+  color: $color-text;
+}
