@@ -1,6 +1,16 @@
 import type { Comment } from '@/entities/comment'
 import type { TopicDetail } from '@/entities/topic'
 
+// мок временный, удалится вместе с остальными моками при переходе на реальный API
+const mockComment = (
+  c: Pick<Comment, 'id' | 'author' | 'date' | 'body'>
+): Comment => ({
+  ...c,
+  replies: [],
+  reactions: [],
+  myReaction: null,
+})
+
 export const forumTopicDetailMock: Record<
   string,
   { topic: TopicDetail; comments: Comment[] }
@@ -15,18 +25,18 @@ export const forumTopicDetailMock: Record<
       content: 'Какой-то текст топика. Подробнее раскрываем тему здесь.',
     },
     comments: [
-      {
+      mockComment({
         id: 'c1',
         author: 'Барсик',
         date: '2026-05-13',
         body: 'Согласен, полезный топик.',
-      },
-      {
+      }),
+      mockComment({
         id: 'c2',
         author: 'Рыжик',
         date: '2026-05-13',
         body: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Развёрнутый ответ для проверки переносов и длинного текста.',
-      },
+      }),
     ],
   },
   '2': {
@@ -39,12 +49,12 @@ export const forumTopicDetailMock: Record<
       content: 'Полный текст анекдота и обсуждение.',
     },
     comments: [
-      {
+      mockComment({
         id: 'c3',
         author: 'Мурзик',
         date: '2026-05-13',
         body: 'Ха-ха, спасибо!',
-      },
+      }),
     ],
   },
   '3': {
@@ -57,18 +67,18 @@ export const forumTopicDetailMock: Record<
       content: 'Какой-то текст топика.',
     },
     comments: [
-      {
+      mockComment({
         id: 'c4',
         author: 'Барсик',
         date: '2026-05-13',
         body: 'Короткий комментарий.',
-      },
-      {
+      }),
+      mockComment({
         id: 'c5',
         author: 'Рыжик',
         date: '2026-05-13',
         body: 'Второй ответ в треде.',
-      },
+      }),
     ],
   },
   '4': {

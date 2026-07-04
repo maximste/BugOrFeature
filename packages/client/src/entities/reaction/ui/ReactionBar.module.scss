@@ -1,0 +1,33 @@
+@use '@/app/styles/mixins' as *;
+
+.root {
+  display: flex;
+  gap: 6px;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid $color-border;
+  border-radius: 999px;
+  background-color: $color-card-bg;
+  font-size: 14px;
+  color: $color-text;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: default;
+    opacity: 0.6;
+  }
+}
+
+.active {
+  border-color: $color-primary;
+  background-color: $color-button-bg;
+}
+
+.count {
+  font-size: 12px;
+}
