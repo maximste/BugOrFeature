@@ -39,6 +39,9 @@ const resolveDisplayName = (data: PracticumUserResponse): string => {
   return fullName || data.login
 }
 
+// вызывать только внутри роутов за requireAuth — там req.user уже гарантированно есть
+export const getAuthUser = (req: Request): AuthUser => req.user as AuthUser
+
 // своей авторизации у нас нет, сессию проверяем через Практикум
 export const requireAuth = async (
   req: Request,
