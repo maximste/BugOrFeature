@@ -2,7 +2,7 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom'
 
 import { AUTH_TARGET, useRequireAuth } from '@/shared/hooks'
 
-const GUEST_ONLY_PATHS = ['/signin', '/signup']
+const GUEST_ONLY_PATHS = ['/signin', '/signup', '/oauth']
 
 const normalizePathname = (pathname: string) => {
   if (pathname.length > 1 && pathname.endsWith('/')) {
