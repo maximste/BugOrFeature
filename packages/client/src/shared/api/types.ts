@@ -45,3 +45,8 @@ export type ChangePasswordBody = {
   oldPassword: string
   newPassword: string
 }
+
+/** GET /oauth/yandex/service-id — CLIENT_ID для редиректа на Яндекс OAuth */
+export type OauthServiceIdResponse = {
+  service_id: string
+}

@@ -48,6 +48,12 @@ export default defineConfig(({ mode }) => ({
         secure: true,
         configure: rewriteSetCookieForLocalhost,
       },
+      '/oauth/yandex': {
+        target: PRACTICUM_AUTH_API_BASE,
+        changeOrigin: true,
+        secure: true,
+        configure: rewriteSetCookieForLocalhost,
+      },
       '/user': {
         target: PRACTICUM_AUTH_API_BASE,
         changeOrigin: true,
@@ -59,6 +65,13 @@ export default defineConfig(({ mode }) => ({
         target: 'https://ya-praktikum.tech',
         changeOrigin: true,
         secure: true,
+      },
+      '/leaderboard': {
+        target: PRACTICUM_AUTH_API_BASE,
+        changeOrigin: true,
+        secure: true,
+        timeout: 120_000,
+        configure: rewriteSetCookieForLocalhost,
       },
     },
   },

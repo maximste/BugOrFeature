@@ -10,6 +10,10 @@ import { getCookie, removeCookie, setCookie } from '@/shared/lib/cookie'
 /** Имя cookie, по которой UI понимает «пользователь вошёл» */
 export const TOKEN_COOKIE = 'token'
 
+/** Cookie сессии API Практикума */
+export const AUTH_COOKIE = 'authCookie'
+export const UUID_COOKIE = 'uuid'
+
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7
 
 /** Запасная cookie, если API выставил HttpOnly и JS не видит token (dev / localhost) */
@@ -21,6 +25,8 @@ export const ensureAuthCookie = () => {
 
 export const clearAuthCookie = () => {
   removeCookie(TOKEN_COOKIE)
+  removeCookie(AUTH_COOKIE)
+  removeCookie(UUID_COOKIE)
 }
 
 /** Для AuthProvider.refreshAuth() */

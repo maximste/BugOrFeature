@@ -13,6 +13,8 @@ import MinesweeperCanvas from './MinesweeperCanvas'
 import { GameStatusBanner } from './GameStatusBanner'
 import { DEFAULT_DIFFICULTY } from '../constants/game'
 import { exitFullscreenMode, setFullscreenMode } from '@/shared/fullscreen'
+import { store } from '@/app/store'
+import { sendResultToLeaderbord } from '@/entities/leaderbord'
 
 export const GamePage = () => {
   usePage({ initPage: initGamePage })
@@ -88,6 +90,18 @@ export const GamePage = () => {
       }
     }
   }, [handleFullScreenChange])
+
+  //отправить в лидерборд
+  useEffect(() => {
+    if (status === 'won' && currentDifficulty !== 'custom') {
+      const gameData = {
+        player: store.getState().auth.user?.login,
+        level: currentDifficulty,
+        BOFTime: time * -1,
+      }
+      sendResultToLeaderbord(gameData)
+    }
+  }, [status])
 
   return (
     <>
