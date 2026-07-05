@@ -4,6 +4,7 @@ import { API_FETCH_BASE_URL } from '@/shared/config/env'
 
 import type {
   ChangePasswordBody,
+  OauthServiceIdResponse,
   ReasonBody,
   SignInBody,
   SignUpBody,
@@ -30,7 +31,7 @@ export class ApiError extends Error {
   }
 }
 
-const api = axios.create({
+export const api = axios.create({
   baseURL: API_FETCH_BASE_URL ?? '',
   withCredentials: true,
   headers: {
@@ -81,6 +82,17 @@ export const request = async <T>(
 
 export const postSignIn = (body: SignInBody) =>
   request(() => api.post<void>('/auth/signin', body))
+
+/** GET /oauth/yandex/service-id — service_id (CLIENT_ID) для OAuth Яндекса */
+export const getOauthYandexServiceId = (redirectUri: string) =>
+  request(() =>
+    api.get<OauthServiceIdResponse>('/oauth/yandex/service-id', {
+      params: { redirect_uri: redirectUri },
+    })
+  )
+
+export const oauthYandex = (body: { code: string; redirect_uri?: string }) =>
+  request(() => api.post<SignUpResponse>('/oauth/yandex', body))
 
 export const postSignUp = (body: SignUpBody) =>
   request(() => api.post<SignUpResponse>('/auth/signup', body))
