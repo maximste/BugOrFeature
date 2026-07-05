@@ -4,9 +4,9 @@ import {
   TypedUseSelectorHook,
   useStore as useStoreBase,
 } from 'react-redux'
-import { configureStore } from '@reduxjs/toolkit'
 
 import { rootReducer } from './rootReducer'
+import { setupStore } from './setupStore'
 
 declare global {
   interface Window {
@@ -14,11 +14,9 @@ declare global {
   }
 }
 
-export const store = configureStore({
-  reducer: rootReducer,
-  preloadedState:
-    typeof window === 'undefined' ? undefined : window.APP_INITIAL_STATE,
-})
+export const store = setupStore(
+  typeof window === 'undefined' ? undefined : window.APP_INITIAL_STATE
+)
 
 export type RootState = ReturnType<typeof rootReducer>
 export type AppDispatch = typeof store.dispatch

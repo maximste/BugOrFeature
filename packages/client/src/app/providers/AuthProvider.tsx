@@ -7,11 +7,11 @@ import {
 } from 'react'
 
 import { fetchAuthUser, useDispatch } from '@/app/store'
-import { isAuthCookieSet, TOKEN_COOKIE } from '@/shared/auth'
-import { getCookie } from '@/shared/lib/cookie'
+import { isAuthCookieSet } from '@/shared/auth'
 
 type AuthContextValue = {
   isAuthenticated: boolean
+  isAuthChecked: boolean
   refreshAuth: () => void
 }
 
@@ -23,22 +23,29 @@ type AuthProviderProps = {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const dispatch = useDispatch()
-  const [isAuthenticated, setIsAuthenticated] = useState(() =>
-    Boolean(getCookie(TOKEN_COOKIE))
-  )
+  // SSR: на сервере document нет — всегда false. На клиенте тоже стартуем с false,
+  // чтобы первый рендер совпал с сервером; cookie читаем после mount (9 спринт — с сервера).
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isAuthChecked, setIsAuthChecked] = useState(false)
 
   const refreshAuth = () => {
     setIsAuthenticated(isAuthCookieSet())
+    setIsAuthChecked(true)
   }
 
   useEffect(() => {
-    if (isAuthCookieSet()) {
+    const authenticated = isAuthCookieSet()
+    setIsAuthenticated(authenticated)
+    setIsAuthChecked(true)
+
+    if (authenticated) {
       dispatch(fetchAuthUser())
     }
   }, [dispatch])
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, refreshAuth }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, isAuthChecked, refreshAuth }}>
       {children}
     </AuthContext.Provider>
   )
