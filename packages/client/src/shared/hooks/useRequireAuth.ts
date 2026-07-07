@@ -8,7 +8,11 @@ export const AUTH_TARGET = {
 type AuthTarget = (typeof AUTH_TARGET)[keyof typeof AUTH_TARGET]
 
 export const useRequireAuth = (target: AuthTarget = AUTH_TARGET.PRIVATE) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isAuthChecked } = useAuth()
+
+  if (!isAuthChecked) {
+    return { isAuthenticated, redirect: null }
+  }
 
   let redirect: string | null = null
 
