@@ -1,10 +1,10 @@
-import { Request as ExpressRequest } from 'express'
+import type { Request as ExpressRequest } from 'express'
+import axios from 'axios'
 
 import type { PageInitContext } from '@/app/routes'
+import type { UserProfileResponse } from '@/shared/api/types'
 
-export const createContext = (req: ExpressRequest): PageInitContext => ({
-  clientToken: req.cookies.token,
-})
+export const createContext = (req: ExpressRequest): PageInitContext => ({})
 
 export const createUrl = (req: ExpressRequest) => {
   const origin = `${req.protocol}://${req.get('host')}`
@@ -43,4 +43,37 @@ export const createFetchRequest = (req: ExpressRequest) => {
   }
 
   return new Request(url.href, init)
+}
+
+const getServerUrl = () =>
+  process.env.INTERNAL_SERVER_URL ??
+  process.env.EXTERNAL_SERVER_URL ??
+  'http://localhost:3001'
+
+export const fetchAuthUserForSsr = async (
+  req: ExpressRequest
+): Promise<UserProfileResponse | null> => {
+  const cookie = req.headers.cookie
+
+  if (!cookie) {
+    return null
+  }
+
+  try {
+    const { data, status } = await axios.get<UserProfileResponse>(
+      `${getServerUrl()}/auth/user`,
+      {
+        headers: { Cookie: cookie },
+        validateStatus: () => true,
+      }
+    )
+
+    if (status !== 200) {
+      return null
+    }
+
+    return data
+  } catch {
+    return null
+  }
 }

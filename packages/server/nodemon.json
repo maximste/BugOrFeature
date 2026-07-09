@@ -1,0 +1,7 @@
+{
+  "watch": ["*.ts", "types"],
+  "ext": "ts,json",
+  "delay": 1000,
+  "signal": "SIGINT",
+  "exec": "ts-node index.ts"
+}

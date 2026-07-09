@@ -2,7 +2,6 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 
-import { AuthProvider } from '@/app/providers'
 import '@/app/styles/index.scss'
 
 import { routes } from '@/app/routes'
@@ -18,9 +17,7 @@ const app = (
   <ChakraProvider value={system}>
     <ErrorBoundary>
       <Provider store={store}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <RouterProvider router={router} />
       </Provider>
     </ErrorBoundary>
   </ChakraProvider>

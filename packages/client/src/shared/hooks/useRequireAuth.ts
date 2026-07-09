@@ -7,8 +7,13 @@ export const AUTH_TARGET = {
 
 type AuthTarget = (typeof AUTH_TARGET)[keyof typeof AUTH_TARGET]
 
+/** Клиентский fallback для SPA-навигации; основная проверка — на бэкенде (SSR + API). */
 export const useRequireAuth = (target: AuthTarget = AUTH_TARGET.PRIVATE) => {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isAuthLoading } = useAuth()
+
+  if (isAuthLoading) {
+    return { isAuthenticated: false, redirect: null }
+  }
 
   let redirect: string | null = null
 

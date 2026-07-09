@@ -36,4 +36,5 @@ export {
   selectAuthUser,
   selectAuthStatus,
   selectIsAuthUserLoading,
+  selectIsAuthenticated,
 } from './authSlice'

@@ -10,10 +10,9 @@ import {
 import { matchRoutes } from 'react-router-dom'
 import { configureStore } from '@reduxjs/toolkit'
 
-import { AuthProvider } from '@/app/providers'
+import { reducer, setUser } from '@/app/store'
 import { routes, type AppRouteObject } from '@/app/routes'
 import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
-import { reducer } from '@/app/store'
 import { ChakraProvider } from '@chakra-ui/react'
 import { system } from '@/theme'
 
@@ -21,6 +20,7 @@ import {
   createContext,
   createFetchRequest,
   createUrl,
+  fetchAuthUserForSsr,
 } from './entry-server.utils'
 
 import '@/app/styles/index.scss'
@@ -38,6 +38,12 @@ export const render = async (req: ExpressRequest) => {
   const store = configureStore({
     reducer,
   })
+
+  const authUser = await fetchAuthUserForSsr(req)
+
+  if (authUser != null) {
+    store.dispatch(setUser(authUser))
+  }
 
   const url = createUrl(req)
 
@@ -75,9 +81,7 @@ export const render = async (req: ExpressRequest) => {
       <ChakraProvider value={system}>
         <ErrorBoundary>
           <Provider store={store}>
-            <AuthProvider>
-              <StaticRouterProvider router={router} context={context} />
-            </AuthProvider>
+            <StaticRouterProvider router={router} context={context} />
           </Provider>
         </ErrorBoundary>
       </ChakraProvider>

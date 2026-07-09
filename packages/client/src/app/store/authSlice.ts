@@ -14,8 +14,15 @@ const initialState: AuthState = {
   status: 'idle',
 }
 
-export const fetchAuthUser = createAsyncThunk('auth/fetchUser', () =>
-  getAuthUser()
+export const fetchAuthUser = createAsyncThunk(
+  'auth/fetchUser',
+  () => getAuthUser(),
+  {
+    condition: (_, { getState }) => {
+      const { status } = (getState() as RootState).auth
+      return status !== 'loading'
+    },
+  }
 )
 
 export const authSlice = createSlice({
@@ -53,5 +60,7 @@ export const selectAuthUser = (state: RootState) => state.auth.user
 export const selectAuthStatus = (state: RootState) => state.auth.status
 export const selectIsAuthUserLoading = (state: RootState) =>
   state.auth.status === 'loading'
+export const selectIsAuthenticated = (state: RootState) =>
+  state.auth.user != null
 
 export default authSlice.reducer

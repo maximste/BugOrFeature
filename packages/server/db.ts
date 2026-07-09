@@ -21,7 +21,10 @@ export const createClientAndConnect = async (): Promise<Client | null> => {
 
     return client
   } catch (e) {
-    console.error(e)
+    console.warn(
+      e,
+      '  ➜ ⚠️  PostgreSQL недоступен — BFF и авторизация работают без БД'
+    )
   }
 
   return null

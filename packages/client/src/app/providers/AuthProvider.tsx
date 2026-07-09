@@ -1,55 +1,32 @@
+import { useEffect, type ReactNode } from 'react'
+import { useLocation } from 'react-router-dom'
+
 import {
-  createContext,
-  useContext,
-  useEffect,
-  useState,
-  type ReactNode,
-} from 'react'
-
-import { fetchAuthUser, useDispatch } from '@/app/store'
-import { isAuthCookieSet, TOKEN_COOKIE } from '@/shared/auth'
-import { getCookie } from '@/shared/lib/cookie'
-
-type AuthContextValue = {
-  isAuthenticated: boolean
-  refreshAuth: () => void
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null)
+  fetchAuthUser,
+  selectAuthStatus,
+  useDispatch,
+  useSelector,
+} from '@/app/store'
+import { normalizePathname } from '@/shared/config/authRoutes'
 
 type AuthProviderProps = {
   children: ReactNode
 }
 
+/** Запрашивает сессию у бэкенда при первом рендере (если SSR не предзагрузил user). */
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const dispatch = useDispatch()
-  const [isAuthenticated, setIsAuthenticated] = useState(() =>
-    Boolean(getCookie(TOKEN_COOKIE))
-  )
-
-  const refreshAuth = () => {
-    setIsAuthenticated(isAuthCookieSet())
-  }
+  const status = useSelector(selectAuthStatus)
+  const { pathname } = useLocation()
+  const path = normalizePathname(pathname)
+  // /oauth сам обменивает code и загружает user — ранний fetch даст 401
+  const skipAutoFetch = path === '/oauth'
 
   useEffect(() => {
-    if (isAuthCookieSet()) {
+    if (status === 'idle' && !skipAutoFetch) {
       dispatch(fetchAuthUser())
     }
-  }, [dispatch])
+  }, [dispatch, status, skipAutoFetch])
 
-  return (
-    <AuthContext.Provider value={{ isAuthenticated, refreshAuth }}>
-      {children}
-    </AuthContext.Provider>
-  )
-}
-
-export const useAuth = (): AuthContextValue => {
-  const context = useContext(AuthContext)
-
-  if (context == null) {
-    throw new Error('useAuth must be used within AuthProvider')
-  }
-
-  return context
+  return <>{children}</>
 }

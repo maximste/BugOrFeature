@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { usePage } from '@/app/hooks/usePage'
-import { useAuth } from '@/app/providers'
+import { fetchAuthUser, useDispatch } from '@/app/store'
 import { oauthYandex } from '@/shared/api'
-import { ensureAuthCookie, toAuthError } from '@/shared/auth'
+import { toAuthError } from '@/shared/auth'
 import { getYandexOAuthRedirectUri } from '@/shared/config/oauth'
 
 import { initOauthPage } from '../model/initOauthPage'
@@ -15,7 +15,7 @@ import styles from './OauthPage.module.scss'
 export const OauthPage = () => {
   usePage({ initPage: initOauthPage })
   const navigate = useNavigate()
-  const { refreshAuth } = useAuth()
+  const dispatch = useDispatch()
   const [searchParams] = useSearchParams()
   const code = searchParams.get('code')
   const [error, setError] = useState<string | null>(null)
@@ -30,9 +30,8 @@ export const OauthPage = () => {
     const redirectUri = getYandexOAuthRedirectUri()
 
     oauthYandex({ code, redirect_uri: redirectUri })
-      .then(() => {
-        ensureAuthCookie()
-        refreshAuth()
+      .then(async () => {
+        await dispatch(fetchAuthUser()).unwrap()
         window.history.replaceState({}, '', '/oauth/')
         navigate('/', { replace: true })
       })
@@ -40,7 +39,7 @@ export const OauthPage = () => {
         window.history.replaceState({}, '', '/oauth/')
         setError(toAuthError(err))
       })
-  }, [code, navigate, refreshAuth])
+  }, [code, dispatch, navigate])
 
   return (
     <>

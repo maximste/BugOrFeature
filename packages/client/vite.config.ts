@@ -4,30 +4,15 @@ import svgr from 'vite-plugin-svgr'
 import { VitePWA } from 'vite-plugin-pwa'
 import dotenv from 'dotenv'
 import path from 'path'
-import type { HttpProxy } from 'vite'
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
-const PRACTICUM_AUTH_API_BASE = 'https://ya-praktikum.tech/api/v2'
+const BFF_URL = process.env.EXTERNAL_SERVER_URL ?? 'http://localhost:3001'
 
-// Сервер отдаёт куки для ya-praktikum.tech: Domain, Secure, SameSite=None.
-// На http://localhost:3000 без правок браузер часто отбрасывает authCookie после F5.
-const rewriteSetCookieForLocalhost = (proxy: HttpProxy.Server) => {
-  proxy.on('proxyRes', proxyRes => {
-    const setCookie = proxyRes.headers['set-cookie']
-
-    if (!setCookie) {
-      return
-    }
-
-    proxyRes.headers['set-cookie'] = setCookie.map(cookie =>
-      cookie
-        .replace(/; ?Domain=[^;]+/gi, '')
-        .replace(/; ?Secure/gi, '')
-        // SameSite=None без Secure на http — cookie не живёт после перезагрузки
-        .replace(/; ?SameSite=None/gi, '; SameSite=Lax')
-    )
-  })
+const apiProxy = {
+  target: BFF_URL,
+  changeOrigin: true,
+  secure: false,
 }
 
 // https://vitejs.dev/config/
@@ -39,40 +24,13 @@ export default defineConfig(({ mode }) => ({
   },
   server: {
     port: Number(process.env.CLIENT_PORT) || 3000,
-    // В dev пересылаем /auth/* и /user/* на API Практикума через Vite (localhost + куки)
-    // (без ошибок CORS и с рабочими куками). В собранном приложении прокси нет.
+    // В dev (yarn dev:spa) запросы /auth, /user и т.д. идут на BFF (packages/server).
     proxy: {
-      '/auth': {
-        target: PRACTICUM_AUTH_API_BASE,
-        changeOrigin: true,
-        secure: true,
-        configure: rewriteSetCookieForLocalhost,
-      },
-      '/oauth/yandex': {
-        target: PRACTICUM_AUTH_API_BASE,
-        changeOrigin: true,
-        secure: true,
-        configure: rewriteSetCookieForLocalhost,
-      },
-      '/user': {
-        target: PRACTICUM_AUTH_API_BASE,
-        changeOrigin: true,
-        secure: true,
-        timeout: 120_000,
-        configure: rewriteSetCookieForLocalhost,
-      },
-      '/api/v2/resources': {
-        target: 'https://ya-praktikum.tech',
-        changeOrigin: true,
-        secure: true,
-      },
-      '/leaderboard': {
-        target: PRACTICUM_AUTH_API_BASE,
-        changeOrigin: true,
-        secure: true,
-        timeout: 120_000,
-        configure: rewriteSetCookieForLocalhost,
-      },
+      '/auth': apiProxy,
+      '/oauth/yandex': apiProxy,
+      '/user': { ...apiProxy, timeout: 120_000 },
+      '/api/v2/resources': apiProxy,
+      '/leaderboard': { ...apiProxy, timeout: 120_000 },
     },
   },
   define: {
