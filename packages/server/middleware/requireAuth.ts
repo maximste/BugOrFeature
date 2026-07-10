@@ -1,7 +1,8 @@
 import { NextFunction, Request, Response } from 'express'
 import axios from 'axios'
 
-const PRACTICUM_AUTH_API_BASE = 'https://ya-praktikum.tech/api/v2'
+const PRACTICUM_AUTH_API_BASE =
+  process.env.PRACTICUM_API_BASE_URL ?? 'https://ya-praktikum.tech/api/v2'
 
 export type AuthUser = {
   id: number

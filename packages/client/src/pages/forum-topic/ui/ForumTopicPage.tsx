@@ -27,6 +27,7 @@ export const ForumTopicPage = () => {
   const [comments, setComments] = useState<CommentResponse[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [reactionError, setReactionError] = useState<string | null>(null)
 
   useEffect(() => {
     if (!topicId) {
@@ -93,8 +94,16 @@ export const ForumTopicPage = () => {
   }
 
   const handleReact = async (commentId: string, emotion: Emotion) => {
-    const result = await putReaction(commentId, emotion)
-    setComments(prev => updateCommentReaction(prev, commentId, result))
+    setReactionError(null)
+
+    try {
+      const result = await putReaction(commentId, emotion)
+      setComments(prev => updateCommentReaction(prev, commentId, result))
+    } catch (err) {
+      setReactionError(
+        err instanceof Error ? err.message : 'Не удалось поставить реакцию'
+      )
+    }
   }
 
   return (
@@ -104,6 +113,7 @@ export const ForumTopicPage = () => {
         <title>{topic.title} — BugOrFeature</title>
         <meta name="description" content={topic.description} />
       </Helmet>
+      {reactionError != null ? <p role="alert">{reactionError}</p> : null}
       <ForumTopicView
         topic={topic}
         comments={comments}

@@ -26,11 +26,12 @@ const DB_CONNECT_RETRY_DELAY_MS = 2000
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-const bootstrapDb = async () => {
+// true — подключились (и накатили схему), false — исчерпали все попытки
+const bootstrapDb = async (): Promise<boolean> => {
   for (let attempt = 1; attempt <= DB_CONNECT_ATTEMPTS; attempt += 1) {
     if (await connectDb()) {
       await syncModels()
-      return
+      return true
     }
 
     if (attempt < DB_CONNECT_ATTEMPTS) {
@@ -38,12 +39,8 @@ const bootstrapDb = async () => {
     }
   }
 
-  console.error(
-    `Не удалось подключиться к базе данных после ${DB_CONNECT_ATTEMPTS} попыток`
-  )
+  return false
 }
-
-bootstrapDb()
 
 app.get('/', (_, res) => {
   res.json({ message: 'Hello from API' })
@@ -63,6 +60,21 @@ const errorHandler: ErrorRequestHandler = (
 
 app.use(errorHandler)
 
-app.listen(port, () => {
-  console.log(`Server is listening on port: ${port}`)
-})
+// порт не слушаем, пока не подключимся к БД — иначе healthcheck (GET /) считает
+// контейнер здоровым, а /forum/* при этом всё равно отдаёт 500
+const main = async () => {
+  const connected = await bootstrapDb()
+
+  if (!connected) {
+    console.error(
+      `Не удалось подключиться к базе данных после ${DB_CONNECT_ATTEMPTS} попыток — выходим`
+    )
+    process.exit(1)
+  }
+
+  app.listen(port, () => {
+    console.log(`Server is listening on port: ${port}`)
+  })
+}
+
+main()
