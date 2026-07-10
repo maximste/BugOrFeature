@@ -116,17 +116,62 @@
 
 Все ваши PR будут автоматически деплоиться на vercel. URL вам предоставит деплоящий бот
 
-## Production окружение в докере
-Перед первым запуском выполните `node init.js`
+## Docker и переменные окружения
 
+Секреты и пароли **не хранятся в репозитории** — только в `.env` (файл в `.gitignore`).
+Шаблон с тестовыми значениями для локальной разработки: `.env.sample`.
 
-`docker compose up` - запустит три сервиса
-1. nginx, раздающий клиентскую статику (client)
-2. node, ваш сервер (server)
-3. postgres, вашу базу данных (postgres)
+Перед первым запуском:
 
-Если вам понадобится только один сервис, просто уточните какой в команде
-`docker compose up {sevice_name}`, например `docker compose up server`
+```bash
+node init.js
+```
+
+Скрипт создаст `.env` из `.env.sample`, если его ещё нет.
+
+### Переменные окружения
+
+| Переменная | Назначение | Локально (`yarn dev`) | В Docker (server) |
+| :--- | :--- | :--- | :--- |
+| `POSTGRES_HOST` | Хост PostgreSQL | `localhost` | `postgres` (задаётся в compose) |
+| `POSTGRES_PORT` | Порт на хосте | `5432` | `5432` (внутри сети compose) |
+| `POSTGRES_USER` | Пользователь БД | из `.env` | из `.env` |
+| `POSTGRES_PASSWORD` | Пароль БД | из `.env` | из `.env` |
+| `POSTGRES_DB` | Имя базы | из `.env` | из `.env` |
+| `EXTERNAL_SERVER_URL` | URL API для браузера / сборки клиента | `http://localhost:3001` | `http://localhost:3001` |
+| `INTERNAL_SERVER_URL` | URL API внутри docker-сети | — | `http://server:3001` |
+
+### Локальная разработка (только база в Docker)
+
+```bash
+node init.js
+docker compose -f docker-compose.dev.yml up -d
+yarn dev
+```
+
+PostgreSQL поднимается в контейнере, client и server — на хосте через `yarn dev`.
+
+### Production-like окружение (полный стек)
+
+```bash
+node init.js
+docker compose up --build
+```
+
+Запускаются три сервиса:
+
+1. **client** — SSR-сервер клиента (Node)
+2. **server** — API-сервер (Node), стартует после готовности PostgreSQL
+3. **postgres** — база данных PostgreSQL 14
+
+Порядок старта: `postgres` (healthcheck) → `server` → `client`.
+
+Если нужен один сервис:
+
+```bash
+docker compose up postgres -d
+docker compose up server
+```
 
 ## Структура клиента (FSD)
 

@@ -57,6 +57,7 @@ async function createServer() {
       let render: (req: ExpressRequest) => Promise<{
         html: string
         initialState: unknown
+        routerState: unknown
         helmet: HelmetData
         styleTags: string
       }>
@@ -67,11 +68,8 @@ async function createServer() {
           'utf-8'
         )
 
-        // Применяем встроенные HTML-преобразования vite и плагинов
         template = await vite.transformIndexHtml(url, template)
 
-        // Загружаем модуль клиента, который писали выше,
-        // он будет рендерить HTML-код
         render = (
           await vite.ssrLoadModule(
             path.join(clientPath, 'src/app/entry-server.tsx')
@@ -83,25 +81,22 @@ async function createServer() {
           'utf-8'
         )
 
-        // Получаем путь до сбилдженого модуля клиента, чтобы не тащить средства сборки клиента на сервер
         const pathToServer = path.join(
           clientPath,
           'dist/server/entry-server.js'
         )
 
-        // Импортируем этот модуль и вызываем с инишл стейтом
         render = (await import(pathToServer)).render
       }
 
-      // Получаем HTML-строку из JSX
       const {
         html: appHtml,
         initialState,
+        routerState,
         helmet,
         styleTags,
       } = await render(req)
 
-      // Заменяем комментарий на сгенерированную HTML-строку
       const html = template
         .replace('<!--ssr-styles-->', styleTags)
         .replace(
@@ -115,11 +110,28 @@ async function createServer() {
             isJSON: true,
           })}</script>`
         )
+        .replace(
+          `<!--ssr-router-state-->`,
+          `<script>window.__staticRouterHydrationData = ${serialize(
+            routerState,
+            {
+              isJSON: true,
+            }
+          )}</script>`
+        )
 
-      // Завершаем запрос и отдаём HTML-страницу
       res.status(200).set({ 'Content-Type': 'text/html' }).end(html)
     } catch (e) {
-      vite.ssrFixStacktrace(e as Error)
+      if (e instanceof Response) {
+        const location = e.headers.get('Location')
+
+        if (location) {
+          return res.redirect(e.status, location)
+        }
+
+        return res.status(e.status).end()
+      }
+      if (vite) vite.ssrFixStacktrace(e as Error)
       next(e)
     }
   })

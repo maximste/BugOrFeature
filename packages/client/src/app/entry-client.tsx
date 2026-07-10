@@ -10,7 +10,19 @@ import { ChakraProvider } from '@chakra-ui/react'
 import { system } from '@/theme'
 import ErrorBoundary from './errorBoundary/ErrorBoundary'
 
-const router = createBrowserRouter(routes)
+declare global {
+  interface Window {
+    __staticRouterHydrationData?: {
+      loaderData?: Record<string, unknown>
+      actionData?: Record<string, unknown>
+      errors?: Record<string, unknown>
+    }
+  }
+}
+
+const router = createBrowserRouter(routes, {
+  hydrationData: window.__staticRouterHydrationData,
+})
 const rootElement = document.getElementById('root') as HTMLElement
 
 const app = (

@@ -8,11 +8,11 @@ import {
   StaticRouterProvider,
 } from 'react-router-dom/server'
 import { matchRoutes } from 'react-router-dom'
-import { configureStore } from '@reduxjs/toolkit'
 
-import { reducer, setUser } from '@/app/store'
+import { setUser } from '@/app/store'
 import { routes, type AppRouteObject } from '@/app/routes'
 import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
+import { setupStore } from '@/app/store/setupStore'
 import { ChakraProvider } from '@chakra-ui/react'
 import { system } from '@/theme'
 
@@ -35,9 +35,7 @@ export const render = async (req: ExpressRequest) => {
     throw context
   }
 
-  const store = configureStore({
-    reducer,
-  })
+  const store = setupStore()
 
   const authUser = await fetchAuthUserForSsr(req)
 
@@ -47,16 +45,14 @@ export const render = async (req: ExpressRequest) => {
 
   const url = createUrl(req)
 
-  const foundRoutes = matchRoutes(routes, url)
-  if (!foundRoutes) {
-    throw new Error('Страница не найдена!')
-  }
-
-  const leafRoute = foundRoutes[foundRoutes.length - 1].route as AppRouteObject
-  const fetchData = leafRoute.fetchData
+  const foundRoutes = matchRoutes(routes, url.pathname)
+  const leafRoute = foundRoutes?.[foundRoutes.length - 1]?.route as
+    | AppRouteObject
+    | undefined
+  const fetchData = leafRoute?.fetchData
 
   if (!fetchData) {
-    console.log('Страница без fetchData:', url)
+    console.log('Страница без fetchData:', url.pathname)
   }
 
   try {
@@ -97,5 +93,10 @@ export const render = async (req: ExpressRequest) => {
     helmet,
     styleTags: '',
     initialState: store.getState(),
+    routerState: {
+      loaderData: context.loaderData,
+      actionData: context.actionData,
+      errors: context.errors,
+    },
   }
 }
