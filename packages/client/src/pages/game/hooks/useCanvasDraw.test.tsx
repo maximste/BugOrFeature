@@ -41,6 +41,7 @@ const TestComponent = (props: Omit<TProps, 'canvasRef' | 'drawRef'>) => {
 describe('useCanvasDraw', () => {
   let props: Omit<TProps, 'canvasRef' | 'drawRef'>
   let matchMediaMock: ReturnType<typeof vi.spyOn>
+  let drawCellMock: ReturnType<typeof vi.mocked>
 
   beforeEach(() => {
     // Мокаем getContext для всех canvas-элементов
