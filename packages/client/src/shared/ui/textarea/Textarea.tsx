@@ -1,9 +1,10 @@
-import type { TextareaHTMLAttributes } from 'react'
+import { createRecipeContext, type HTMLChakraProps } from '@chakra-ui/react'
 
-import styles from './Textarea.module.scss'
+const { withContext } = createRecipeContext({ key: 'formInput' })
 
-export type TextareaProps = TextareaHTMLAttributes<HTMLTextAreaElement>
+export type TextareaProps = HTMLChakraProps<'textarea'>
 
-export const Textarea = ({ className = '', ...rest }: TextareaProps) => (
-  <textarea className={`${styles.root} ${className}`.trim()} {...rest} />
+export const Textarea = withContext<HTMLTextAreaElement, TextareaProps>(
+  'textarea',
+  { defaultProps: { minH: '178px', resize: 'vertical' } }
 )

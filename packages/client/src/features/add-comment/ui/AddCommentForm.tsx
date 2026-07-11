@@ -1,11 +1,13 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
+import { chakra } from '@chakra-ui/react'
 
 import { Button } from '@/shared/ui/button'
+import { Card } from '@/shared/ui/card'
 import { FormField } from '@/shared/ui/form-field'
 import { Textarea } from '@/shared/ui/textarea'
 
-import styles from './AddCommentForm.module.scss'
+const Form = chakra('form')
 
 export const AddCommentForm = () => {
   const [body, setBody] = useState('')
@@ -15,8 +17,21 @@ export const AddCommentForm = () => {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
-      <div className={styles.card}>
+    <Form
+      display="flex"
+      flexDirection="column"
+      gap={3}
+      w="full"
+      onSubmit={handleSubmit}
+      noValidate>
+      <Card
+        display="flex"
+        flexDirection="column"
+        gap={3}
+        p="21px"
+        border="1px solid"
+        borderColor="border"
+        boxShadow="cardSoft">
         <FormField label="Ваш комментарий" htmlFor="topic-comment-body">
           <Textarea
             id="topic-comment-body"
@@ -28,7 +43,7 @@ export const AddCommentForm = () => {
           />
         </FormField>
         <Button type="submit">Добавить комментарий</Button>
-      </div>
-    </form>
+      </Card>
+    </Form>
   )
 }

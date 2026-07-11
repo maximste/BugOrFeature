@@ -1,8 +1,0 @@
-@use '@/app/styles/mixins' as *;
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  @include form-card(35px 25px 25px);
-}

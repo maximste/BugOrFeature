@@ -1,3 +1,5 @@
+import { Flex, Heading, Text } from '@chakra-ui/react'
+
 import { CommentCard } from '@/entities/comment'
 import type { Comment } from '@/entities/comment'
 import { TopicDetailCard } from '@/entities/topic'
@@ -5,21 +7,21 @@ import type { TopicDetail } from '@/entities/topic'
 import { AddCommentForm } from '@/features/add-comment'
 import { BackLink } from '@/shared/ui/back-link'
 
-import styles from './ForumTopicView.module.scss'
-
 export type ForumTopicViewProps = {
   topic: TopicDetail
   comments: Comment[]
 }
-
-const COMMENTS_ICON_SRC = '/img/not-found-icon.png'
 
 export const ForumTopicView = ({ topic, comments }: ForumTopicViewProps) => {
   const hasComments = comments.length > 0
 
   return (
     <>
-      <BackLink to="/forum" className={styles.back}>
+      <BackLink
+        to="/forum"
+        alignSelf="flex-start"
+        color="text"
+        _hover={{ color: 'danger' }}>
         ← К темам
       </BackLink>
       <TopicDetailCard
@@ -28,28 +30,42 @@ export const ForumTopicView = ({ topic, comments }: ForumTopicViewProps) => {
         date={topic.date}
         content={topic.content}
       />
-      <h2 className={styles.commentsHeading}>
+      <Heading
+        as="h2"
+        fontFamily="body"
+        fontSize="20px"
+        fontWeight="800"
+        color="text"
+        m={0}
+        pb={2}
+        alignSelf="flex-start">
         Комментарии · {comments.length}
-      </h2>
+      </Heading>
       {hasComments ? (
-        <ul className={styles.commentList}>
+        <Flex
+          as="ul"
+          listStyleType="none"
+          direction="column"
+          gap={4}
+          w="full"
+          pb={8}>
           {comments.map(({ id, ...rest }) => (
             <CommentCard key={id} {...rest} />
           ))}
-        </ul>
+        </Flex>
       ) : (
-        <div className={styles.commentsEmpty}>
-          <p className={styles.commentsEmptyText}>
-            Будьте первым, кто прокомментирует
-          </p>
-          <img
-            src={COMMENTS_ICON_SRC}
-            alt="Комментарии не найдены"
-            width={16}
-            height={16}
-            aria-hidden
-          />
-        </div>
+        <Text
+          m={0}
+          fontFamily="body"
+          fontSize="14px"
+          fontWeight="400"
+          maxW="22rem"
+          color="text"
+          opacity={0.92}
+          margin="16px 0 14px"
+          pb={8}>
+          Будьте первым, кто прокомментирует 🐱
+        </Text>
       )}
       <AddCommentForm />
     </>

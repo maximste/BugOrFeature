@@ -1,5 +1,4 @@
 import { Helmet } from 'react-helmet'
-import styles from './GamePage.module.scss'
 import { usePage } from '@/app/hooks/usePage'
 
 import { initGamePage } from '../model/initGamePage'
@@ -14,7 +13,7 @@ import { GameStatusBanner } from './GameStatusBanner'
 import { DEFAULT_DIFFICULTY } from '../constants/game'
 import { exitFullscreenMode, setFullscreenMode } from '@/shared/fullscreen'
 import { store } from '@/app/store'
-import { sendResultToLeaderbord } from '@/entities/leaderbord'
+import { sendResultToLeaderboard } from '@/entities/leaderboard'
 
 export const GamePage = () => {
   usePage({ initPage: initGamePage })
@@ -99,7 +98,7 @@ export const GamePage = () => {
         level: currentDifficulty,
         BOFTime: time * -1,
       }
-      sendResultToLeaderbord(gameData)
+      sendResultToLeaderboard(gameData)
     }
   }, [status])
 
@@ -114,59 +113,67 @@ export const GamePage = () => {
       <Heading fontSize="2rem" fontWeight={800}>
         Котосапёр 🐾
       </Heading>
-      <Text mt={1}>Не разбудите пёсиков и соберите всех котиков</Text>
       <Flex
+        as="section"
+        w="full"
+        maxW="660px"
         direction="column"
-        align="center"
-        className={isFullscreen ? styles.fullscreenWrapper : ''}
-        ref={fullscreenRef}>
-        <ControlPanel
-          currentDifficulty={currentDifficulty}
-          setCurrentDifficulty={setCurrentDifficulty}
-          onCustomStart={onCustomStart}
-          minesLeft={minesLeft}
-          time={time}
-          reset={reset}
-          isFullscreen={isFullscreen}
-          toggleFullscreen={toggleFullscreen}
-          isMuted={isMuted}
-          toggleMute={toggleMute}
-        />
-
-        <GameStatusBanner status={status} onReset={reset} />
-
-        <Box
-          border="12px solid white"
-          borderRadius="2xl"
-          overflow="hidden"
-          maxW="100%"
-          overflowX="auto"
-          shadow="card">
-          <MinesweeperCanvas
-            grid={grid}
-            rows={rows}
-            cols={cols}
-            status={status}
-            onReveal={reveal}
-            onFlag={flag}
-            onChord={chord}
+        alignItems="center">
+        <Text mt={1}>Не разбудите пёсиков и соберите всех котиков</Text>
+        <Flex
+          direction="column"
+          align="center"
+          pt={isFullscreen ? '10vh' : undefined}
+          background={isFullscreen ? 'background' : undefined}
+          ref={fullscreenRef}>
+          <ControlPanel
+            currentDifficulty={currentDifficulty}
+            setCurrentDifficulty={setCurrentDifficulty}
+            onCustomStart={onCustomStart}
+            minesLeft={minesLeft}
+            time={time}
+            reset={reset}
+            isFullscreen={isFullscreen}
+            toggleFullscreen={toggleFullscreen}
+            isMuted={isMuted}
+            toggleMute={toggleMute}
           />
-        </Box>
-      </Flex>
-      <Text
-        maxW="28rem"
-        fontWeight={400}
-        fontSize="0.875rem"
-        mt={4}
-        textAlign="center">
-        Клик — открыть клетку. Правый клик — поставить рыбку-флажок. Не
-        разбудите спящих пёсиков!
-      </Text>
 
-      {/* TODO: убрать после тестирования */}
-      <Button onClick={cheat} mt={8} opacity={0.4}>
-        победить (debug)
-      </Button>
+          <GameStatusBanner status={status} onReset={reset} />
+
+          <Box
+            border="12px solid white"
+            borderRadius="2xl"
+            overflow="hidden"
+            maxW="100%"
+            overflowX="auto"
+            shadow="card">
+            <MinesweeperCanvas
+              grid={grid}
+              rows={rows}
+              cols={cols}
+              status={status}
+              onReveal={reveal}
+              onFlag={flag}
+              onChord={chord}
+            />
+          </Box>
+        </Flex>
+        <Text
+          maxW="28rem"
+          fontWeight={400}
+          fontSize="0.875rem"
+          mt={4}
+          textAlign="center">
+          Клик — открыть клетку. Правый клик — поставить рыбку-флажок. Не
+          разбудите спящих пёсиков!
+        </Text>
+
+        {/* TODO: убрать после тестирования */}
+        <Button onClick={cheat} mt={8} opacity={0.4}>
+          победить (debug)
+        </Button>
+      </Flex>
     </>
   )
 }

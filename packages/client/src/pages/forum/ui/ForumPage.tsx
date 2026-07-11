@@ -1,13 +1,13 @@
 import { Helmet } from 'react-helmet'
+import { Link } from 'react-router-dom'
+import { Box, Flex } from '@chakra-ui/react'
 
 import { usePage } from '@/app/hooks/usePage'
 import type { Topic } from '@/entities/topic'
+import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page-heading'
 import { ForumTopicsList } from '@/widgets/forum-topics-list'
 import { initForumPage } from '../model/initForumPage'
-
-import styles from './ForumPage.module.scss'
-import { Link } from 'react-router-dom'
 
 const MOCK_TOPICS: Topic[] = [
   {
@@ -50,18 +50,22 @@ export const ForumPage = () => {
         <title>BugOrFeature</title>
         <meta name="description" content="BugOrFeature" />
       </Helmet>
-      <section className={styles.page}>
-        <div className={styles.header}>
+      <Box as="section" w="full" maxW="660px" mx="auto">
+        <Flex
+          justifyContent="space-between"
+          alignItems="center"
+          mb="32px"
+          w="95%">
           <PageHeading
             title="Форум"
             subtitle="Делитесь опытом и кото-историями"
           />
-          <Link to="/forum/new" className={styles.newTopicButton}>
-            + Новая тема
-          </Link>
-        </div>
+          <Button asChild variant="solid">
+            <Link to="/forum/new">+ Новая тема</Link>
+          </Button>
+        </Flex>
         <ForumTopicsList topics={MOCK_TOPICS} />
-      </section>
+      </Box>
     </>
   )
 }

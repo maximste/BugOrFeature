@@ -1,9 +1,7 @@
-import type { InputHTMLAttributes } from 'react'
+import { createRecipeContext, type HTMLChakraProps } from '@chakra-ui/react'
 
-import styles from './Input.module.scss'
+const { withContext } = createRecipeContext({ key: 'formInput' })
 
-export type InputProps = InputHTMLAttributes<HTMLInputElement>
+export type InputProps = HTMLChakraProps<'input'>
 
-export const Input = ({ className = '', ...rest }: InputProps) => (
-  <input className={`${styles.root} ${className}`.trim()} {...rest} />
-)
+export const Input = withContext<HTMLInputElement, InputProps>('input')
