@@ -1,11 +1,12 @@
 import '@testing-library/jest-dom'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, waitFor } from '@testing-library/react'
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 
 // Мокаем зависимости, чтобы не тянуть реальные файлы
 vi.mock('../constants/game', () => ({
-  CANVAS_COLORS: { border: '#000000' },
+  LIGHT_CANVAS_COLORS: { border: '#000000' },
+  DARK_CANVAS_COLORS: { border: '#ffffff' },
   CELL_SIZE: 50,
   GAP: 5,
 }))
@@ -40,7 +41,6 @@ const TestComponent = (props: Omit<TProps, 'canvasRef' | 'drawRef'>) => {
 describe('useCanvasDraw', () => {
   let props: Omit<TProps, 'canvasRef' | 'drawRef'>
   let matchMediaMock: ReturnType<typeof vi.spyOn>
-  let drawCellMock: ReturnType<typeof vi.mocked>
 
   beforeEach(() => {
     // Мокаем getContext для всех canvas-элементов

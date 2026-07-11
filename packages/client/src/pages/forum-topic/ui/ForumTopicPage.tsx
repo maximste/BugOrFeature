@@ -7,6 +7,7 @@ import { ForumTopicView } from '@/widgets/forum-topic-view'
 
 import { getForumTopicDetailMock } from '../model/mockForumTopicData'
 import { initForumTopicPage } from '../model/initForumTopicPage'
+import { Box } from '@chakra-ui/react'
 
 export const ForumTopicPage = () => {
   const { topicId } = useParams<{ topicId: string }>()
@@ -37,7 +38,9 @@ export const ForumTopicPage = () => {
         <title>{topic.title} — BugOrFeature</title>
         <meta name="description" content={topic.description} />
       </Helmet>
-      <ForumTopicView topic={topic} comments={comments} />
+      <Box as="section" w="full" maxW="660px" mx="auto">
+        <ForumTopicView topic={topic} comments={comments} />
+      </Box>
     </>
   )
 }

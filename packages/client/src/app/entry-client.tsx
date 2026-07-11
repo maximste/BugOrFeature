@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 
-import { AuthProvider } from '@/app/providers'
+import { AuthProvider, ColorModeProvider } from '@/app/providers'
 import '@/app/styles/fonts.css'
 import '@/app/styles/input-field.css'
 
@@ -29,13 +29,15 @@ const rootElement = document.getElementById('root') as HTMLElement
 
 const app = (
   <ChakraProvider value={system}>
-    <ErrorBoundary>
-      <Provider store={store}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
-      </Provider>
-    </ErrorBoundary>
+    <ColorModeProvider>
+      <ErrorBoundary>
+        <Provider store={store}>
+          <AuthProvider>
+            <RouterProvider router={router} />
+          </AuthProvider>
+        </Provider>
+      </ErrorBoundary>
+    </ColorModeProvider>
   </ChakraProvider>
 )
 

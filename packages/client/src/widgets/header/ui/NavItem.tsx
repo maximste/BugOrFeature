@@ -14,11 +14,11 @@ export const NavItem: FC<TProps> = props => {
   const { to, label, active } = props
   return (
     <List.Item
-      bg={active ? 'purple/60' : undefined}
+      bg={active ? 'buttonBg/40' : undefined}
       borderRadius="full"
       p="8px 16px"
       transition={TRANSITION}
-      _hover={active ? undefined : { bg: 'purple/20' }}>
+      _hover={active ? undefined : { bg: 'buttonBg/40' }}>
       <Link to={to}>{label}</Link>
     </List.Item>
   )

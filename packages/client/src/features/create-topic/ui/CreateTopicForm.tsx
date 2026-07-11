@@ -21,6 +21,8 @@ export const CreateTopicForm = () => {
       flexDirection="column"
       gap={4}
       p="35px 25px 25px"
+      border="1px solid"
+      borderColor="border"
       onSubmit={handleSubmit}
       noValidate>
       <FormField label="Заголовок" htmlFor="new-topic-title">

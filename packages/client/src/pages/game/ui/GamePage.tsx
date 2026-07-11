@@ -142,7 +142,8 @@ export const GamePage = () => {
           <GameStatusBanner status={status} onReset={reset} />
 
           <Box
-            border="12px solid white"
+            border="12px solid"
+            borderColor="white"
             borderRadius="2xl"
             overflow="hidden"
             maxW="100%"

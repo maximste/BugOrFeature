@@ -22,7 +22,7 @@ export const NotFoundPage = () => {
         code="404"
         subheader="Котик потерялся"
         actions={
-          <Button asChild variant="solid">
+          <Button asChild variant="default">
             <Link to="/">На главную</Link>
           </Button>
         }>

@@ -1,12 +1,15 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Box, Flex, List, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, List, Text } from '@chakra-ui/react'
 
-import { useAuth } from '@/app/providers'
+import { useAuth, useColorMode } from '@/app/providers'
 import { LogoutButton } from '@/features/logout'
 
 import LogoIcon from '@/assets/icons/logo.svg?react'
+import SunIcon from '@/assets/icons/sun.svg?react'
+import MoonIcon from '@/assets/icons/moon.svg?react'
 
 import { NavItem } from './NavItem'
+import { TRANSITION } from '@/theme'
 
 const NAV_LINKS = [
   { to: '/', label: 'Главная' },
@@ -23,6 +26,7 @@ const GUEST_LINKS = [
 
 export const Header = () => {
   const { isAuthenticated } = useAuth()
+  const { colorMode, toggleColorMode } = useColorMode()
   const { pathname } = useLocation()
 
   const isActive = (path: string) => pathname === path
@@ -51,36 +55,68 @@ export const Header = () => {
           </Flex>
         </Link>
 
-        <Box as="nav">
-          <List.Root flexDirection="row" gap={2}>
-            {isAuthenticated ? (
-              <>
-                {NAV_LINKS.map(({ to, label }) => (
-                  <NavItem
-                    key={to}
-                    to={to}
-                    label={label}
-                    active={isActive(to)}
-                  />
-                ))}
-                <List.Item>
-                  <LogoutButton />
-                </List.Item>
-              </>
+        <Flex align="center" gap={3}>
+          <Box as="nav">
+            <List.Root flexDirection="row" gap={2}>
+              {isAuthenticated ? (
+                <>
+                  {NAV_LINKS.map(({ to, label }) => (
+                    <NavItem
+                      key={to}
+                      to={to}
+                      label={label}
+                      active={isActive(to)}
+                    />
+                  ))}
+                  <List.Item>
+                    <LogoutButton />
+                  </List.Item>
+                </>
+              ) : (
+                <>
+                  {GUEST_LINKS.map(({ to, label }) => (
+                    <NavItem
+                      key={to}
+                      to={to}
+                      label={label}
+                      active={isActive(to)}
+                    />
+                  ))}
+                </>
+              )}
+            </List.Root>
+          </Box>
+
+          <Button
+            unstyled
+            borderRadius="full"
+            width="36px"
+            height="36px"
+            padding="8px"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            cursor="pointer"
+            transition={TRANSITION}
+            _hover={{ bg: 'purple' }}
+            onClick={toggleColorMode}
+            aria-label={
+              colorMode === 'dark'
+                ? 'Включить светлую тему'
+                : 'Включить тёмную тему'
+            }
+            title={
+              colorMode === 'dark'
+                ? 'Включить светлую тему'
+                : 'Включить тёмную тему'
+            }>
+            {colorMode === 'dark' ? (
+              <SunIcon width={18} height={18} />
             ) : (
-              <>
-                {GUEST_LINKS.map(({ to, label }) => (
-                  <NavItem
-                    key={to}
-                    to={to}
-                    label={label}
-                    active={isActive(to)}
-                  />
-                ))}
-              </>
+              <MoonIcon width={18} height={18} />
             )}
-          </List.Root>
-        </Box>
+          </Button>
+        </Flex>
       </Flex>
     </Flex>
   )

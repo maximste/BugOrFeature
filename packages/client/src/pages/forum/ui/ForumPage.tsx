@@ -51,16 +51,12 @@ export const ForumPage = () => {
         <meta name="description" content="BugOrFeature" />
       </Helmet>
       <Box as="section" w="full" maxW="660px" mx="auto">
-        <Flex
-          justifyContent="space-between"
-          alignItems="center"
-          mb="32px"
-          w="95%">
+        <Flex justifyContent="space-between" alignItems="center" mb="32px">
           <PageHeading
             title="Форум"
             subtitle="Делитесь опытом и кото-историями"
           />
-          <Button asChild variant="solid">
+          <Button asChild variant="default">
             <Link to="/forum/new">+ Новая тема</Link>
           </Button>
         </Flex>

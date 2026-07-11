@@ -24,7 +24,7 @@ export const ServerErrorPage = () => {
         subheader="Котики что-то уронили"
         actions={
           <>
-            <Button variant="solid" onClick={() => navigate(-1)}>
+            <Button variant="default" onClick={() => navigate(-1)}>
               Попробовать снова
             </Button>
             <Button asChild variant="white">
