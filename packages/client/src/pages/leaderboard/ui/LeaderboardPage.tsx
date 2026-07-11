@@ -1,14 +1,16 @@
-import styles from './LeaderboardPage.module.scss'
 import { Helmet } from 'react-helmet'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { Box, Flex, Text } from '@chakra-ui/react'
 import { usePage } from '@/app/hooks/usePage'
 
+import FishIcon from '@/assets/icons/fish.svg?react'
+import CupIcon from '@/assets/icons/cup.svg?react'
 import { initLeaderboardPage } from '../model/initLeaderboardPage'
 import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page-heading'
 import { Table } from '@/shared/ui/table'
 
-import { getLeaderbordData, LeaderboardUnit } from '@/entities/leaderbord'
+import { getLeaderboardData, LeaderboardUnit } from '@/entities/leaderboard'
 import { TDifficulty } from '@/pages/game/types/game'
 
 const LEVEL_BUTTONS: { label: string; level: Level }[] = [
@@ -17,10 +19,33 @@ const LEVEL_BUTTONS: { label: string; level: Level }[] = [
   { label: 'Дикий кот', level: 'hard' },
 ]
 
+const RANK_BACKGROUND: Record<number, string> = {
+  0: 'mint/40',
+  1: 'purple/40',
+  2: 'pink/40',
+}
+
+const rankCellProps = (rowIndex: number) => ({
+  width: '60px',
+  textAlign: 'right' as const,
+  fontFamily: 'fredoka',
+  fontWeight: '800',
+  ...(rowIndex < 3
+    ? {
+        fontSize: 0,
+        backgroundImage: `url('/img/rating${rowIndex + 1}-icon.png')`,
+        backgroundPosition: 'right 16px center',
+        backgroundRepeat: 'no-repeat',
+        backgroundSize: '16px auto',
+      }
+    : {}),
+})
+
 const tableColumns = [
   {
     key: 'rating',
     title: 'Место',
+    cellProps: (_row: unknown, rowIndex: number) => rankCellProps(rowIndex),
   },
   {
     key: 'playerEl',
@@ -29,6 +54,7 @@ const tableColumns = [
   {
     key: 'timeStr',
     title: 'Результат',
+    cellProps: { textAlign: 'right' as const },
   },
 ]
 
@@ -45,7 +71,7 @@ export const LeaderboardPage = () => {
     setNoDataText('')
     const fetchData = async () => {
       try {
-        const rawData = await getLeaderbordData()
+        const rawData = await getLeaderboardData()
         const data = rawData.filter(el => el.data.level === activeLevel)
 
         setLeadersData(data)
@@ -67,7 +93,12 @@ export const LeaderboardPage = () => {
     () =>
       leadersData.map((el, i) => ({
         ...el,
-        playerEl: <div className={styles.playerFlex}>{el.data.player}</div>,
+        playerEl: (
+          <Flex alignItems="center" gap={4} fontSize="16px" fontWeight="700">
+            <FishIcon width={16} height={16} />
+            {el.data.player}
+          </Flex>
+        ),
         rating: i + 1,
         timeStr: `${Math.abs(el.data.BOFTime)} сек`,
       })),
@@ -81,37 +112,59 @@ export const LeaderboardPage = () => {
         <title>Лидерборд</title>
         <meta name="description" content="Таблица лидеров" />
       </Helmet>
-      <section className={styles.pageSection}>
-        <div className={styles.pageTop}>
-          <h2 className={styles.subHeader}>Зал котославы</h2>
+      <Box as="section" w="full" maxW="660px" mx="auto">
+        <Box mb="32px">
+          <Text
+            display="flex"
+            alignItems="center"
+            gap={2}
+            cursor="text"
+            fontFamily="body"
+            fontSize="14px"
+            fontWeight="500"
+            background="purple/50"
+            padding="6px 16px"
+            borderRadius="pill"
+            color="buttonText"
+            maxW="max-content"
+            margin="0 auto 24px">
+            <CupIcon />
+            Зал котославы
+          </Text>
           <PageHeading
-            className={styles.headerBlock}
             title="Топ игроков"
             subtitle="Самые быстрые лапки в каждом уровне."
+            alignItems="center"
           />
-        </div>
+        </Box>
 
-        <ul className={styles.tabsList}>
+        <Flex
+          as="ul"
+          listStyleType="none"
+          gap={3}
+          justifyContent="center"
+          mb="24px">
           {LEVEL_BUTTONS.map(({ label, level }) => (
-            <li key={level}>
+            <Box as="li" key={level}>
               <Button
-                className={`${styles.tab} ${
-                  activeLevel === level ? styles.tab_active : ''
-                }`.trim()}
+                variant={activeLevel === level ? 'solid' : 'cyan'}
                 onClick={() => setActiveLevel(level)}>
                 {label}
               </Button>
-            </li>
+            </Box>
           ))}
-        </ul>
+        </Flex>
 
         <Table
-          className={styles.table}
           columns={tableColumns}
           rows={tableRows}
+          getRowProps={(_row, rowIndex) => {
+            const background = RANK_BACKGROUND[rowIndex]
+            return background ? { background } : {}
+          }}
         />
-        <p className={styles.noDataText}>{noDataText}</p>
-      </section>
+        <Text textAlign="center">{noDataText}</Text>
+      </Box>
     </>
   )
 }

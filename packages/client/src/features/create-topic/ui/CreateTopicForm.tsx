@@ -2,11 +2,10 @@ import type { FormEvent } from 'react'
 import { useState } from 'react'
 
 import { Button } from '@/shared/ui/button'
+import { CardForm } from '@/shared/ui/card'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
 import { Textarea } from '@/shared/ui/textarea'
-
-import styles from './CreateTopicForm.module.scss'
 
 export const CreateTopicForm = () => {
   const [title, setTitle] = useState('')
@@ -17,7 +16,13 @@ export const CreateTopicForm = () => {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
+    <CardForm
+      display="flex"
+      flexDirection="column"
+      gap={4}
+      p="35px 25px 25px"
+      onSubmit={handleSubmit}
+      noValidate>
       <FormField label="Заголовок" htmlFor="new-topic-title">
         <Input
           id="new-topic-title"
@@ -38,6 +43,6 @@ export const CreateTopicForm = () => {
         />
       </FormField>
       <Button type="submit">Опубликовать</Button>
-    </form>
+    </CardForm>
   )
 }

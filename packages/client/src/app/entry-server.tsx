@@ -22,7 +22,8 @@ import {
   createUrl,
 } from './entry-server.utils'
 
-import '@/app/styles/index.scss'
+import '@/app/styles/fonts.css'
+import '@/app/styles/input-field.css'
 import ErrorBoundary from './errorBoundary/ErrorBoundary'
 
 export const render = async (req: ExpressRequest) => {

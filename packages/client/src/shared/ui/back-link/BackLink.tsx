@@ -1,22 +1,27 @@
 import type { ReactNode } from 'react'
-import { Link } from 'react-router-dom'
+import { Link as RouterLink } from 'react-router-dom'
+import { Link, type HTMLChakraProps } from '@chakra-ui/react'
 
-import styles from './BackLink.module.scss'
-
-export type BackLinkProps = {
+export type BackLinkProps = HTMLChakraProps<'a'> & {
   to?: string
   children?: ReactNode
-  className?: string
 }
 
 export const BackLink = ({
   to = '/',
   children = '← На главную',
-  className = '',
+  ...rest
 }: BackLinkProps) => {
   return (
-    <Link className={`${styles.root} ${className}`.trim()} to={to}>
-      {children}
+    <Link
+      asChild
+      fontFamily="body"
+      fontSize="14px"
+      fontWeight="400"
+      color="subtitleText"
+      _hover={{ color: 'text' }}
+      {...rest}>
+      <RouterLink to={to}>{children}</RouterLink>
     </Link>
   )
 }

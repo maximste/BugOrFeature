@@ -12,7 +12,7 @@ import type {
   UpdateUserProfileBody,
   UserProfileResponse,
 } from './types'
-import { LeaderboardUnit } from '@/entities/leaderbord'
+import { LeaderboardUnit } from '@/entities/leaderboard'
 
 /**
  * Общий слой HTTP-запросов к API Практикума.
