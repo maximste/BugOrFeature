@@ -1,0 +1,24 @@
+@use '@/app/styles/mixins' as *;
+
+.page {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  width: 95%;
+}
+
+.newTopicButton {
+  @include button-shared;
+}
+
+.status {
+  @include typography-ui;
+  color: $color-text;
+}

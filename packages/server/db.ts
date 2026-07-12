@@ -1,4 +1,4 @@
-import { Client } from 'pg'
+import { Sequelize } from 'sequelize'
 
 const {
   POSTGRES_USER,
@@ -8,26 +8,23 @@ const {
   POSTGRES_HOST,
 } = process.env
 
-export const createClientAndConnect = async (): Promise<Client | null> => {
+export const sequelize = new Sequelize({
+  dialect: 'postgres',
+  host: POSTGRES_HOST || 'localhost',
+  port: Number(POSTGRES_PORT) || 5432,
+  username: POSTGRES_USER,
+  password: POSTGRES_PASSWORD,
+  database: POSTGRES_DB,
+  logging: false,
+})
+
+export const connectDb = async (): Promise<boolean> => {
   try {
-    const client = new Client({
-      user: POSTGRES_USER,
-      host: POSTGRES_HOST || 'localhost',
-      database: POSTGRES_DB,
-      password: POSTGRES_PASSWORD,
-      port: Number(POSTGRES_PORT),
-    })
-
-    await client.connect()
-
-    const res = await client.query('SELECT NOW()')
-    console.log('  ➜ 🎸 Connected to the database at:', res?.rows?.[0].now)
-    client.end()
-
-    return client
+    await sequelize.authenticate()
+    console.log('Connected to the database')
+    return true
   } catch (e) {
-    console.error(e)
+    console.error('Unable to connect to the database:', e)
+    return false
   }
-
-  return null
 }

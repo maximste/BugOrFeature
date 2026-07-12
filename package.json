@@ -17,6 +17,10 @@
   "workspaces": [
     "packages/*"
   ],
+  "resolutions": {
+    "@types/node": "^18.19.0",
+    "@types/react": "^18.0.17"
+  },
   "engines": {
     "node": ">=15"
   },
