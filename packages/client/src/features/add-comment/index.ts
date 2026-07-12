@@ -1,1 +1,1 @@
-export { AddCommentForm } from './ui/AddCommentForm'
+export { AddCommentForm, type AddCommentFormProps } from './ui/AddCommentForm'

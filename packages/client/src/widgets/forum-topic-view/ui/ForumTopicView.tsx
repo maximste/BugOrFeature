@@ -2,17 +2,35 @@ import { Flex, Heading, Text } from '@chakra-ui/react'
 
 import { CommentCard } from '@/entities/comment'
 import type { Comment } from '@/entities/comment'
+import type { Emotion } from '@/entities/reaction'
+import type { Reply } from '@/entities/reply'
 import { TopicDetailCard } from '@/entities/topic'
 import type { TopicDetail } from '@/entities/topic'
 import { AddCommentForm } from '@/features/add-comment'
+import type { CommentResponse } from '@/shared/api'
 import { BackLink } from '@/shared/ui/back-link'
+
+import { ReplyActions } from './ReplyActions'
 
 export type ForumTopicViewProps = {
   topic: TopicDetail
   comments: Comment[]
+  onCommentAdded: (comment: CommentResponse) => void
+  onReplyAdded: (
+    commentId: string,
+    parentReplyId: string | null,
+    reply: Reply
+  ) => void
+  onReact: (commentId: string, emotion: Emotion) => void
 }
 
-export const ForumTopicView = ({ topic, comments }: ForumTopicViewProps) => {
+export const ForumTopicView = ({
+  topic,
+  comments,
+  onCommentAdded,
+  onReplyAdded,
+  onReact,
+}: ForumTopicViewProps) => {
   const hasComments = comments.length > 0
 
   return (
@@ -50,7 +68,20 @@ export const ForumTopicView = ({ topic, comments }: ForumTopicViewProps) => {
           w="full"
           pb={8}>
           {comments.map(({ id, ...rest }) => (
-            <CommentCard key={id} {...rest} />
+            <CommentCard
+              key={id}
+              {...rest}
+              onReact={emotion => onReact(id, emotion)}
+              renderReplyActions={reply => (
+                <ReplyActions
+                  commentId={id}
+                  reply={reply}
+                  onReplyAdded={(parentReplyId, newReply) =>
+                    onReplyAdded(id, parentReplyId, newReply)
+                  }
+                />
+              )}
+            />
           ))}
         </Flex>
       ) : (
@@ -67,7 +98,7 @@ export const ForumTopicView = ({ topic, comments }: ForumTopicViewProps) => {
           Будьте первым, кто прокомментирует 🐱
         </Text>
       )}
-      <AddCommentForm />
+      <AddCommentForm topicId={topic.id} onSuccess={onCommentAdded} />
     </>
   )
 }

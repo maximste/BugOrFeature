@@ -1,12 +1,34 @@
-import { Box, Text, HStack, chakra } from '@chakra-ui/react'
+import type { ReactNode } from 'react'
+import { Box, chakra, HStack, Text, VStack } from '@chakra-ui/react'
+
+import { ReactionBar } from '@/entities/reaction'
+import type { Emotion } from '@/entities/reaction'
+import { ReplyCard } from '@/entities/reply'
+import type { Reply } from '@/entities/reply'
 import { Card } from '@/shared/ui/card'
+
 import type { Comment as CommentItem } from '../model/types'
 
 const Time = chakra('time')
 
-export type CommentCardProps = Omit<CommentItem, 'id'>
+export type CommentCardProps = Omit<CommentItem, 'id'> & {
+  onReact?: (emotion: Emotion) => void
+  reactionsDisabled?: boolean
+  /** null — ответ на сам комментарий, иначе — ответ на конкретный вложенный reply */
+  renderReplyActions?: (reply: Reply | null) => ReactNode
+}
 
-export const CommentCard = ({ author, date, body }: CommentCardProps) => {
+export const CommentCard = ({
+  author,
+  date,
+  body,
+  replies,
+  reactions,
+  myReaction,
+  onReact,
+  reactionsDisabled,
+  renderReplyActions,
+}: CommentCardProps) => {
   return (
     <Card
       as="li"
@@ -28,6 +50,34 @@ export const CommentCard = ({ author, date, body }: CommentCardProps) => {
       <Text m={0} fontSize="16px" color="text">
         {body}
       </Text>
+      <HStack justify="space-between" align="center" gap={3} mt="12px">
+        <ReactionBar
+          reactions={reactions}
+          myReaction={myReaction}
+          onReact={onReact ?? (() => undefined)}
+          disabled={reactionsDisabled}
+        />
+        {renderReplyActions ? renderReplyActions(null) : null}
+      </HStack>
+      {replies.length > 0 ? (
+        <VStack
+          as="ul"
+          listStyleType="none"
+          align="stretch"
+          gap={3}
+          mt="16px"
+          pl="20px"
+          borderLeft="2px solid"
+          borderColor="border">
+          {replies.map(reply => (
+            <ReplyCard
+              key={reply.id}
+              reply={reply}
+              renderActions={renderReplyActions}
+            />
+          ))}
+        </VStack>
+      ) : null}
     </Card>
   )
 }

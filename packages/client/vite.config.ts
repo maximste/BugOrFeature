@@ -8,7 +8,8 @@ import type { HttpProxy } from 'vite'
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
-const PRACTICUM_AUTH_API_BASE = 'https://ya-praktikum.tech/api/v2'
+const PRACTICUM_AUTH_API_BASE =
+  process.env.PRACTICUM_API_BASE_URL ?? 'https://ya-praktikum.tech/api/v2'
 
 // Сервер отдаёт куки для ya-praktikum.tech: Domain, Secure, SameSite=None.
 // На http://localhost:3000 без правок браузер часто отбрасывает authCookie после F5.
