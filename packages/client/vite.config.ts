@@ -85,16 +85,6 @@ export default defineConfig(({ mode }) => ({
       mode === 'production' ? process.env.EXTERNAL_SERVER_URL ?? '' : ''
     ),
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@use "@/app/styles/variables" as *;\n`,
-        // Глушим deprecation-шум legacy-js-api: сам движок (sass) не трогаем,
-        // апгрейд на sass-embedded ломает отдельный сборочный шаг vite-plugin-pwa на Vite 4.
-        logger: { warn: () => undefined, debug: () => undefined },
-      },
-    },
-  },
   build: {
     outDir: path.join(__dirname, 'dist/client'),
   },

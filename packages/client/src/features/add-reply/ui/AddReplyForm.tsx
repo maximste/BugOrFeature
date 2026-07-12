@@ -1,12 +1,14 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
+import { chakra, HStack, Text } from '@chakra-ui/react'
 
 import { postReply } from '@/shared/api'
 import type { ReplyResponse } from '@/shared/api'
 import { Button } from '@/shared/ui/button'
 import { Textarea } from '@/shared/ui/textarea'
 
-import styles from './AddReplyForm.module.scss'
+const Form = chakra('form')
+const CancelButton = chakra('button')
 
 export type AddReplyFormProps = {
   commentId: string
@@ -53,11 +55,17 @@ export const AddReplyForm = ({
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
+    <Form
+      display="flex"
+      flexDirection="column"
+      gap={2}
+      w="full"
+      onSubmit={handleSubmit}
+      noValidate>
       {error != null ? (
-        <p className={styles.error} role="alert">
+        <Text m={0} fontSize="14px" color="danger" role="alert">
           {error}
-        </p>
+        </Text>
       ) : null}
       <Textarea
         value={body}
@@ -67,20 +75,26 @@ export const AddReplyForm = ({
         rows={3}
         disabled={loading}
       />
-      <div className={styles.actions}>
+      <HStack gap={3}>
         <Button type="submit" disabled={loading}>
           {loading ? 'Отправка…' : 'Ответить'}
         </Button>
         {onCancel ? (
-          <button
+          <CancelButton
             type="button"
-            className={styles.cancel}
+            background="none"
+            border="none"
+            p={0}
+            fontSize="14px"
+            color="subtitleText"
+            cursor={loading ? 'default' : 'pointer'}
+            opacity={loading ? 0.6 : 1}
             onClick={onCancel}
             disabled={loading}>
             Отмена
-          </button>
+          </CancelButton>
         ) : null}
-      </div>
-    </form>
+      </HStack>
+    </Form>
   )
 }

@@ -1,12 +1,12 @@
 import type { ReactNode } from 'react'
+import { Box, chakra, type HTMLChakraProps } from '@chakra-ui/react'
 
-import styles from './FormField.module.scss'
+const Label = chakra('label')
 
-export type FormFieldProps = {
+export type FormFieldProps = HTMLChakraProps<'div'> & {
   label: ReactNode
   htmlFor: string
   children: ReactNode
-  className?: string
 }
 
 export const FormField = ({
@@ -14,13 +14,19 @@ export const FormField = ({
   htmlFor,
   children,
   className = '',
+  ...rest
 }: FormFieldProps) => {
   return (
-    <div className={`${styles.root} input-field ${className}`.trim()}>
-      <label className={styles.label} htmlFor={htmlFor}>
+    <Box
+      className={`input-field ${className}`.trim()}
+      display="flex"
+      flexDirection="column"
+      gap={1}
+      {...rest}>
+      <Label htmlFor={htmlFor} textStyle="uiLabel" color="text">
         {label}
-      </label>
+      </Label>
       {children}
-    </div>
+    </Box>
   )
 }

@@ -2,10 +2,13 @@ import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { Link, useNavigate } from 'react-router-dom'
+import { Box, Flex, Text, Link as ChakraLink } from '@chakra-ui/react'
 
+import LogoIcon from '@/assets/icons/logo.svg?react'
 import { usePage } from '@/app/hooks/usePage'
 import { signUp, toAuthError } from '@/shared/auth'
 import { Button } from '@/shared/ui/button'
+import { CardForm } from '@/shared/ui/card'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
 import {
@@ -15,8 +18,6 @@ import {
 } from '@/shared/lib/validations'
 
 import { initSignUpPage } from '../model/initSignUpPage'
-
-import styles from './SignUpPage.module.scss'
 
 export const SignUpPage = () => {
   usePage({ initPage: initSignUpPage })
@@ -59,31 +60,67 @@ export const SignUpPage = () => {
   }
 
   return (
-    <main>
+    <Flex
+      as="main"
+      direction="column"
+      justifyContent="center"
+      alignItems="center"
+      gap={4}
+      w="full">
       <Helmet>
         <meta charSet="utf-8" />
         <title>Регистрация — Catsweeper</title>
         <meta name="description" content="Регистрация" />
       </Helmet>
-      <form
-        className={styles.form}
+      <CardForm
+        display="flex"
+        flexDirection="column"
+        gap={4}
+        w="full"
+        maxW="26rem"
+        p="35px 25px 25px"
         onSubmit={handleSubmit}
         onFocus={e => handleValidationFocus(e.nativeEvent)}
         onBlur={e => handleValidationBlur(e.nativeEvent)}
         noValidate>
-        <div className={styles.titleContainer}>
-          <div className={styles.titleIconContainer}>
-            <img src="/img/signup-icon.png" alt="" />
-          </div>
-          <h2 className={styles.title}>Создать аккаунт</h2>
-          <span className={styles.titleSubtitle}>
+        <Flex direction="column" alignItems="center" gap={1}>
+          <Flex
+            justifyContent="center"
+            alignItems="center"
+            w="56px"
+            h="56px"
+            borderRadius="16px"
+            background="buttonBg/30">
+            <LogoIcon width={28} height={28} />
+          </Flex>
+          <Text
+            as="h2"
+            m={0}
+            fontFamily="body"
+            fontSize="18px"
+            fontWeight="700"
+            lineHeight="28px"
+            textAlign="center">
+            Создать аккаунт
+          </Text>
+          <Text
+            as="span"
+            fontFamily="body"
+            fontSize="12px"
+            fontWeight="400"
+            textAlign="center">
             Присоединяйтесь к пушистому сообществу
-          </span>
-        </div>
+          </Text>
+        </Flex>
         {error != null ? (
-          <p className={styles.error} role="alert">
+          <Text
+            m={0}
+            fontSize="14px"
+            color="danger"
+            textAlign="center"
+            role="alert">
             {error}
-          </p>
+          </Text>
         ) : null}
         <FormField label="Имя" htmlFor="signup-name">
           <Input
@@ -154,24 +191,46 @@ export const SignUpPage = () => {
             disabled={loading}
           />
         </FormField>
-        <div className={styles.formFooter}>
-          <Button
-            className={styles.formFooterButton}
-            type="submit"
-            disabled={loading}>
+        <Flex
+          direction="column"
+          justifyContent="center"
+          alignItems="center"
+          gap={4}
+          w="full">
+          <Button type="submit" minW="full" disabled={loading}>
             {loading ? 'Регистрация…' : 'Зарегистрироваться'}
           </Button>
-          <span className={styles.formFooterDescription}>
-            Уже есть аккаунт? <Link to="/signin">Войти</Link>
-          </span>
-        </div>
-      </form>
-      <div className={styles.footer}>
-        <Link className={styles.footerLink} to="/signin">
-          <span className={styles.footerLinkIcon}>←</span>
-          Авторизоваться
-        </Link>
-      </div>
-    </main>
+          <Text
+            as="span"
+            fontFamily="body"
+            fontSize="12px"
+            fontWeight="400"
+            textAlign="center">
+            Уже есть аккаунт?{' '}
+            <ChakraLink asChild>
+              <Link to="/signin">Войти</Link>
+            </ChakraLink>
+          </Text>
+        </Flex>
+      </CardForm>
+      <Box
+        fontFamily="body"
+        fontSize="12px"
+        fontWeight="400"
+        textAlign="center">
+        <ChakraLink
+          asChild
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          gap={1}
+          textDecoration="none">
+          <Link to="/signin">
+            <Box as="span">←</Box>
+            Авторизоваться
+          </Link>
+        </ChakraLink>
+      </Box>
+    </Flex>
   )
 }

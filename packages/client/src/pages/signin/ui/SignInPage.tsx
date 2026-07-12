@@ -1,12 +1,11 @@
 import { Helmet } from 'react-helmet'
+import { Flex } from '@chakra-ui/react'
 
 import { usePage } from '@/app/hooks/usePage'
 import { SignInForm } from '@/features/sign-in'
 import { BackLink } from '@/shared/ui/back-link'
 
 import { initSignInPage } from '../model/initSignInPage'
-
-import styles from './SignInPage.module.scss'
 
 export const SignInPage = () => {
   usePage({ initPage: initSignInPage })
@@ -18,10 +17,18 @@ export const SignInPage = () => {
         <title>Вход — Catsweeper</title>
         <meta name="description" content="Войдите, чтобы общаться на форуме" />
       </Helmet>
-      <section className={styles.page}>
+      <Flex
+        as="section"
+        direction="column"
+        alignItems="center"
+        justifyContent="center"
+        gap={5}
+        w="full"
+        minH="calc(100vh - 120px)"
+        padding="24px 16px 48px">
         <SignInForm />
         <BackLink />
-      </section>
+      </Flex>
     </>
   )
 }

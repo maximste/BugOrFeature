@@ -1,9 +1,10 @@
 import { useState } from 'react'
+import { chakra } from '@chakra-ui/react'
 
 import type { Reply } from '@/entities/reply'
 import { AddReplyForm } from '@/features/add-reply'
 
-import styles from './ReplyActions.module.scss'
+const ToggleButton = chakra('button')
 
 export type ReplyActionsProps = {
   commentId: string
@@ -20,12 +21,19 @@ export const ReplyActions = ({
 
   if (!open) {
     return (
-      <button
+      <ToggleButton
         type="button"
-        className={styles.toggle}
+        alignSelf="flex-start"
+        background="none"
+        border="none"
+        p={0}
+        fontSize="14px"
+        color="subtitleText"
+        cursor="pointer"
+        _hover={{ color: 'danger' }}
         onClick={() => setOpen(true)}>
         Ответить
-      </button>
+      </ToggleButton>
     )
   }
 

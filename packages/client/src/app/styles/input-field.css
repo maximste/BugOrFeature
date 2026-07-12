@@ -1,0 +1,10 @@
+.input-field--error input {
+  border-color: var(--chakra-colors-danger, #bf4f74);
+}
+
+.input-field__error {
+  font-family: var(--chakra-fonts-body, 'Nunito', system-ui, sans-serif);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--chakra-colors-danger, #bf4f74);
+}

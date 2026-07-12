@@ -1,5 +1,6 @@
 import type { ChangeEvent, FormEvent } from 'react'
 import { useEffect, useRef, useState } from 'react'
+import { Box, Flex, Heading, Text, chakra } from '@chakra-ui/react'
 
 import type { UserProfile } from '@/entities/user'
 import {
@@ -10,6 +11,7 @@ import {
   uploadAvatar,
 } from '@/shared/profile'
 import { Button } from '@/shared/ui/button'
+import { Card } from '@/shared/ui/card'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
 import {
@@ -18,14 +20,15 @@ import {
   validateForm,
 } from '@/shared/lib/validations'
 
-import styles from './ProfileView.module.scss'
-
 export type ProfileViewProps = {
   profile: UserProfile
   onProfileChange: (profile: UserProfile) => void
 }
 
 const AVATAR_ACCEPT = 'image/jpeg,image/jpg,image/png,image/gif,image/webp'
+const Form = chakra('form')
+const FilePickLabel = chakra('label')
+const HiddenFileInput = chakra('input')
 
 function safeTrim(value: string | null | undefined) {
   return (value ?? '').trim()
@@ -269,101 +272,223 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
   const formBusy = profileLoading || avatarLoading || passwordLoading
   const identity = formatIdentity(firstName, secondName, displayName, login)
 
+  const errorTextProps = {
+    m: 0,
+    fontFamily: 'body',
+    fontSize: '14px',
+    fontWeight: '500',
+    color: 'danger',
+  } as const
+
+  const successTextProps = {
+    m: 0,
+    fontFamily: 'body',
+    fontSize: '14px',
+    fontWeight: '500',
+    color: 'text',
+  } as const
+
   return (
-    <div className={styles.root}>
-      <section className={styles.section} aria-labelledby="avatar-heading">
-        <h2 id="avatar-heading" className={styles.sectionTitle}>
+    <Flex direction="column" gap={6}>
+      <Card
+        as="section"
+        p="24px"
+        border="1px solid"
+        borderColor="border"
+        aria-labelledby="avatar-heading">
+        <Heading
+          as="h2"
+          id="avatar-heading"
+          fontFamily="body"
+          fontSize="18px"
+          fontWeight="800"
+          margin="0 0 16px"
+          color="text">
           Аватар
-        </h2>
-        <form className={styles.form} onSubmit={handleAvatarSubmit} noValidate>
+        </Heading>
+        <Form
+          display="flex"
+          flexDirection="column"
+          gap={4}
+          onSubmit={handleAvatarSubmit}
+          noValidate>
           {avatarError != null ? (
-            <p className={styles.error} role="alert">
+            <Text {...errorTextProps} role="alert">
               {avatarError}
-            </p>
+            </Text>
           ) : null}
           {avatarSuccess != null ? (
-            <p className={styles.success} role="status">
+            <Text {...successTextProps} role="status">
               {avatarSuccess}
-            </p>
+            </Text>
           ) : null}
-          <div className={styles.avatarSection}>
+          <Flex flexWrap="wrap" alignItems="flex-start" gap="20px 24px">
             {avatarPreview && !avatarBroken ? (
               <img
-                className={styles.avatarImg}
                 src={avatarPreview}
                 alt="Аватар пользователя"
                 width={96}
                 height={96}
+                style={{
+                  flexShrink: 0,
+                  width: 96,
+                  height: 96,
+                  borderRadius: 24,
+                  objectFit: 'cover',
+                }}
                 onError={() => setAvatarBroken(true)}
               />
             ) : (
-              <div className={styles.avatarFallback} aria-hidden>
+              <Flex
+                flexShrink={0}
+                w="96px"
+                h="96px"
+                borderRadius="24px"
+                display="grid"
+                css={{ placeItems: 'center' }}
+                background="linear-gradient(145deg, #ffd7d1 0%, #FB9890 100%)"
+                color="buttonText"
+                boxShadow="avatar"
+                textStyle="uiHeavy"
+                aria-hidden>
                 {initials(firstName, secondName)}
-              </div>
+              </Flex>
             )}
 
-            <div className={styles.identity}>
-              <p className={styles.identityName}>{identity.primary}</p>
+            <Box
+              flex="1 1 160px"
+              minW={0}
+              display="flex"
+              flexDirection="column"
+              gap={1}
+              pt="4px">
+              <Text
+                m={0}
+                fontFamily="body"
+                fontSize="22px"
+                fontWeight="800"
+                color="text"
+                lineHeight="1.25">
+                {identity.primary}
+              </Text>
               {identity.fullName != null ? (
-                <p className={styles.identityFullName}>{identity.fullName}</p>
+                <Text
+                  m={0}
+                  fontFamily="body"
+                  fontSize="15px"
+                  fontWeight="500"
+                  color="text">
+                  {identity.fullName}
+                </Text>
               ) : null}
               {identity.login.length > 0 ? (
-                <p className={styles.identityLogin}>@{identity.login}</p>
+                <Text
+                  m={0}
+                  fontFamily="body"
+                  fontSize="14px"
+                  fontWeight="500"
+                  color="subtitleText">
+                  @{identity.login}
+                </Text>
               ) : null}
-            </div>
+            </Box>
 
-            <div className={styles.avatarActions}>
-              <input
+            <Flex flex="1 1 100%" direction="column" gap={2} minW={0}>
+              <HiddenFileInput
                 ref={fileInputRef}
                 id="profile-avatar"
                 name="avatar"
                 type="file"
-                className={styles.fileInputHidden}
+                srOnly
                 accept={AVATAR_ACCEPT}
                 onChange={handleAvatarChange}
                 disabled={formBusy}
               />
-              <div className={styles.avatarButtons}>
-                <label
+              <Flex flexWrap="wrap" gap="10px">
+                <FilePickLabel
                   htmlFor="profile-avatar"
-                  className={styles.filePickButton}>
+                  display="inline-flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  minH="36px"
+                  padding="8px 16px"
+                  cursor="pointer"
+                  userSelect="none"
+                  fontFamily="body"
+                  fontSize="14px"
+                  fontWeight="500"
+                  borderRadius="pill"
+                  background="card/80"
+                  border="1px solid"
+                  borderColor="border"
+                  color="buttonText"
+                  _hover={{ color: 'buttonBg' }}>
                   Выбрать изображение
-                </label>
+                </FilePickLabel>
                 <Button
                   type="submit"
-                  className={styles.uploadButton}
+                  minH="36px"
                   disabled={!avatarFile || avatarLoading}>
                   {avatarLoading ? 'Загрузка…' : 'Загрузить аватар'}
                 </Button>
-              </div>
-              <p className={styles.fileName}>
+              </Flex>
+              <Text
+                m={0}
+                fontFamily="body"
+                fontSize="13px"
+                fontWeight="500"
+                color="text"
+                overflow="hidden"
+                textOverflow="ellipsis"
+                whiteSpace="nowrap">
                 {avatarFile?.name ?? 'Файл не выбран'}
-              </p>
-              <p className={styles.hint}>JPEG, JPG, PNG, GIF или WebP</p>
-            </div>
-          </div>
-        </form>
-      </section>
+              </Text>
+              <Text
+                m={0}
+                fontFamily="body"
+                fontSize="12px"
+                fontWeight="400"
+                color="subtitleText">
+                JPEG, JPG, PNG, GIF или WebP
+              </Text>
+            </Flex>
+          </Flex>
+        </Form>
+      </Card>
 
-      <section className={styles.section} aria-labelledby="profile-heading">
-        <h2 id="profile-heading" className={styles.sectionTitle}>
+      <Card
+        as="section"
+        p="24px"
+        border="1px solid"
+        borderColor="border"
+        aria-labelledby="profile-heading">
+        <Heading
+          as="h2"
+          id="profile-heading"
+          fontFamily="body"
+          fontSize="18px"
+          fontWeight="800"
+          margin="0 0 16px"
+          color="text">
           Данные профиля
-        </h2>
-        <form
-          className={styles.form}
+        </Heading>
+        <Form
+          display="flex"
+          flexDirection="column"
+          gap={4}
           onSubmit={handleProfileSubmit}
           onFocus={e => handleValidationFocus(e.nativeEvent)}
           onBlur={e => handleValidationBlur(e.nativeEvent)}
           noValidate>
           {profileError != null ? (
-            <p className={styles.error} role="alert">
+            <Text {...errorTextProps} role="alert">
               {profileError}
-            </p>
+            </Text>
           ) : null}
           {profileSuccess != null ? (
-            <p className={styles.success} role="status">
+            <Text {...successTextProps} role="status">
               {profileSuccess}
-            </p>
+            </Text>
           ) : null}
           <FormField label="Имя" htmlFor="profile-first-name">
             <Input
@@ -430,28 +555,42 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
           <Button type="submit" disabled={profileLoading}>
             {profileLoading ? 'Сохранение…' : 'Сохранить профиль'}
           </Button>
-        </form>
-      </section>
+        </Form>
+      </Card>
 
-      <section className={styles.section} aria-labelledby="password-heading">
-        <h2 id="password-heading" className={styles.sectionTitle}>
+      <Card
+        as="section"
+        p="24px"
+        border="1px solid"
+        borderColor="border"
+        aria-labelledby="password-heading">
+        <Heading
+          as="h2"
+          id="password-heading"
+          fontFamily="body"
+          fontSize="18px"
+          fontWeight="800"
+          margin="0 0 16px"
+          color="text">
           Смена пароля
-        </h2>
-        <form
-          className={styles.form}
+        </Heading>
+        <Form
+          display="flex"
+          flexDirection="column"
+          gap={4}
           onSubmit={handlePasswordSubmit}
           onFocus={e => handleValidationFocus(e.nativeEvent)}
           onBlur={e => handleValidationBlur(e.nativeEvent)}
           noValidate>
           {passwordError != null ? (
-            <p className={styles.error} role="alert">
+            <Text {...errorTextProps} role="alert">
               {passwordError}
-            </p>
+            </Text>
           ) : null}
           {passwordSuccess != null ? (
-            <p className={styles.success} role="status">
+            <Text {...successTextProps} role="status">
               {passwordSuccess}
-            </p>
+            </Text>
           ) : null}
           <FormField label="Текущий пароль" htmlFor="profile-old-password">
             <Input
@@ -478,8 +617,8 @@ export const ProfileView = ({ profile, onProfileChange }: ProfileViewProps) => {
           <Button type="submit" disabled={passwordLoading}>
             {passwordLoading ? 'Смена…' : 'Сменить пароль'}
           </Button>
-        </form>
-      </section>
-    </div>
+        </Form>
+      </Card>
+    </Flex>
   )
 }

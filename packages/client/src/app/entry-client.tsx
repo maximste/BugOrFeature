@@ -3,7 +3,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 
 import { AuthProvider } from '@/app/providers'
-import '@/app/styles/index.scss'
+import '@/app/styles/fonts.css'
+import '@/app/styles/input-field.css'
 
 import { routes } from '@/app/routes'
 import { store } from '@/app/store'

@@ -1,14 +1,14 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Text } from '@chakra-ui/react'
 
 import { postTopic } from '@/shared/api'
 import { Button } from '@/shared/ui/button'
+import { CardForm } from '@/shared/ui/card'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
 import { Textarea } from '@/shared/ui/textarea'
-
-import styles from './CreateTopicForm.module.scss'
 
 export const CreateTopicForm = () => {
   const navigate = useNavigate()
@@ -41,11 +41,17 @@ export const CreateTopicForm = () => {
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit} noValidate>
+    <CardForm
+      display="flex"
+      flexDirection="column"
+      gap={4}
+      p="35px 25px 25px"
+      onSubmit={handleSubmit}
+      noValidate>
       {error != null ? (
-        <p className={styles.error} role="alert">
+        <Text m={0} fontSize="14px" color="danger" role="alert">
           {error}
-        </p>
+        </Text>
       ) : null}
       <FormField label="Заголовок" htmlFor="new-topic-title">
         <Input
@@ -71,6 +77,6 @@ export const CreateTopicForm = () => {
       <Button type="submit" disabled={loading}>
         {loading ? 'Публикация…' : 'Опубликовать'}
       </Button>
-    </form>
+    </CardForm>
   )
 }

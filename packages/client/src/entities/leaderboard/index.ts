@@ -13,7 +13,7 @@ export type LeaderboardUnit = {
 const ratingFieldName = 'BOFTime'
 const teamName = 'BugOrFeature'
 
-export const sendResultToLeaderbord = (data: any) => {
+export const sendResultToLeaderboard = (data: any) => {
   const body = {
     data: {
       ...data,
@@ -25,7 +25,7 @@ export const sendResultToLeaderbord = (data: any) => {
   request(() => api.post<void>('/leaderboard', body))
 }
 
-export const getLeaderbordData = () => {
+export const getLeaderboardData = () => {
   const body = {
     ratingFieldName: ratingFieldName,
     cursor: 0,

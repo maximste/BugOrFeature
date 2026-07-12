@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { Link } from 'react-router-dom'
+import { Box, Flex, Text } from '@chakra-ui/react'
 
 import { usePage } from '@/app/hooks/usePage'
 import { getTopics } from '@/shared/api'
 import type { TopicResponse } from '@/shared/api'
+import { Button } from '@/shared/ui/button'
 import { PageHeading } from '@/shared/ui/page-heading'
 import { ForumTopicsList } from '@/widgets/forum-topics-list'
 
 import { initForumPage } from '../model/initForumPage'
-
-import styles from './ForumPage.module.scss'
 
 export const ForumPage = () => {
   usePage({ initPage: initForumPage })
@@ -53,26 +53,30 @@ export const ForumPage = () => {
         <title>BugOrFeature</title>
         <meta name="description" content="BugOrFeature" />
       </Helmet>
-      <section className={styles.page}>
-        <div className={styles.header}>
+      <Box as="section" w="full" maxW="660px" mx="auto">
+        <Flex
+          justifyContent="space-between"
+          alignItems="center"
+          mb="32px"
+          w="95%">
           <PageHeading
             title="Форум"
             subtitle="Делитесь опытом и кото-историями"
           />
-          <Link to="/forum/new" className={styles.newTopicButton}>
-            + Новая тема
-          </Link>
-        </div>
+          <Button asChild variant="solid">
+            <Link to="/forum/new">+ Новая тема</Link>
+          </Button>
+        </Flex>
         {loading ? (
-          <p className={styles.status}>Загрузка…</p>
+          <Text color="text">Загрузка…</Text>
         ) : error != null ? (
-          <p className={styles.status} role="alert">
+          <Text color="danger" role="alert">
             {error}
-          </p>
+          </Text>
         ) : (
           <ForumTopicsList topics={topics} />
         )}
-      </section>
+      </Box>
     </>
   )
 }
