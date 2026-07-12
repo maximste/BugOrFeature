@@ -9,7 +9,7 @@ import {
 } from 'react-router-dom/server'
 import { matchRoutes } from 'react-router-dom'
 
-import { AuthProvider } from '@/app/providers'
+import { AuthProvider, ColorModeProvider } from '@/app/providers'
 import { routes, type AppRouteObject } from '@/app/routes'
 import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
 import { setupStore } from '@/app/store/setupStore'
@@ -69,17 +69,19 @@ export const render = async (req: ExpressRequest) => {
   try {
     html = ReactDOM.renderToString(
       <ChakraProvider value={system}>
-        <ErrorBoundary>
-          <Provider store={store}>
-            <AuthProvider>
-              <StaticRouterProvider
-                router={router}
-                context={context}
-                hydrate={false}
-              />
-            </AuthProvider>
-          </Provider>
-        </ErrorBoundary>
+        <ColorModeProvider>
+          <ErrorBoundary>
+            <Provider store={store}>
+              <AuthProvider>
+                <StaticRouterProvider
+                  router={router}
+                  context={context}
+                  hydrate={false}
+                />
+              </AuthProvider>
+            </Provider>
+          </ErrorBoundary>
+        </ColorModeProvider>
       </ChakraProvider>
     )
   } catch (e) {

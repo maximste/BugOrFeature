@@ -58,7 +58,7 @@ export const OauthPage = () => {
             Завершаем вход через Яндекс…
           </Text>
         ) : (
-          <Text m={0} fontSize="16px" color="#c62828" role="alert">
+          <Text m={0} fontSize="16px" color="danger" role="alert">
             {error}
           </Text>
         )}

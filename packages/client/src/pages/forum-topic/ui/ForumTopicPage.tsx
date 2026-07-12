@@ -14,6 +14,7 @@ import { BackLink } from '@/shared/ui/back-link'
 import { ForumTopicView } from '@/widgets/forum-topic-view'
 
 import { initForumTopicPage } from '../model/initForumTopicPage'
+import { Box } from '@chakra-ui/react'
 import {
   addReplyToComments,
   updateCommentReaction,
@@ -113,14 +114,16 @@ export const ForumTopicPage = () => {
         <title>{topic.title} — BugOrFeature</title>
         <meta name="description" content={topic.description} />
       </Helmet>
-      {reactionError != null ? <p role="alert">{reactionError}</p> : null}
-      <ForumTopicView
-        topic={topic}
-        comments={comments}
-        onCommentAdded={handleCommentAdded}
-        onReplyAdded={handleReplyAdded}
-        onReact={handleReact}
-      />
+      <Box as="section" w="full" maxW="660px" mx="auto">
+        {reactionError != null ? <p role="alert">{reactionError}</p> : null}
+        <ForumTopicView
+          topic={topic}
+          comments={comments}
+          onCommentAdded={handleCommentAdded}
+          onReplyAdded={handleReplyAdded}
+          onReact={handleReact}
+        />
+      </Box>
     </>
   )
 }

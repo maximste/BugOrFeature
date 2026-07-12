@@ -1,4 +1,4 @@
-import { COLORS } from '../../../theme'
+import { COLORS, DARK_COLORS } from '../../../theme'
 import { TDifficulty, TDifficultyConfig } from '../types/game'
 
 export const CELL_SIZE = 36
@@ -44,13 +44,31 @@ export const CUSTOM_FIELD_MAX_SIZE = 24
 export const CUSTOM_MIN_MINE_DENSITY = 0.12
 export const CUSTOM_MAX_MINE_DENSITY = 0.35
 
-export const CANVAS_COLORS = {
+export type TCanvasColors = {
+  hidden: string
+  hover: string
+  revealed: string
+  border: string
+  exploded: string
+  num: readonly string[]
+}
+
+export const LIGHT_CANVAS_COLORS: TCanvasColors = {
   hidden: COLORS.cyan,
   hover: COLORS.purple,
   revealed: COLORS.yellow,
   border: COLORS.white,
   exploded: COLORS.pink,
   num: COLORS.num,
-} as const
+}
+
+export const DARK_CANVAS_COLORS: TCanvasColors = {
+  hidden: DARK_COLORS.cyan,
+  hover: DARK_COLORS.purple,
+  revealed: DARK_COLORS.yellow,
+  border: DARK_COLORS.white,
+  exploded: DARK_COLORS.pink,
+  num: COLORS.num,
+}
 
 export const MUSIC_FADE_SECONDS = 1 as const

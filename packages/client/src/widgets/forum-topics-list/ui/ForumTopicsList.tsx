@@ -10,7 +10,7 @@ export type ForumTopicsListProps = {
 
 export const ForumTopicsList = ({ topics }: ForumTopicsListProps) => {
   return (
-    <Flex as="ul" listStyleType="none" direction="column" gap={3} w="95%">
+    <Flex as="ul" listStyleType="none" direction="column" gap={3}>
       {topics.map(({ id, ...card }) => (
         <Box as="li" key={id}>
           <ChakraLink asChild textDecoration="none" width="100%">

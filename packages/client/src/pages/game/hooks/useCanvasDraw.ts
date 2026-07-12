@@ -5,7 +5,12 @@ import {
   RefObject,
   MutableRefObject,
 } from 'react'
-import { CANVAS_COLORS, CELL_SIZE, GAP } from '../constants/game'
+import {
+  CELL_SIZE,
+  DARK_CANVAS_COLORS,
+  GAP,
+  LIGHT_CANVAS_COLORS,
+} from '../constants/game'
 import { drawCell } from '../services/drawCell'
 import { TGrid, TImgSet } from '../types/game'
 import { getBoardSize } from '../services/getBoardSize'
@@ -20,6 +25,7 @@ export type TProps = {
   hoverAlphaRef: RefObject<number>
   revealMapRef: RefObject<Map<string, number>>
   imgsRef: RefObject<TImgSet>
+  colorMode?: 'light' | 'dark'
 }
 
 export const useCanvasDraw = (props: TProps) => {
@@ -33,6 +39,7 @@ export const useCanvasDraw = (props: TProps) => {
     hoverAlphaRef,
     revealMapRef,
     imgsRef,
+    colorMode = 'light',
   } = props
 
   const lastSizeRef = useRef<{
@@ -72,8 +79,11 @@ export const useCanvasDraw = (props: TProps) => {
       lastSizeRef.current = { width, height, dpr }
     }
 
+    const colors =
+      colorMode === 'dark' ? DARK_CANVAS_COLORS : LIGHT_CANVAS_COLORS
+
     ctx.clearRect(0, 0, width, height)
-    ctx.fillStyle = CANVAS_COLORS.border
+    ctx.fillStyle = colors.border
     ctx.fillRect(0, 0, width, height)
 
     for (let row = 0; row < rows; row++)
@@ -89,6 +99,7 @@ export const useCanvasDraw = (props: TProps) => {
               : 0,
           revealAlpha: revealMapRef.current?.get(`${row}-${col}`) ?? 1,
           imgs: imgsRef.current,
+          colors,
         })
   }, [
     grid,
@@ -99,6 +110,7 @@ export const useCanvasDraw = (props: TProps) => {
     hoverAlphaRef,
     revealMapRef,
     imgsRef,
+    colorMode,
   ])
 
   useEffect(() => {

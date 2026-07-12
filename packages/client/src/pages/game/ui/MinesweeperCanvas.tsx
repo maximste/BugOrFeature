@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { useColorMode } from '@/app/providers'
 import { CELL_SIZE, GAP } from '../constants/game'
 import { TGameStatus, TGrid } from '../types/game'
 
@@ -20,6 +21,7 @@ type TProps = {
 
 export default function MinesweeperCanvas(props: TProps) {
   const { grid, rows, cols, status, onReveal, onFlag, onChord } = props
+  const { colorMode } = useColorMode()
 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const drawRef = useRef<(() => void) | null>(null)
@@ -40,6 +42,7 @@ export default function MinesweeperCanvas(props: TProps) {
     hoverAlphaRef,
     revealMapRef,
     imgsRef,
+    colorMode,
   })
 
   const isFinished = status === 'won' || status === 'lost'

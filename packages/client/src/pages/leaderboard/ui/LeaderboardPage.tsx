@@ -147,7 +147,7 @@ export const LeaderboardPage = () => {
           {LEVEL_BUTTONS.map(({ label, level }) => (
             <Box as="li" key={level}>
               <Button
-                variant={activeLevel === level ? 'solid' : 'cyan'}
+                variant={activeLevel === level ? 'default' : 'cyan'}
                 onClick={() => setActiveLevel(level)}>
                 {label}
               </Button>
