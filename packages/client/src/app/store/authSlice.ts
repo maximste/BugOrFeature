@@ -37,6 +37,11 @@ export const authSlice = createSlice({
       state.user = null
       state.status = 'idle'
     },
+    /** /oauth: без запроса /auth/user — считаем гостем, чтобы AuthGate отдал страницу */
+    resolveUnauthenticated: state => {
+      state.user = null
+      state.status = 'failed'
+    },
   },
   extraReducers: builder => {
     builder
@@ -54,7 +59,7 @@ export const authSlice = createSlice({
   },
 })
 
-export const { setUser, clearAuth } = authSlice.actions
+export const { setUser, clearAuth, resolveUnauthenticated } = authSlice.actions
 
 export const selectAuthUser = (state: RootState) => state.auth.user
 export const selectAuthStatus = (state: RootState) => state.auth.status

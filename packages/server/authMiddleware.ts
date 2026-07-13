@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 
-import { fetchAuthUser, type AuthUser } from './auth'
+import { checkAuth, type AuthUser } from './auth'
 
 type AuthedRequest = Request & {
   user?: AuthUser
@@ -11,13 +11,18 @@ export const requireAuth = async (
   res: Response,
   next: NextFunction
 ) => {
-  const user = await fetchAuthUser(req.headers.cookie)
+  const result = await checkAuth(req.headers.cookie)
 
-  if (!user) {
-    res.status(401).json({ reason: 'Unauthorized' })
+  if (result.status === 'authenticated') {
+    req.user = result.user
+    next()
     return
   }
 
-  req.user = user
-  next()
+  if (result.status === 'unavailable') {
+    res.status(503).json({ reason: 'Auth service unavailable' })
+    return
+  }
+
+  res.status(401).json({ reason: 'Unauthorized' })
 }

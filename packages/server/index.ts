@@ -13,7 +13,10 @@ import { createApiProxy, practicumResourcesProxy } from './proxy'
 
 const app = express()
 const port = Number(process.env.SERVER_PORT) || 3001
-const clientOrigin = process.env.CLIENT_ORIGIN ?? 'http://localhost:3000'
+const clientOrigin = process.env.CLIENT_ORIGIN
+if (!clientOrigin) {
+  throw new Error('CLIENT_ORIGIN is required')
+}
 
 app.use(cors({ origin: clientOrigin, credentials: true }))
 app.use(cookieParser())
@@ -27,7 +30,7 @@ app.get('/', (_req, res) => {
 app.use('/auth', createApiProxy('/auth'))
 app.use('/oauth/yandex', createApiProxy('/oauth/yandex'))
 app.use('/user', requireAuth, createApiProxy('/user'))
-app.use('/leaderboard', createApiProxy('/leaderboard'))
+app.use('/leaderboard', requireAuth, createApiProxy('/leaderboard'))
 app.use('/api/v2/resources', practicumResourcesProxy)
 
 const server = app.listen(port, () => {

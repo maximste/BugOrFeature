@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import {
   fetchAuthUser,
+  resolveUnauthenticated,
   selectAuthStatus,
   useDispatch,
   useSelector,
@@ -27,6 +28,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       dispatch(fetchAuthUser())
     }
   }, [dispatch, status, skipAutoFetch])
+
+  useEffect(() => {
+    if (skipAutoFetch && status === 'idle') {
+      dispatch(resolveUnauthenticated())
+    }
+  }, [dispatch, skipAutoFetch, status])
 
   return <>{children}</>
 }

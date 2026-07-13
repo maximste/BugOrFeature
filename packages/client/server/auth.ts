@@ -5,6 +5,11 @@ export const GUEST_ONLY_PATHS = ['/signin', '/signup', '/oauth'] as const
 
 export type PageAuthRequirement = 'guest' | 'private' | 'none'
 
+export type AuthCheckStatus =
+  | 'authenticated'
+  | 'unauthenticated'
+  | 'unavailable'
+
 export const normalizePathname = (pathname: string): string => {
   if (pathname.length > 1 && pathname.endsWith('/')) {
     return pathname.slice(0, -1)
@@ -44,23 +49,78 @@ const getServerUrl = () =>
   process.env.EXTERNAL_SERVER_URL ??
   'http://localhost:3001'
 
-export const checkIsAuthenticated = async (req: Request): Promise<boolean> => {
-  const cookie = req.headers.cookie
+const isServerError = (status: number) => status >= 500
 
-  if (!cookie) {
-    return false
-  }
+type AuthStatusResponse =
+  | { kind: 'authenticated' }
+  | { kind: 'unauthenticated' }
+  | { kind: 'unavailable' }
 
+const checkAuthStatusOnce = async (
+  cookie: string
+): Promise<AuthStatusResponse> => {
   try {
     const { status } = await axios.get(`${getServerUrl()}/auth/user`, {
       headers: { Cookie: cookie },
       validateStatus: () => true,
     })
 
-    return status === 200
+    if (status === 200) {
+      return { kind: 'authenticated' }
+    }
+
+    if (isServerError(status)) {
+      return { kind: 'unavailable' }
+    }
+
+    return { kind: 'unauthenticated' }
   } catch {
-    return false
+    return { kind: 'unavailable' }
   }
+}
+
+const resolveAuthStatusResponse = (
+  response: AuthStatusResponse
+): AuthCheckStatus | null => {
+  if (response.kind === 'authenticated') {
+    return 'authenticated'
+  }
+
+  if (response.kind === 'unauthenticated') {
+    return 'unauthenticated'
+  }
+
+  return null
+}
+
+export const checkAuth = async (req: Request): Promise<AuthCheckStatus> => {
+  const cookie = req.headers.cookie
+
+  if (!cookie) {
+    return 'unauthenticated'
+  }
+
+  const first = await checkAuthStatusOnce(cookie)
+  const firstResult = resolveAuthStatusResponse(first)
+
+  if (firstResult != null) {
+    return firstResult
+  }
+
+  const second = await checkAuthStatusOnce(cookie)
+  const secondResult = resolveAuthStatusResponse(second)
+
+  if (secondResult != null) {
+    return secondResult
+  }
+
+  return 'unavailable'
+}
+
+export const checkIsAuthenticated = async (req: Request): Promise<boolean> => {
+  const status = await checkAuth(req)
+
+  return status === 'authenticated'
 }
 
 export const resolvePageAuthRedirect = async (
@@ -74,13 +134,19 @@ export const resolvePageAuthRedirect = async (
     return null
   }
 
-  const authenticated = await checkIsAuthenticated(req)
+  const authStatus = await checkAuth(req)
 
-  if (requirement === 'private' && !authenticated) {
-    return '/signin'
+  if (requirement === 'private') {
+    if (authStatus === 'unauthenticated') {
+      return '/signin'
+    }
+
+    if (authStatus === 'unavailable') {
+      return '/500'
+    }
   }
 
-  if (requirement === 'guest' && authenticated) {
+  if (requirement === 'guest' && authStatus === 'authenticated') {
     return '/'
   }
 

@@ -1,4 +1,5 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Center, Spinner } from '@chakra-ui/react'
 
 import { AUTH_TARGET, useRequireAuth } from '@/shared/hooks'
 import {
@@ -11,12 +12,20 @@ export const AuthGate = () => {
   const path = normalizePathname(pathname)
   const requirement = getPageAuthRequirement(path)
 
-  const { redirect } = useRequireAuth(
+  const { redirect, pending } = useRequireAuth(
     requirement === 'guest' ? AUTH_TARGET.GUEST : AUTH_TARGET.PRIVATE
   )
 
   if (requirement === 'none') {
     return <Outlet />
+  }
+
+  if (pending) {
+    return (
+      <Center minH="50vh">
+        <Spinner size="lg" />
+      </Center>
+    )
   }
 
   if (redirect != null) {

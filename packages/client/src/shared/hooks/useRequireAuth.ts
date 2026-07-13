@@ -12,7 +12,7 @@ export const useRequireAuth = (target: AuthTarget = AUTH_TARGET.PRIVATE) => {
   const { isAuthenticated, isAuthLoading } = useAuth()
 
   if (isAuthLoading) {
-    return { isAuthenticated: false, redirect: null }
+    return { isAuthenticated: false, redirect: null, pending: true }
   }
 
   let redirect: string | null = null
@@ -23,5 +23,5 @@ export const useRequireAuth = (target: AuthTarget = AUTH_TARGET.PRIVATE) => {
     redirect = '/'
   }
 
-  return { isAuthenticated, redirect }
+  return { isAuthenticated, redirect, pending: false }
 }

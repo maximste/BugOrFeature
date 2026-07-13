@@ -30,7 +30,9 @@ export default defineConfig(({ mode }) => ({
       '/oauth/yandex': apiProxy,
       '/user': { ...apiProxy, timeout: 120_000 },
       '/api/v2/resources': apiProxy,
-      '/leaderboard': { ...apiProxy, timeout: 120_000 },
+      // Только API: /leaderboard-page — маршрут React, не проксировать
+      '^/leaderboard$': { ...apiProxy, timeout: 120_000 },
+      '^/leaderboard/': { ...apiProxy, timeout: 120_000 },
     },
   },
   define: {
