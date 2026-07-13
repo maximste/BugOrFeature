@@ -1,6 +1,6 @@
+import { Flex, Heading, Text } from '@chakra-ui/react'
+import { Card } from '@/shared/ui/card'
 import type { MainFeatureCard } from '../model/types'
-
-import styles from './MainFeatureCards.module.scss'
 
 export type MainFeatureCardsProps = {
   cards: MainFeatureCard[]
@@ -8,16 +8,44 @@ export type MainFeatureCardsProps = {
 
 export const MainFeatureCards = ({ cards }: MainFeatureCardsProps) => {
   return (
-    <div className={styles.root}>
-      {cards.map(card => (
-        <article key={card.id} className={styles.card}>
-          <div className={styles.icon}>
-            <img src={card.iconSrc} alt={card.iconAlt} width={24} height={24} />
-          </div>
-          <h3 className={styles.title}>{card.title}</h3>
-          <p className={styles.description}>{card.description}</p>
-        </article>
+    <Flex flexWrap="wrap" gap={4} w="full">
+      {cards.map(({ id, title, description, Icon }) => (
+        <Card as="article" key={id} p="24px" flex="1 1 200px" gap={1}>
+          <Flex
+            justifyContent="center"
+            alignItems="center"
+            w="48px"
+            h="48px"
+            background="purple/50"
+            borderRadius="16px"
+            color="text">
+            <Icon width={24} height={24} />
+          </Flex>
+          <Heading
+            as="h3"
+            display="flex"
+            alignItems="end"
+            justifyContent="start"
+            fontFamily="body"
+            fontSize="18px"
+            fontWeight="800"
+            lineHeight="28px"
+            height="40px"
+            m={0}>
+            {title}
+          </Heading>
+          <Text
+            m={0}
+            fontFamily="body"
+            fontSize="12px"
+            fontWeight="400"
+            color="subtitleText"
+            textAlign="start"
+            whiteSpace="pre-line">
+            {description}
+          </Text>
+        </Card>
       ))}
-    </div>
+    </Flex>
   )
 }

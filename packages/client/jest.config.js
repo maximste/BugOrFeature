@@ -8,7 +8,6 @@ module.exports = {
   passWithNoTests: true,
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '\\.module\\.(scss|sass)$': 'identity-obj-proxy',
   },
   globals: {
     __SERVER_PORT__: process.env.SERVER_PORT,

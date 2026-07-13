@@ -2,7 +2,9 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 
-import '@/app/styles/index.scss'
+import { ColorModeProvider } from '@/app/providers'
+import '@/app/styles/fonts.css'
+import '@/app/styles/input-field.css'
 
 import { routes } from '@/app/routes'
 import { store } from '@/app/store'
@@ -27,11 +29,13 @@ const rootElement = document.getElementById('root') as HTMLElement
 
 const app = (
   <ChakraProvider value={system}>
-    <ErrorBoundary>
-      <Provider store={store}>
-        <RouterProvider router={router} />
-      </Provider>
-    </ErrorBoundary>
+    <ColorModeProvider>
+      <ErrorBoundary>
+        <Provider store={store}>
+          <RouterProvider router={router} />
+        </Provider>
+      </ErrorBoundary>
+    </ColorModeProvider>
   </ChakraProvider>
 )
 

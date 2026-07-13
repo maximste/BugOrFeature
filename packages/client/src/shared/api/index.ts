@@ -21,3 +21,21 @@ export type {
   UpdateUserProfileBody,
   UserProfileResponse,
 } from './types'
+
+export {
+  getTopics,
+  getTopicDetail,
+  postTopic,
+  postComment,
+  postReply,
+  putReaction,
+} from './forumApiClient'
+export type {
+  CommentResponse,
+  Emotion,
+  ReactionState,
+  ReactionSummary,
+  ReplyResponse,
+  TopicDetailResponse,
+  TopicResponse,
+} from './forumApiClient'

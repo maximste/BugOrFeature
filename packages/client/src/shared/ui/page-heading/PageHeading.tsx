@@ -1,24 +1,42 @@
 import type { ReactNode } from 'react'
+import { Box, Heading, Text, type HTMLChakraProps } from '@chakra-ui/react'
 
-import styles from './PageHeading.module.scss'
-
-export type PageHeadingProps = {
+export type PageHeadingProps = Omit<HTMLChakraProps<'div'>, 'title'> & {
   title: ReactNode
   subtitle?: ReactNode
-  className?: string
+  align?: 'flex-start' | 'center'
+  titleFontSize?: string
+  subtitleFontSize?: string
 }
 
 export const PageHeading = ({
   title,
   subtitle,
-  className = '',
+  align = 'flex-start',
+  titleFontSize = '30px',
+  subtitleFontSize = '16px',
+  ...rest
 }: PageHeadingProps) => {
   return (
-    <div className={`${styles.root} ${className}`.trim()}>
-      <h1 className={styles.title}>{title}</h1>
+    <Box
+      display="flex"
+      flexDirection="column"
+      alignItems={align}
+      gap={2}
+      {...rest}>
+      <Heading
+        as="h1"
+        fontSize={titleFontSize}
+        fontWeight="800"
+        color="text"
+        m={0}>
+        {title}
+      </Heading>
       {subtitle != null && subtitle !== '' ? (
-        <p className={styles.subtitle}>{subtitle}</p>
+        <Text as="p" fontSize={subtitleFontSize} color="subtitleText" m={0}>
+          {subtitle}
+        </Text>
       ) : null}
-    </div>
+    </Box>
   )
 }

@@ -1,4 +1,4 @@
-import { CELL_SIZE, CANVAS_COLORS, RADIUS } from '../constants/game'
+import { CELL_SIZE, RADIUS, TCanvasColors } from '../constants/game'
 import { TCell, TImgSet } from '../types/game'
 
 type TProps = {
@@ -9,13 +9,14 @@ type TProps = {
   hoverAlpha: number
   revealAlpha: number
   imgs: TImgSet | null
+  colors: TCanvasColors
 }
 
 const canDrawImage = (img: HTMLImageElement | null): img is HTMLImageElement =>
   img != null && img.complete && img.naturalWidth > 0
 
 export const drawCell = (props: TProps): void => {
-  const { ctx, x, y, cell, hoverAlpha, revealAlpha, imgs } = props
+  const { ctx, x, y, cell, hoverAlpha, revealAlpha, imgs, colors } = props
 
   const s = CELL_SIZE
 
@@ -26,13 +27,11 @@ export const drawCell = (props: TProps): void => {
 
   if (cell.revealed) {
     // hidden-цвет основа для плавного перехода
-    ctx.fillStyle = CANVAS_COLORS.hidden
+    ctx.fillStyle = colors.hidden
     ctx.fillRect(x, y, s, s)
 
     ctx.globalAlpha = revealAlpha
-    ctx.fillStyle = cell.exploded
-      ? CANVAS_COLORS.exploded
-      : CANVAS_COLORS.revealed
+    ctx.fillStyle = cell.exploded ? colors.exploded : colors.revealed
     ctx.fillRect(x, y, s, s)
 
     if (cell.mine) {
@@ -42,7 +41,7 @@ export const drawCell = (props: TProps): void => {
         ctx.drawImage(mineImg, x + m, y + m, s - m * 2, s - m * 2)
       }
     } else if (!cell.mine && cell.adjacent > 0) {
-      ctx.fillStyle = CANVAS_COLORS.num[cell.adjacent] ?? '#000'
+      ctx.fillStyle = colors.num[cell.adjacent] ?? '#000'
       ctx.font = `600 ${s * 0.52}px 'Fredoka', sans-serif`
       ctx.textAlign = 'center'
       ctx.textBaseline = 'middle'
@@ -57,12 +56,12 @@ export const drawCell = (props: TProps): void => {
 
     ctx.globalAlpha = 1
   } else {
-    ctx.fillStyle = CANVAS_COLORS.hidden
+    ctx.fillStyle = colors.hidden
     ctx.fillRect(x, y, s, s)
 
     if (hoverAlpha > 0) {
       ctx.globalAlpha = hoverAlpha
-      ctx.fillStyle = CANVAS_COLORS.hover
+      ctx.fillStyle = colors.hover
       ctx.fillRect(x, y, s, s)
       ctx.globalAlpha = 1
     }

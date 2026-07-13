@@ -3,11 +3,18 @@ import dotenv from 'dotenv'
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
-import express from 'express'
+import express, {
+  ErrorRequestHandler,
+  NextFunction,
+  Request,
+  Response,
+} from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 
-import { createClientAndConnect } from './db'
+import { connectDb } from './db'
+import { syncModels } from './models'
+import { forumRouter } from './routes/forum'
 import { requireAuth } from './authMiddleware'
 import { createApiProxy, practicumResourcesProxy } from './proxy'
 
@@ -20,8 +27,30 @@ if (!clientOrigin) {
 
 app.use(cors({ origin: clientOrigin, credentials: true }))
 app.use(cookieParser())
+app.use(express.json())
 
-createClientAndConnect()
+// при холодном старте (особенно в docker-compose) Postgres может ещё не принимать
+// соединения в момент запуска сервера — пробуем несколько раз с паузой
+const DB_CONNECT_ATTEMPTS = 10
+const DB_CONNECT_RETRY_DELAY_MS = 2000
+
+const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
+
+// true — подключились (и накатили схему), false — исчерпали все попытки
+const bootstrapDb = async (): Promise<boolean> => {
+  for (let attempt = 1; attempt <= DB_CONNECT_ATTEMPTS; attempt += 1) {
+    if (await connectDb()) {
+      await syncModels()
+      return true
+    }
+
+    if (attempt < DB_CONNECT_ATTEMPTS) {
+      await wait(DB_CONNECT_RETRY_DELAY_MS)
+    }
+  }
+
+  return false
+}
 
 app.get('/', (_req, res) => {
   res.json({ message: 'Hello from API' })
@@ -32,23 +61,21 @@ app.use('/oauth/yandex', createApiProxy('/oauth/yandex'))
 app.use('/user', requireAuth, createApiProxy('/user'))
 app.use('/leaderboard', requireAuth, createApiProxy('/leaderboard'))
 app.use('/api/v2/resources', practicumResourcesProxy)
+app.use('/forum', forumRouter)
 
-const server = app.listen(port, () => {
-  console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
-})
+const errorHandler: ErrorRequestHandler = (
+  err: unknown,
+  _req: Request,
+  res: Response,
+  _next: NextFunction
+) => {
+  console.error(err)
+  res.status(500).json({ reason: 'Внутренняя ошибка сервера' })
+}
 
-server.on('error', (err: NodeJS.ErrnoException) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(
-      `  ➜ ❌ Порт ${port} уже занят. Остановите другой процесс (Ctrl+C в терминале с yarn dev:server).`
-    )
-    process.exit(1)
-  }
+app.use(errorHandler)
 
-  throw err
-})
-
-const shutdown = () => {
+const shutdown = (server: ReturnType<typeof app.listen>) => {
   if ('closeAllConnections' in server) {
     ;(
       server as typeof server & { closeAllConnections: () => void }
@@ -60,5 +87,35 @@ const shutdown = () => {
   setTimeout(() => process.exit(0), 1000).unref()
 }
 
-process.on('SIGTERM', shutdown)
-process.on('SIGINT', shutdown)
+// порт не слушаем, пока не подключимся к БД — иначе healthcheck (GET /) считает
+// контейнер здоровым, а /forum/* при этом всё равно отдаёт 500
+const main = async () => {
+  const connected = await bootstrapDb()
+
+  if (!connected) {
+    console.error(
+      `Не удалось подключиться к базе данных после ${DB_CONNECT_ATTEMPTS} попыток — выходим`
+    )
+    process.exit(1)
+  }
+
+  const server = app.listen(port, () => {
+    console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
+  })
+
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(
+        `  ➜ ❌ Порт ${port} уже занят. Остановите другой процесс (Ctrl+C в терминале с yarn dev:server).`
+      )
+      process.exit(1)
+    }
+
+    throw err
+  })
+
+  process.on('SIGTERM', () => shutdown(server))
+  process.on('SIGINT', () => shutdown(server))
+}
+
+main()

@@ -1,6 +1,7 @@
 import { Helmet } from 'react-helmet'
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Flex, Text } from '@chakra-ui/react'
 
 import { usePage } from '@/app/hooks/usePage'
 import { fetchAuthUser, useDispatch } from '@/app/store'
@@ -9,8 +10,6 @@ import { toAuthError } from '@/shared/auth'
 import { getYandexOAuthRedirectUri } from '@/shared/config/oauth'
 
 import { initOauthPage } from '../model/initOauthPage'
-
-import styles from './OauthPage.module.scss'
 
 export const OauthPage = () => {
   usePage({ initPage: initOauthPage })
@@ -47,15 +46,22 @@ export const OauthPage = () => {
         <meta charSet="utf-8" />
         <title>Авторизация — Catsweeper</title>
       </Helmet>
-      <section className={styles.page}>
+      <Flex
+        as="section"
+        justifyContent="center"
+        alignItems="center"
+        minH="40vh"
+        p="24px">
         {!error ? (
-          <p className={styles.message}>Завершаем вход через Яндекс…</p>
+          <Text m={0} fontSize="16px">
+            Завершаем вход через Яндекс…
+          </Text>
         ) : (
-          <p className={styles.error} role="alert">
+          <Text m={0} fontSize="16px" color="danger" role="alert">
             {error}
-          </p>
+          </Text>
         )}
-      </section>
+      </Flex>
     </>
   )
 }

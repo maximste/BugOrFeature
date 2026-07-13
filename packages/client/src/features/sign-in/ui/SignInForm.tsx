@@ -1,7 +1,9 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Box, Text, Link as ChakraLink, Flex } from '@chakra-ui/react'
 
+import LogoIcon from '@/assets/icons/logo.svg?react'
 import { getOauthYandexServiceId } from '@/shared/api'
 import { fetchAuthUser, useDispatch } from '@/app/store'
 import { signIn, toAuthError } from '@/shared/auth'
@@ -10,6 +12,7 @@ import {
   getYandexOAuthRedirectUri,
 } from '@/shared/config/oauth'
 import { Button } from '@/shared/ui/button'
+import { CardForm } from '@/shared/ui/card'
 import { FormField } from '@/shared/ui/form-field'
 import { Input } from '@/shared/ui/input'
 import { PageHeading } from '@/shared/ui/page-heading'
@@ -18,8 +21,6 @@ import {
   handleValidationFocus,
   validateForm,
 } from '@/shared/lib/validations'
-
-import styles from './SignInForm.module.scss'
 
 export const SignInForm = () => {
   const navigate = useNavigate()
@@ -73,36 +74,59 @@ export const SignInForm = () => {
   }
 
   return (
-    <form
-      className={styles.form}
+    <CardForm
+      display="flex"
+      flexDirection="column"
+      alignItems="stretch"
+      gap={4}
+      w="full"
+      maxW="26rem"
+      p="30px"
       onSubmit={handleSubmit}
       onFocus={e => handleValidationFocus(e.nativeEvent)}
       onBlur={e => handleValidationBlur(e.nativeEvent)}
       noValidate>
-      <div className={styles.iconWrap} aria-hidden>
-        <img className={styles.icon} src="/icons/logo.svg" alt="" />
-      </div>
+      <Flex
+        justifyContent="center"
+        alignItems="center"
+        w="56px"
+        h="56px"
+        mx="auto"
+        borderRadius="16px"
+        background="buttonBg/30">
+        <LogoIcon width={28} height={28} />
+      </Flex>
       <PageHeading
         title="С возвращением"
         subtitle="Войдите, чтобы общаться на форуме"
-        className={styles.heading}
+        align="center"
+        gap={1}
+        textAlign="center"
+        mb="4px"
+        titleFontSize="24px"
+        subtitleFontSize="14px"
       />
       {!displayError ? null : (
-        <p className={styles.error} role="alert">
+        <Text
+          m={0}
+          fontSize="14px"
+          color="danger"
+          textAlign="center"
+          role="alert">
           {displayError}
-        </p>
+        </Text>
       )}
-      <FormField label="Логин" htmlFor="login">
+      <FormField label="Логин" htmlFor="login" width="100%">
         <Input
           id="login"
           name="login"
           type="text"
-          className={styles.input}
           value={login}
           onChange={e => setLogin(e.target.value)}
           placeholder="cat"
           autoComplete="username"
           disabled={loading}
+          width="100%"
         />
       </FormField>
       <FormField label="Пароль" htmlFor="password">
@@ -110,28 +134,49 @@ export const SignInForm = () => {
           id="password"
           name="password"
           type="password"
-          className={styles.input}
           value={password}
           onChange={e => setPassword(e.target.value)}
           autoComplete="off"
           disabled={loading}
         />
       </FormField>
-      <Button type="submit" className={styles.submit} disabled={loading}>
+      <Button
+        type="submit"
+        w="full"
+        maxW="none"
+        mt="4px"
+        padding="12px 16px"
+        disabled={loading}>
         {signInLoading ? 'Вход…' : 'Войти'}
       </Button>
-      <p className={styles.footer}>
+      <Text
+        alignSelf="center"
+        m="4px 0 0"
+        fontSize="14px"
+        color="subtitleText"
+        textAlign="center">
         Нет аккаунта?{' '}
-        <Link className={styles.registerLink} to="/signup">
-          Зарегистрироваться
-        </Link>
-      </p>
-      <p
-        className={styles.authYandexLink}
+        <ChakraLink
+          asChild
+          color="text"
+          fontWeight="600"
+          textDecoration="none"
+          _hover={{ color: 'danger' }}>
+          <Link to="/signup">Зарегистрироваться</Link>
+        </ChakraLink>
+      </Text>
+      <Text
+        display="flex"
+        justifyContent="center"
+        fontSize="14px"
+        color="text"
+        fontWeight="600"
+        cursor="pointer"
+        _hover={{ color: 'danger' }}
         onClick={loading ? undefined : authOrRegisterFromYandex}
         aria-disabled={loading}>
         {yandexLoading ? 'Вход через Яндекс…' : 'Войти через Яндекс'}
-      </p>
-    </form>
+      </Text>
+    </CardForm>
   )
 }

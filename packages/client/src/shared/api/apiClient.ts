@@ -12,7 +12,6 @@ import type {
   UpdateUserProfileBody,
   UserProfileResponse,
 } from './types'
-import { LeaderboardUnit } from '@/entities/leaderbord'
 
 /**
  * Общий слой HTTP-запросов к API Практикума.
@@ -50,8 +49,8 @@ const toApiError = (err: unknown): ApiError => {
   const status = err.response?.status ?? 0
   const reason = getReason(err.response?.data)
 
-  if (status === 401) {
-    return new ApiError(401, reason ?? 'Требуется авторизация', reason)
+  if (status === 401 || status === 403) {
+    return new ApiError(status, reason ?? 'Требуется авторизация', reason)
   }
 
   if (status === 400) {
@@ -69,6 +68,7 @@ const toApiError = (err: unknown): ApiError => {
   )
 }
 
+/** Общий helper для запросов к любому axios-инстансу (переиспользуется в forumApiClient) */
 export const request = async <T>(
   call: () => Promise<{ data: T }>
 ): Promise<T> => {

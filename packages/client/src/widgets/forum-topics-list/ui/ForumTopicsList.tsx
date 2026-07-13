@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom'
+import { Flex, Box, Link as ChakraLink } from '@chakra-ui/react'
 
 import { TopicCard } from '@/entities/topic'
 import type { Topic } from '@/entities/topic'
-
-import styles from './ForumTopicsList.module.scss'
 
 export type ForumTopicsListProps = {
   topics: Topic[]
@@ -11,14 +10,16 @@ export type ForumTopicsListProps = {
 
 export const ForumTopicsList = ({ topics }: ForumTopicsListProps) => {
   return (
-    <ul className={styles.list}>
+    <Flex as="ul" listStyleType="none" direction="column" gap={3}>
       {topics.map(({ id, ...card }) => (
-        <li key={id} className={styles.item}>
-          <Link className={styles.cardLink} to={`/forum/${id}`}>
-            <TopicCard {...card} />
-          </Link>
-        </li>
+        <Box as="li" key={id}>
+          <ChakraLink asChild textDecoration="none" width="100%">
+            <Link to={`/forum/${id}`}>
+              <TopicCard {...card} />
+            </Link>
+          </ChakraLink>
+        </Box>
       ))}
-    </ul>
+    </Flex>
   )
 }

@@ -1,2 +1,3 @@
-export { AuthProvider } from './AuthProvider'
 export { useAuth } from './useAuth'
+export { AuthProvider } from './AuthProvider'
+export { ColorModeProvider, useColorMode } from './ColorModeProvider'

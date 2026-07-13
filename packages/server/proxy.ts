@@ -2,7 +2,9 @@ import type { IncomingMessage, ServerResponse } from 'http'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 
 const PRACTICUM_API_BASE =
-  process.env.PRACTICUM_API_BASE ?? 'https://ya-praktikum.tech/api/v2'
+  process.env.PRACTICUM_API_BASE_URL ??
+  process.env.PRACTICUM_API_BASE ??
+  'https://ya-praktikum.tech/api/v2'
 
 const rewriteSetCookieForLocalhost = (proxyRes: IncomingMessage) => {
   const setCookie = proxyRes.headers['set-cookie']

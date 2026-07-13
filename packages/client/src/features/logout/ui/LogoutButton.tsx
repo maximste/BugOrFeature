@@ -3,8 +3,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { clearAuth, useDispatch } from '@/app/store'
 import { logout } from '@/shared/auth'
-
-import styles from './LogoutButton.module.scss'
+import { Button } from '@/shared/ui/button'
 
 export const LogoutButton = () => {
   const navigate = useNavigate()
@@ -28,12 +27,13 @@ export const LogoutButton = () => {
   }
 
   return (
-    <button
+    <Button
       type="button"
-      className={styles.root}
+      bg="cyan"
+      fontSize="16px "
       onClick={handleClick}
       disabled={loggingOut}>
-      {loggingOut ? 'Выход…' : 'Logout'}
-    </button>
+      {loggingOut ? 'Выход…' : 'Выйти'}
+    </Button>
   )
 }

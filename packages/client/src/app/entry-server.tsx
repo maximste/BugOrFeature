@@ -9,6 +9,7 @@ import {
 } from 'react-router-dom/server'
 import { matchRoutes } from 'react-router-dom'
 
+import { ColorModeProvider } from '@/app/providers'
 import { setUser } from '@/app/store'
 import { routes, type AppRouteObject } from '@/app/routes'
 import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
@@ -23,7 +24,8 @@ import {
   fetchAuthUserForSsr,
 } from './entry-server.utils'
 
-import '@/app/styles/index.scss'
+import '@/app/styles/fonts.css'
+import '@/app/styles/input-field.css'
 import ErrorBoundary from './errorBoundary/ErrorBoundary'
 
 export const render = async (req: ExpressRequest) => {
@@ -75,11 +77,17 @@ export const render = async (req: ExpressRequest) => {
   try {
     html = ReactDOM.renderToString(
       <ChakraProvider value={system}>
-        <ErrorBoundary>
-          <Provider store={store}>
-            <StaticRouterProvider router={router} context={context} />
-          </Provider>
-        </ErrorBoundary>
+        <ColorModeProvider>
+          <ErrorBoundary>
+            <Provider store={store}>
+              <StaticRouterProvider
+                router={router}
+                context={context}
+                hydrate={false}
+              />
+            </Provider>
+          </ErrorBoundary>
+        </ColorModeProvider>
       </ChakraProvider>
     )
   } catch (e) {

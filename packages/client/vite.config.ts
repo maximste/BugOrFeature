@@ -44,13 +44,6 @@ export default defineConfig(({ mode }) => ({
       mode === 'production' ? process.env.EXTERNAL_SERVER_URL ?? '' : ''
     ),
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        additionalData: `@use "@/app/styles/variables" as *;\n`,
-      },
-    },
-  },
   build: {
     outDir: path.join(__dirname, 'dist/client'),
   },

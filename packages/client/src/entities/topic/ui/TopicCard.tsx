@@ -1,6 +1,11 @@
+import { Box, Heading, Text, HStack, chakra } from '@chakra-ui/react'
+import { Card } from '@/shared/ui/card'
+import { TRANSITION } from '@/theme'
 import type { Topic } from '../model/types'
-import styles from './TopicCard.module.scss'
-const TOPIC_ICON_SRC = '/icons/IconTopic.svg'
+
+import ChatIcon from '@/assets/icons/chat.svg?react'
+
+const Time = chakra('time')
 
 export type TopicCardProps = Omit<Topic, 'id'>
 
@@ -11,25 +16,36 @@ export const TopicCard = ({
   date,
 }: TopicCardProps) => {
   return (
-    <article className={styles.item}>
-      <div className={styles.header}>
-        <img
-          src={TOPIC_ICON_SRC}
-          alt="Тема топика"
-          width={16}
-          height={16}
-          decoding="async"
-          aria-hidden
-        />
-        <h2 className={styles.title}>{title}</h2>
-      </div>
-      <p className={styles.description}>{description}</p>
-      <div className={styles.footer}>
-        <span aria-hidden>🐾</span>
-        <span>{author}</span>
-        <span aria-hidden>·</span>
-        <time dateTime={date}>{date}</time>
-      </div>
-    </article>
+    <Card
+      as="article"
+      p="20px"
+      borderRadius="16px"
+      border="1px solid"
+      borderColor="border"
+      cursor="pointer"
+      width="100%"
+      transition={`transform 0.22s ease, box-shadow 0.22s ease, ${TRANSITION}`}
+      _hover={{ transform: 'translateY(-4px)', boxShadow: 'cardHover' }}
+      _active={{ transform: 'translateY(-1px)' }}>
+      <HStack gap="6px" align="center">
+        <ChatIcon width={16} height={16} aria-hidden />
+        <Heading as="h2" fontSize="18px" fontWeight="700" color="text" m={0}>
+          {title}
+        </Heading>
+      </HStack>
+      <Text fontSize="14px" color="subtitleText" margin="4px 0 12px">
+        {description}
+      </Text>
+      <HStack gap={0.5} fontSize="12px" color="subtitleText">
+        <Box as="span" aria-hidden>
+          🐾
+        </Box>
+        <Box as="span">{author}</Box>
+        <Box as="span" aria-hidden>
+          ·
+        </Box>
+        <Time dateTime={date}>{date}</Time>
+      </HStack>
+    </Card>
   )
 }

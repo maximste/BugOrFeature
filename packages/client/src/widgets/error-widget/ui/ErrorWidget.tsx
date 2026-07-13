@@ -1,23 +1,17 @@
-import styles from './ErrorWidget.module.scss'
 import { Button } from '@/shared/ui/button'
+import { ErrorPageLayout } from '@/shared/ui/error-page-layout'
 
 export const ErrorWidget = () => {
   return (
-    <main className={styles.noHeaderMain}>
-      <section className={styles.errorPageContainer}>
-        <img
-          className={styles.errorIcon}
-          src="/img/server-error-icon.png"
-          alt=""
-        />
-        <h1 className={styles.errorHeader}>Ошибка</h1>
-        <h2 className={styles.errorSubHeader}>Котики опять что-то уронили</h2>
-        <Button
-          className={`${styles.errorPageButton} ${styles.reloadButton}`}
-          onClick={() => window.location.reload()}>
+    <ErrorPageLayout
+      icon="/img/server-error-icon.png"
+      code="Ошибка"
+      subheader="Котики опять что-то уронили"
+      actions={
+        <Button onClick={() => window.location.reload()}>
           Перезагрузить страницу
         </Button>
-      </section>
-    </main>
+      }
+    />
   )
 }

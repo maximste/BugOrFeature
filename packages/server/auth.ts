@@ -17,7 +17,9 @@ export type AuthCheckResult =
   | { status: 'unavailable' }
 
 const PRACTICUM_API_BASE =
-  process.env.PRACTICUM_API_BASE ?? 'https://ya-praktikum.tech/api/v2'
+  process.env.PRACTICUM_API_BASE_URL ??
+  process.env.PRACTICUM_API_BASE ??
+  'https://ya-praktikum.tech/api/v2'
 
 const isServerError = (status: number) => status >= 500
 

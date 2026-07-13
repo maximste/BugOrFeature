@@ -4,17 +4,19 @@ import { drawCell } from './drawCell' // путь к вашему модулю
 // Мокируем зависимости
 vi.mock('../constants/game', () => ({
   CELL_SIZE: 32,
-  CANVAS_COLORS: {
-    hidden: '#808080',
-    revealed: '#d0d0d0',
-    exploded: '#ff0000',
-    hover: '#c0c0c0',
-    num: ['#000', '#00f', '#080', '#f00', '#008', '#800', '#088', '#000'],
-  },
   RADIUS: 6,
 }))
 
 vi.mock('../types/game', () => ({}))
+
+const testColors = {
+  hidden: '#808080',
+  revealed: '#d0d0d0',
+  exploded: '#ff0000',
+  hover: '#c0c0c0',
+  border: '#ffffff',
+  num: ['#000', '#00f', '#080', '#f00', '#008', '#800', '#088', '#000'],
+} as const
 
 describe('drawCell', () => {
   it('Должен корректно вызывать методы контекста canvas для открытой ячейки с миной', () => {
@@ -60,6 +62,7 @@ describe('drawCell', () => {
         flag: {} as HTMLImageElement,
         emptyCell: {} as HTMLImageElement,
       },
+      colors: testColors,
     }
 
     // Выполняем тестируемую функцию
@@ -117,6 +120,7 @@ describe('drawCell', () => {
         flag: validFlagImage,
         emptyCell: {} as HTMLImageElement,
       },
+      colors: testColors,
     }
 
     drawCell(testProps)
@@ -160,6 +164,7 @@ describe('drawCell', () => {
       hoverAlpha: 0,
       revealAlpha: 1,
       imgs: null,
+      colors: testColors,
     }
 
     drawCell(testProps)
