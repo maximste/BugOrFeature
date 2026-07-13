@@ -1,3 +1,5 @@
+import { getTheme, addThemes } from '@/entities/themes'
+import { updateUserTheme } from '@/shared/api/themeApiClient'
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 
@@ -27,6 +29,11 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
   const [colorMode, setColorMode] = useState<ColorMode>(getPreferredColorMode)
 
   useEffect(() => {
+    addThemes(['light', 'dark'])
+  }, [])
+
+  useEffect(() => {
+    getTheme()
     document.documentElement.classList.toggle('dark', colorMode === 'dark')
     document.documentElement.classList.toggle('light', colorMode === 'light')
     window.localStorage.setItem(STORAGE_KEY, colorMode)
@@ -34,6 +41,7 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
 
   const toggleColorMode = () => {
     setColorMode(mode => (mode === 'light' ? 'dark' : 'light'))
+    updateUserTheme(colorMode)
   }
 
   return (

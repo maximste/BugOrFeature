@@ -12,6 +12,7 @@ import express, {
 import { connectDb } from './db'
 import { syncModels } from './models'
 import { forumRouter } from './routes/forum'
+import { themeRouter } from './routes/theme'
 
 const app = express()
 // без прокси клиент бьёт сюда напрямую с другого порта — нужны credentials в CORS
@@ -47,6 +48,7 @@ app.get('/', (_, res) => {
 })
 
 app.use('/forum', forumRouter)
+app.use('/theme', themeRouter)
 
 const errorHandler: ErrorRequestHandler = (
   err: unknown,

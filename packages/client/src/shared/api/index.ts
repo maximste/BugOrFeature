@@ -39,3 +39,5 @@ export type {
   TopicDetailResponse,
   TopicResponse,
 } from './forumApiClient'
+
+export { getUserTheme, addGameTheme } from './themeApiClient'
