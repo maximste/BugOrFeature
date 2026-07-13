@@ -1,9 +1,12 @@
-import { getTheme, addThemes } from '@/entities/themes'
-import { updateUserTheme } from '@/shared/api/themeApiClient'
+import {
+  getUserTheme,
+  addGameThemes,
+  updateUserTheme,
+} from '@/shared/api/themeApiClient'
 import { createContext, useContext, useEffect, useState } from 'react'
 import type { PropsWithChildren } from 'react'
 
-type ColorMode = 'light' | 'dark'
+export type ColorMode = 'light' | 'dark'
 
 const STORAGE_KEY = 'color-mode'
 
@@ -18,6 +21,7 @@ const getPreferredColorMode = (): ColorMode => {
   if (typeof window === 'undefined') return 'light'
 
   const stored = window.localStorage.getItem(STORAGE_KEY)
+  //получение
   if (stored === 'light' || stored === 'dark') return stored
 
   return window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -29,19 +33,36 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
   const [colorMode, setColorMode] = useState<ColorMode>(getPreferredColorMode)
 
   useEffect(() => {
-    addThemes(['light', 'dark'])
+    const load = async () => {
+      await addGameThemes(['light', 'dark']) //если этих записей в базе нет, сохраняем
+
+      const themeLink = await getUserTheme()
+
+      if (themeLink?.themeCode) {
+        const code = themeLink.themeCode
+
+        if (code === 'light' || code === 'dark') {
+          setColorMode(code)
+        } else {
+          setColorMode('light')
+        }
+      } else {
+        setColorMode('light')
+      }
+    }
+
+    load()
   }, [])
 
   useEffect(() => {
-    getTheme()
     document.documentElement.classList.toggle('dark', colorMode === 'dark')
     document.documentElement.classList.toggle('light', colorMode === 'light')
     window.localStorage.setItem(STORAGE_KEY, colorMode)
+    updateUserTheme(colorMode)
   }, [colorMode])
 
   const toggleColorMode = () => {
     setColorMode(mode => (mode === 'light' ? 'dark' : 'light'))
-    updateUserTheme(colorMode)
   }
 
   return (

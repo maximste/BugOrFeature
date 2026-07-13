@@ -4,7 +4,7 @@ import { sequelize } from '../db'
 
 export interface GameThemeAttributes {
   id: number
-  title: string
+  themeCode: string
 }
 
 export type GameThemeCreationAttributes = Optional<GameThemeAttributes, 'id'>
@@ -14,7 +14,7 @@ export class GameTheme
   implements GameThemeAttributes
 {
   declare id: number
-  declare title: string
+  declare themeCode: string
 }
 
 GameTheme.init(
@@ -24,15 +24,16 @@ GameTheme.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    title: {
+    themeCode: {
       type: DataTypes.STRING(15),
       allowNull: false,
       unique: true,
+      field: 'theme_code',
     },
   },
   {
     sequelize,
     modelName: 'GameTheme',
-    tableName: 'gameThemes',
+    tableName: 'game_themes',
   }
 )

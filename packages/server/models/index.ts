@@ -36,13 +36,9 @@ Comment.hasMany(Reaction, {
 Reaction.belongsTo(Comment, { foreignKey: 'commentId', as: 'comment' })
 
 //themes
-GameTheme.hasMany(UserTheme, {
-  foreignKey: 'themeId',
-  as: 'userLinks',
-})
-
 UserTheme.belongsTo(GameTheme, {
-  foreignKey: 'themeId',
+  foreignKey: 'themeCode',
+  targetKey: 'themeCode',
   as: 'theme',
 })
 

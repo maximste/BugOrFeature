@@ -40,4 +40,4 @@ export type {
   TopicResponse,
 } from './forumApiClient'
 
-export { getUserTheme, addGameTheme } from './themeApiClient'
+export { getUserTheme, addGameThemes, updateUserTheme } from './themeApiClient'

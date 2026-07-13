@@ -6,9 +6,8 @@ import { addGameThemes } from '../controllers/gameThemesController'
 
 export const themeRouter = Router()
 
-themeRouter.use(requireAuth)
-
 themeRouter.post('/add', asyncHandler(addGameThemes))
 
+themeRouter.use(requireAuth)
 themeRouter.get('/', asyncHandler(getUserTheme))
 themeRouter.post('/update', asyncHandler(updateUserTheme))

@@ -2,12 +2,25 @@ import { Request, Response } from 'express'
 import { GameTheme, UserTheme } from '../models'
 import { getAuthUser } from '../middleware/requireAuth'
 
+export interface UserThemeResponse {
+  id: number
+  userId: number
+  themeCode: string
+  theme?: {
+    id: number
+    themeCode: string
+  }
+}
+
 export const getUserTheme = async (
   req: Request,
   res: Response
-): Promise<any> => {
+): Promise<void> => {
   const user = getAuthUser(req)
-  console.log(user.id)
+  if (!user || !user.id) {
+    res.status(401).json({ themeCode: 'light' }) // направлять в ЛС
+  }
+
   const link = await UserTheme.findOne({
     where: { userId: user.id },
     include: [
@@ -19,58 +32,59 @@ export const getUserTheme = async (
     ],
   })
 
-  const theme = link?.themeId ?? null
-
-  if (!theme) {
-    res.json({ theme: { id: 0, title: 'default' } })
+  // Если записи нет (пользователь без темы ИЛИ тема не найдена) — отдаём дефолт
+  if (!link) {
+    res.json({ themeCode: 'light' })
     return
   }
 
-  res.json({ theme })
+  // Возвращаем согласованную структуру: themeCode всегда строка
+  res.json({
+    themeCode: link.themeCode, // код темы (из UserTheme)
+  })
 }
 
 export const updateUserTheme = async (
   req: Request,
   res: Response
-): Promise<any> => {
+): Promise<void> => {
   const user = getAuthUser(req)
   if (!user || !user.id) {
-    return res.status(401).json({ error: 'Пользователь не авторизован' })
+    res.status(401).json({ themeCode: 'light' }) // направлять в ЛС
   }
 
-  const { title } = req.body
+  const { themeCode } = req.body
 
-  if (!title || typeof title !== 'string' || title.trim().length === 0) {
-    return res
-      .status(400)
-      .json({ error: 'Поле title обязательно и должно быть непустой строкой' })
+  // Валидируем, что прислали именно themeCode (строка, не пустая)
+  if (
+    !themeCode ||
+    typeof themeCode !== 'string' ||
+    themeCode.trim().length === 0
+  ) {
+    res.status(400).json({
+      error: 'Поле themeCode обязательно и должно быть непустой строкой',
+    })
   }
 
   const theme = await GameTheme.findOne({
-    where: { title },
+    where: { themeCode },
   })
 
   if (!theme) {
-    return res.status(404).json({ error: 'Тема с таким названием не найдена' })
+    res.status(404).json({ error: 'Тема с таким кодом не найдена' })
+    return
   }
 
-  // Дальше используешь theme.id
-  const themeId = theme.id
-
   try {
-    // Ищем запись UserTheme по userId. Если нет — создаём.
-    const [userTheme, created] = await UserTheme.findOrCreate({
-      where: { userId: user.id },
-      defaults: {
+    const [userTheme, created] = await UserTheme.upsert(
+      {
         userId: user.id,
-        themeId,
+        themeCode: theme.themeCode,
       },
-    })
-
-    // Если запись уже была, обновляем themeId
-    if (!created) {
-      await userTheme.update({ themeId })
-    }
+      {
+        returning: true,
+      }
+    )
 
     res.status(200).json({
       message: created ? 'Тема назначена' : 'Тема обновлена',
@@ -78,6 +92,7 @@ export const updateUserTheme = async (
     })
   } catch (error) {
     console.error('Ошибка обновления темы пользователя:', error)
+
     res.status(500).json({ error: 'Не удалось обновить тему' })
   }
 }

@@ -5,7 +5,7 @@ import { sequelize } from '../db'
 export interface UserThemeAttributes {
   id: number
   userId: number
-  themeId: number
+  themeCode: string
 }
 
 type UserThemeCreationAttributes = Optional<UserThemeAttributes, 'id'>
@@ -16,7 +16,7 @@ export class UserTheme
 {
   declare id: number
   declare userId: number
-  declare themeId: number
+  declare themeCode: string
 }
 
 UserTheme.init(
@@ -26,19 +26,27 @@ UserTheme.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    themeId: {
-      type: DataTypes.INTEGER,
+    themeCode: {
+      type: DataTypes.STRING(15),
       allowNull: false,
-      unique: true,
+      field: 'theme_code',
     },
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false,
+      field: 'user_id',
     },
   },
   {
     sequelize,
     modelName: 'UserTheme',
-    tableName: 'userThemes',
+    tableName: 'user_themes',
+    indexes: [
+      {
+        unique: true,
+        fields: ['user_id'],
+      },
+      { fields: ['theme_code'] },
+    ],
   }
 )

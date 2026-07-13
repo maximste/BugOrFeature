@@ -1,6 +1,11 @@
 import axios from 'axios'
 import { API_BASE_URL } from '@/shared/config/env'
 import { request } from './apiClient'
+import { ColorMode } from '@/app/providers/ColorModeProvider'
+
+export interface UserThemeResponse {
+  themeCode: string
+}
 
 //вынести в отдельный файл и форум апи перенаправить сюда же?
 const themeApi = axios.create({
@@ -11,14 +16,37 @@ const themeApi = axios.create({
   },
 })
 
-export const addGameTheme = (themeTitles: string[]) => {
-  request(() => themeApi.post('/theme/add', { themes: themeTitles }))
+export const addGameThemes = async (themeTitles: string[]) => {
+  try {
+    return await request(() =>
+      themeApi.post('/theme/add', { themes: themeTitles })
+    )
+  } catch (error) {
+    console.error('Ошибка добавления тем:', error)
+  }
 }
 
-export const getUserTheme = () => {
-  request(() => themeApi.get(`/theme`))
+export const getUserTheme = async (): Promise<UserThemeResponse | null> => {
+  try {
+    const rawData = await request(() => themeApi.get(`/theme`))
+    console.log(rawData)
+    if (!rawData || typeof rawData !== 'object' || !('themeCode' in rawData)) {
+      return null
+    }
+
+    return rawData as unknown as UserThemeResponse
+  } catch (error) {
+    console.error('Ошибка добавления тем:', error)
+    return null
+  }
 }
 
-export const updateUserTheme = (themeTitle: string) => {
-  request(() => themeApi.post(`/theme/update`, { title: themeTitle }))
+export const updateUserTheme = async (themeTitle: ColorMode) => {
+  try {
+    return await request(() =>
+      themeApi.post(`/theme/update`, { themeCode: themeTitle })
+    )
+  } catch (e) {
+    console.log(e)
+  }
 }
