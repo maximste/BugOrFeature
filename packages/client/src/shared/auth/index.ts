@@ -1,36 +1,19 @@
 /**
  * Сценарии авторизации: вход, регистрация, выход.
- * Формы вызывают signIn / signUp / logout; проверку полей будет реализована отдельно.
- * Cookie `token` нужна AuthProvider и AuthGate (см. refreshAuth после успешного входа).
+ * Сессия хранится в cookie API (authCookie/uuid); проверка — на бэкенде.
  */
 
 import { ApiError, postLogout, postSignIn, postSignUp } from '@/shared/api'
-import { getCookie, removeCookie, setCookie } from '@/shared/lib/cookie'
+import { removeCookie } from '@/shared/lib/cookie'
 
-/** Имя cookie, по которой UI понимает «пользователь вошёл» */
-export const TOKEN_COOKIE = 'token'
-
-/** Cookie сессии API Практикума */
+/** Cookie сессии API Практикума (могут быть HttpOnly). */
 export const AUTH_COOKIE = 'authCookie'
 export const UUID_COOKIE = 'uuid'
 
-const SESSION_MAX_AGE = 60 * 60 * 24 * 7
-
-/** Запасная cookie, если API выставил HttpOnly и JS не видит token (dev / localhost) */
-export const ensureAuthCookie = () => {
-  if (!getCookie(TOKEN_COOKIE)) {
-    setCookie(TOKEN_COOKIE, 'client-session', { maxAge: SESSION_MAX_AGE })
-  }
-}
-
 export const clearAuthCookie = () => {
-  removeCookie(TOKEN_COOKIE)
   removeCookie(AUTH_COOKIE)
   removeCookie(UUID_COOKIE)
 }
-
-/** Для AuthProvider.refreshAuth() */
-export const isAuthCookieSet = () => Boolean(getCookie(TOKEN_COOKIE))
 
 /** Текст ошибки для форм */
 export const toAuthError = (err: unknown): string => {
@@ -45,7 +28,7 @@ const throwAuthError = (err: ApiError): never => {
   throw new Error(err.reason ?? err.message)
 }
 
-/** POST /auth/signin + cookie для UI. 400 «already in system» не считаем ошибкой */
+/** POST /auth/signin. 400 «already in system» не считаем ошибкой */
 export const signIn = async (
   login: string,
   password: string
@@ -68,8 +51,6 @@ export const signIn = async (
       throw err
     }
   }
-
-  ensureAuthCookie()
 }
 
 export type SignUpFields = {
@@ -101,7 +82,7 @@ export const signUp = async (fields: SignUpFields): Promise<void> => {
   }
 }
 
-/** POST /auth/logout; cookie на клиенте сбрасываем всегда */
+/** POST /auth/logout; cookie на клиенте сбрасываем, если доступны из JS */
 export const logout = async (): Promise<void> => {
   try {
     await postLogout()

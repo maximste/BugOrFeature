@@ -1,75 +1,46 @@
 import { NextFunction, Request, Response } from 'express'
-import axios from 'axios'
 
-const PRACTICUM_AUTH_API_BASE =
-  process.env.PRACTICUM_API_BASE_URL ?? 'https://ya-praktikum.tech/api/v2'
+import { checkAuth, type AuthUser } from '../auth'
 
-export type AuthUser = {
+export type ForumAuthUser = {
   id: number
   login: string
   displayName: string
 }
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace -- так требует паттерн расширения типов Express
-  namespace Express {
-    interface Request {
-      user?: AuthUser
-    }
+const toForumUser = (user: AuthUser): ForumAuthUser => {
+  const displayName =
+    user.display_name?.trim() ||
+    [user.first_name, user.second_name].filter(Boolean).join(' ').trim() ||
+    user.login
+
+  return {
+    id: user.id,
+    login: user.login,
+    displayName,
   }
 }
 
-type PracticumUserResponse = {
-  id: number
-  login: string
-  display_name?: string | null
-  first_name?: string
-  second_name?: string
-}
+export const getAuthUser = (req: Request): ForumAuthUser =>
+  toForumUser(req.user as AuthUser)
 
-const resolveDisplayName = (data: PracticumUserResponse): string => {
-  if (data.display_name) {
-    return data.display_name
-  }
-
-  const fullName = [data.first_name, data.second_name]
-    .filter(Boolean)
-    .join(' ')
-    .trim()
-
-  return fullName || data.login
-}
-
-// вызывать только внутри роутов за requireAuth — там req.user уже гарантированно есть
-export const getAuthUser = (req: Request): AuthUser => req.user as AuthUser
-
-// своей авторизации у нас нет, сессию проверяем через Практикум
 export const requireAuth = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const cookie = req.headers.cookie
+  const result = await checkAuth(req.headers.cookie)
 
-  if (!cookie) {
-    res.status(403).json({ reason: 'Unauthorized' })
+  if (result.status === 'authenticated') {
+    req.user = result.user
+    next()
     return
   }
 
-  try {
-    const { data } = await axios.get<PracticumUserResponse>(
-      `${PRACTICUM_AUTH_API_BASE}/auth/user`,
-      { headers: { cookie } }
-    )
-
-    req.user = {
-      id: data.id,
-      login: data.login,
-      displayName: resolveDisplayName(data),
-    }
-
-    next()
-  } catch {
-    res.status(403).json({ reason: 'Unauthorized' })
+  if (result.status === 'unavailable') {
+    res.status(503).json({ reason: 'Auth service unavailable' })
+    return
   }
+
+  res.status(403).json({ reason: 'Unauthorized' })
 }

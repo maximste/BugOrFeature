@@ -1,8 +1,7 @@
 /**
  * Работа с cookie в браузере через document.cookie.
  *
- * В проекте cookie `token` — признак «пользователь вошёл» для AuthProvider и AuthGate.
- * Тогда после signin мы ставим запасную cookie вручную — см. shared/auth ensureAuthCookie.
+ * Сессия авторизации (authCookie/uuid) выставляется бэкендом; JS может не видеть HttpOnly-cookie.
  *
  * Только браузер: на сервере (SSR) document нет — getCookie вернёт undefined.
  */

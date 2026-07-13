@@ -1,25 +1,32 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { Center, Spinner } from '@chakra-ui/react'
 
 import { AUTH_TARGET, useRequireAuth } from '@/shared/hooks'
-
-const GUEST_ONLY_PATHS = ['/signin', '/signup', '/oauth']
-
-const normalizePathname = (pathname: string) => {
-  if (pathname.length > 1 && pathname.endsWith('/')) {
-    return pathname.slice(0, -1)
-  }
-
-  return pathname
-}
+import {
+  getPageAuthRequirement,
+  normalizePathname,
+} from '@/shared/config/authRoutes'
 
 export const AuthGate = () => {
   const { pathname } = useLocation()
   const path = normalizePathname(pathname)
-  const isGuestOnly = GUEST_ONLY_PATHS.includes(path)
+  const requirement = getPageAuthRequirement(path)
 
-  const { redirect } = useRequireAuth(
-    isGuestOnly ? AUTH_TARGET.GUEST : AUTH_TARGET.PRIVATE
+  const { redirect, pending } = useRequireAuth(
+    requirement === 'guest' ? AUTH_TARGET.GUEST : AUTH_TARGET.PRIVATE
   )
+
+  if (requirement === 'none') {
+    return <Outlet />
+  }
+
+  if (pending) {
+    return (
+      <Center minH="50vh">
+        <Spinner size="lg" />
+      </Center>
+    )
+  }
 
   if (redirect != null) {
     return <Navigate to={redirect} replace />

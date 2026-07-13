@@ -9,7 +9,8 @@ import {
 } from 'react-router-dom/server'
 import { matchRoutes } from 'react-router-dom'
 
-import { AuthProvider, ColorModeProvider } from '@/app/providers'
+import { ColorModeProvider } from '@/app/providers'
+import { setUser } from '@/app/store'
 import { routes, type AppRouteObject } from '@/app/routes'
 import { setPageHasBeenInitializedOnServer } from '@/app/ssr'
 import { setupStore } from '@/app/store/setupStore'
@@ -20,6 +21,7 @@ import {
   createContext,
   createFetchRequest,
   createUrl,
+  fetchAuthUserForSsr,
 } from './entry-server.utils'
 
 import '@/app/styles/fonts.css'
@@ -36,6 +38,12 @@ export const render = async (req: ExpressRequest) => {
   }
 
   const store = setupStore()
+
+  const authUser = await fetchAuthUserForSsr(req)
+
+  if (authUser != null) {
+    store.dispatch(setUser(authUser))
+  }
 
   const url = createUrl(req)
 
@@ -72,13 +80,11 @@ export const render = async (req: ExpressRequest) => {
         <ColorModeProvider>
           <ErrorBoundary>
             <Provider store={store}>
-              <AuthProvider>
-                <StaticRouterProvider
-                  router={router}
-                  context={context}
-                  hydrate={false}
-                />
-              </AuthProvider>
+              <StaticRouterProvider
+                router={router}
+                context={context}
+                hydrate={false}
+              />
             </Provider>
           </ErrorBoundary>
         </ColorModeProvider>

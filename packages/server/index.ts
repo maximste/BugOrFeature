@@ -1,6 +1,6 @@
 import path from 'path'
 import dotenv from 'dotenv'
-import cors from 'cors'
+
 dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
 import express, {
@@ -9,15 +9,25 @@ import express, {
   Request,
   Response,
 } from 'express'
+import cors from 'cors'
+import cookieParser from 'cookie-parser'
+
 import { connectDb } from './db'
 import { syncModels } from './models'
 import { forumRouter } from './routes/forum'
+import { requireAuth } from './authMiddleware'
+import { createApiProxy, practicumResourcesProxy } from './proxy'
 
 const app = express()
-// без прокси клиент бьёт сюда напрямую с другого порта — нужны credentials в CORS
-app.use(cors({ origin: true, credentials: true }))
-app.use(express.json())
 const port = Number(process.env.SERVER_PORT) || 3001
+const clientOrigin = process.env.CLIENT_ORIGIN
+if (!clientOrigin) {
+  throw new Error('CLIENT_ORIGIN is required')
+}
+
+app.use(cors({ origin: clientOrigin, credentials: true }))
+app.use(cookieParser())
+app.use(express.json())
 
 // при холодном старте (особенно в docker-compose) Postgres может ещё не принимать
 // соединения в момент запуска сервера — пробуем несколько раз с паузой
@@ -42,10 +52,15 @@ const bootstrapDb = async (): Promise<boolean> => {
   return false
 }
 
-app.get('/', (_, res) => {
+app.get('/', (_req, res) => {
   res.json({ message: 'Hello from API' })
 })
 
+app.use('/auth', createApiProxy('/auth'))
+app.use('/oauth/yandex', createApiProxy('/oauth/yandex'))
+app.use('/user', requireAuth, createApiProxy('/user'))
+app.use('/leaderboard', requireAuth, createApiProxy('/leaderboard'))
+app.use('/api/v2/resources', practicumResourcesProxy)
 app.use('/forum', forumRouter)
 
 const errorHandler: ErrorRequestHandler = (
@@ -60,6 +75,18 @@ const errorHandler: ErrorRequestHandler = (
 
 app.use(errorHandler)
 
+const shutdown = (server: ReturnType<typeof app.listen>) => {
+  if ('closeAllConnections' in server) {
+    ;(
+      server as typeof server & { closeAllConnections: () => void }
+    ).closeAllConnections()
+  }
+
+  server.close(() => process.exit(0))
+
+  setTimeout(() => process.exit(0), 1000).unref()
+}
+
 // порт не слушаем, пока не подключимся к БД — иначе healthcheck (GET /) считает
 // контейнер здоровым, а /forum/* при этом всё равно отдаёт 500
 const main = async () => {
@@ -72,9 +99,23 @@ const main = async () => {
     process.exit(1)
   }
 
-  app.listen(port, () => {
-    console.log(`Server is listening on port: ${port}`)
+  const server = app.listen(port, () => {
+    console.log(`  ➜ 🎸 Server is listening on port: ${port}`)
   })
+
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(
+        `  ➜ ❌ Порт ${port} уже занят. Остановите другой процесс (Ctrl+C в терминале с yarn dev:server).`
+      )
+      process.exit(1)
+    }
+
+    throw err
+  })
+
+  process.on('SIGTERM', () => shutdown(server))
+  process.on('SIGINT', () => shutdown(server))
 }
 
 main()

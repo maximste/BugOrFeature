@@ -14,8 +14,15 @@ const initialState: AuthState = {
   status: 'idle',
 }
 
-export const fetchAuthUser = createAsyncThunk('auth/fetchUser', () =>
-  getAuthUser()
+export const fetchAuthUser = createAsyncThunk(
+  'auth/fetchUser',
+  () => getAuthUser(),
+  {
+    condition: (_, { getState }) => {
+      const { status } = (getState() as RootState).auth
+      return status !== 'loading'
+    },
+  }
 )
 
 export const authSlice = createSlice({
@@ -29,6 +36,11 @@ export const authSlice = createSlice({
     clearAuth: state => {
       state.user = null
       state.status = 'idle'
+    },
+    /** /oauth: без запроса /auth/user — считаем гостем, чтобы AuthGate отдал страницу */
+    resolveUnauthenticated: state => {
+      state.user = null
+      state.status = 'failed'
     },
   },
   extraReducers: builder => {
@@ -47,11 +59,13 @@ export const authSlice = createSlice({
   },
 })
 
-export const { setUser, clearAuth } = authSlice.actions
+export const { setUser, clearAuth, resolveUnauthenticated } = authSlice.actions
 
 export const selectAuthUser = (state: RootState) => state.auth.user
 export const selectAuthStatus = (state: RootState) => state.auth.status
 export const selectIsAuthUserLoading = (state: RootState) =>
   state.auth.status === 'loading'
+export const selectIsAuthenticated = (state: RootState) =>
+  state.auth.user != null
 
 export default authSlice.reducer

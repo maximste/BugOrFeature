@@ -17,6 +17,8 @@ import { createServer as createViteServer, ViteDevServer } from 'vite'
 import serialize from 'serialize-javascript'
 import cookieParser from 'cookie-parser'
 
+import { resolvePageAuthRedirect } from './auth'
+
 const port = process.env.CLIENT_PORT
 const clientPath = path.join(__dirname, '..')
 const isDev = process.env.NODE_ENV === 'development'
@@ -44,6 +46,14 @@ async function createServer() {
     const url = req.originalUrl
 
     try {
+      const authRedirect = await resolvePageAuthRedirect(req)
+
+      if (authRedirect != null) {
+        res.redirect(302, authRedirect)
+        return
+      }
+      // Получаем файл client/index.html который мы правили ранее
+      // Создаём переменные
       let render: (req: ExpressRequest) => Promise<{
         html: string
         initialState: unknown
