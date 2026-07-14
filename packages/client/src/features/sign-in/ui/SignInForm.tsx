@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Box, Text, Link as ChakraLink, Flex } from '@chakra-ui/react'
 
 import LogoIcon from '@/assets/icons/logo.svg?react'
-import { useAuth } from '@/app/providers'
 import { getOauthYandexServiceId } from '@/shared/api'
 import { fetchAuthUser, useDispatch } from '@/app/store'
 import { signIn, toAuthError } from '@/shared/auth'
@@ -26,7 +25,6 @@ import {
 export const SignInForm = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { refreshAuth } = useAuth()
   const [login, setLogin] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -67,7 +65,6 @@ export const SignInForm = () => {
     try {
       await signIn(login, password)
       await dispatch(fetchAuthUser()).unwrap()
-      refreshAuth()
       navigate('/', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : toAuthError(err))

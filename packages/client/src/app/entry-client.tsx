@@ -2,7 +2,7 @@ import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { Provider } from 'react-redux'
 
-import { AuthProvider, ColorModeProvider } from '@/app/providers'
+import { ColorModeProvider } from '@/app/providers'
 import '@/app/styles/fonts.css'
 import '@/app/styles/input-field.css'
 
@@ -32,9 +32,7 @@ const app = (
     <ColorModeProvider>
       <ErrorBoundary>
         <Provider store={store}>
-          <AuthProvider>
-            <RouterProvider router={router} />
-          </AuthProvider>
+          <RouterProvider router={router} />
         </Provider>
       </ErrorBoundary>
     </ColorModeProvider>

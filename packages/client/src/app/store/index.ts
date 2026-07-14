@@ -31,7 +31,9 @@ export {
   fetchAuthUser,
   setUser,
   clearAuth,
+  resolveUnauthenticated,
   selectAuthUser,
   selectAuthStatus,
   selectIsAuthUserLoading,
+  selectIsAuthenticated,
 } from './authSlice'

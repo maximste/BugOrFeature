@@ -5,13 +5,7 @@ import {
   selectPageHasBeenInitializedOnServer,
   setPageHasBeenInitializedOnServer,
 } from '@/app/ssr'
-import type { PageInitArgs, PageInitContext } from '@/app/routes'
-import { getCookie } from '@/shared/lib/cookie'
-import { TOKEN_COOKIE } from '@/shared/auth'
-
-const createContext = (): PageInitContext => ({
-  clientToken: getCookie(TOKEN_COOKIE),
-})
+import type { PageInitArgs } from '@/app/routes'
 
 type PageProps = {
   initPage: (data: PageInitArgs) => Promise<unknown>
@@ -29,6 +23,6 @@ export const usePage = ({ initPage }: PageProps) => {
       dispatch(setPageHasBeenInitializedOnServer(false))
       return
     }
-    initPage({ dispatch, state: store.getState(), ctx: createContext() })
+    initPage({ dispatch, state: store.getState(), ctx: {} })
   }, [])
 }

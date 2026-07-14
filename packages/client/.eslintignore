@@ -1,5 +1,5 @@
 dist
 node_modules
-server/index.js
-server/index.d.ts
+server/**/*.js
+server/**/*.d.ts
 *.tsbuildinfo

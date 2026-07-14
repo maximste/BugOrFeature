@@ -22,4 +22,6 @@ export const buildYandexOAuthAuthorizeUrl = (
   clientId: string,
   redirectUri: string
 ): string =>
-  `${YANDEX_OAUTH_AUTHORIZE_URL}?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}`
+  `${YANDEX_OAUTH_AUTHORIZE_URL}?response_type=code&client_id=${encodeURIComponent(
+    clientId
+  )}&redirect_uri=${encodeURIComponent(redirectUri)}`

@@ -19,10 +19,8 @@ import { initServerErrorPage, ServerErrorPage } from '@/pages/server-error'
 import { SignInPage, initSignInPage } from '@/pages/signin'
 import { SignUpPage, initSignUpPage } from '@/pages/signup'
 
-/** Контекст SSR/клиента для init*Page (токен, позже — user с сервера) */
-export type PageInitContext = {
-  clientToken?: string
-}
+/** Контекст SSR/клиента для init*Page */
+export type PageInitContext = Record<string, never>
 
 export type PageInitArgs = {
   dispatch: AppDispatch
