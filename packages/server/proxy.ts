@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http'
-import { createProxyMiddleware } from 'http-proxy-middleware'
+import { createProxyMiddleware, fixRequestBody } from 'http-proxy-middleware'
 
 const PRACTICUM_API_BASE =
   process.env.PRACTICUM_API_BASE_URL ??
@@ -32,6 +32,7 @@ export const createApiProxy = (mountPath: string) =>
     // Express снимает mountPath (/auth) — возвращаем его для API Практикума
     pathRewrite: path => `${mountPath}${path}`,
     on: {
+      proxyReq: fixRequestBody,
       proxyRes: (proxyRes, _req, _res: ServerResponse) => {
         rewriteSetCookieForLocalhost(proxyRes)
       },
@@ -44,6 +45,7 @@ export const practicumResourcesProxy = createProxyMiddleware({
   secure: true,
   pathRewrite: path => `/api/v2/resources${path}`,
   on: {
+    proxyReq: fixRequestBody,
     proxyRes: (proxyRes, _req, _res: ServerResponse) => {
       rewriteSetCookieForLocalhost(proxyRes)
     },

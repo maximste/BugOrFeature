@@ -26,5 +26,8 @@
     },
     "outDir": "dist"
   },
-  "include": ["./**/*.ts", "./types/**/*.d.ts"]
+  "include": ["./**/*.ts", "./types/**/*.d.ts"],
+  "ts-node": {
+    "files": true
+  }
 }
