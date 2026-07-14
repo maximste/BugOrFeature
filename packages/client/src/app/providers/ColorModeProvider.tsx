@@ -31,6 +31,7 @@ const getPreferredColorMode = (): ColorMode => {
 
 export const ColorModeProvider = ({ children }: PropsWithChildren) => {
   const [colorMode, setColorMode] = useState<ColorMode>(getPreferredColorMode)
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -47,17 +48,25 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
           setColorMode('light')
         }
       } else {
-        setColorMode('light')
+        const mode = localStorage.getItem(STORAGE_KEY)
+        if (mode && (mode === 'light' || mode === 'dark')) {
+          setColorMode(mode)
+        } else {
+          setColorMode('light')
+        }
       }
     }
 
     load()
+    setMounted(true)
   }, [])
 
   useEffect(() => {
+    if (!mounted) return
     document.documentElement.classList.toggle('dark', colorMode === 'dark')
     document.documentElement.classList.toggle('light', colorMode === 'light')
     window.localStorage.setItem(STORAGE_KEY, colorMode)
+
     updateUserTheme(colorMode)
   }, [colorMode])
 

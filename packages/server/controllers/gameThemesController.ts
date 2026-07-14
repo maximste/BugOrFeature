@@ -4,14 +4,6 @@ import {
   type GameThemeCreationAttributes,
 } from '../models/GameTheme'
 
-/*export const getGameThemes = async (
-  _req: Request,
-  res: Response
-): Promise<void> => {
-  const themes = await GameTheme.findAll()
-  res.json({themes: theme})
-}*/
-
 export const addGameThemes = async (
   req: Request,
   res: Response

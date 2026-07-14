@@ -38,7 +38,6 @@ export const getUserTheme = async (
     return
   }
 
-  // Возвращаем согласованную структуру: themeCode всегда строка
   res.json({
     themeCode: link.themeCode, // код темы (из UserTheme)
   })
@@ -55,7 +54,6 @@ export const updateUserTheme = async (
 
   const { themeCode } = req.body
 
-  // Валидируем, что прислали именно themeCode (строка, не пустая)
   if (
     !themeCode ||
     typeof themeCode !== 'string' ||
@@ -76,7 +74,7 @@ export const updateUserTheme = async (
   }
 
   try {
-    const [userTheme, created] = await UserTheme.upsert(
+    const [userTheme] = await UserTheme.upsert(
       {
         userId: user.id,
         themeCode: theme.themeCode,
@@ -87,12 +85,9 @@ export const updateUserTheme = async (
     )
 
     res.status(200).json({
-      message: created ? 'Тема назначена' : 'Тема обновлена',
-      data: userTheme.toJSON(),
+      themeCode: userTheme.toJSON().themeCode,
     })
   } catch (error) {
-    console.error('Ошибка обновления темы пользователя:', error)
-
     res.status(500).json({ error: 'Не удалось обновить тему' })
   }
 }
