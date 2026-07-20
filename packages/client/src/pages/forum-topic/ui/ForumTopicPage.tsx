@@ -1,20 +1,21 @@
 import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { useParams } from 'react-router-dom'
+import { Box } from '@chakra-ui/react'
 
 import { usePage } from '@/app/hooks/usePage'
-import { getTopicDetail, putReaction } from '@/shared/api'
-import type {
-  CommentResponse,
-  Emotion,
-  ReplyResponse,
-  TopicDetailResponse,
+import {
+  getTopicDetail,
+  putReaction,
+  type CommentResponse,
+  type Emotion,
+  type ReplyResponse,
+  type TopicDetailResponse,
 } from '@/shared/api'
 import { BackLink } from '@/shared/ui/back-link'
 import { ForumTopicView } from '@/widgets/forum-topic-view'
 
 import { initForumTopicPage } from '../model/initForumTopicPage'
-import { Box } from '@chakra-ui/react'
 import {
   addReplyToComments,
   updateCommentReaction,

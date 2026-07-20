@@ -17,6 +17,7 @@ import { syncModels } from './models'
 import { forumRouter } from './routes/forum'
 import { requireAuth } from './authMiddleware'
 import { createApiProxy, practicumResourcesProxy } from './proxy'
+import { toDbErrorResponse } from './utils/dbErrors'
 
 const app = express()
 const port = Number(process.env.SERVER_PORT) || 3001
@@ -29,14 +30,12 @@ app.use(cors({ origin: clientOrigin, credentials: true }))
 app.use(cookieParser())
 app.use(express.json())
 
-// при холодном старте (особенно в docker-compose) Postgres может ещё не принимать
-// соединения в момент запуска сервера — пробуем несколько раз с паузой
+// Postgres при холодном старте может быть ещё не готов — пробуем несколько раз
 const DB_CONNECT_ATTEMPTS = 10
 const DB_CONNECT_RETRY_DELAY_MS = 2000
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-// true — подключились (и накатили схему), false — исчерпали все попытки
 const bootstrapDb = async (): Promise<boolean> => {
   for (let attempt = 1; attempt <= DB_CONNECT_ATTEMPTS; attempt += 1) {
     if (await connectDb()) {
@@ -70,6 +69,14 @@ const errorHandler: ErrorRequestHandler = (
   _next: NextFunction
 ) => {
   console.error(err)
+
+  const dbError = toDbErrorResponse(err)
+
+  if (dbError) {
+    res.status(dbError.status).json({ reason: dbError.reason })
+    return
+  }
+
   res.status(500).json({ reason: 'Внутренняя ошибка сервера' })
 }
 
@@ -87,8 +94,7 @@ const shutdown = (server: ReturnType<typeof app.listen>) => {
   setTimeout(() => process.exit(0), 1000).unref()
 }
 
-// порт не слушаем, пока не подключимся к БД — иначе healthcheck (GET /) считает
-// контейнер здоровым, а /forum/* при этом всё равно отдаёт 500
+// порт не слушаем, пока не подключимся к БД — иначе healthcheck решит, что всё ок
 const main = async () => {
   const connected = await bootstrapDb()
 

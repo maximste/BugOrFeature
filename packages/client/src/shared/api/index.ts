@@ -26,6 +26,7 @@ export {
   getTopics,
   getTopicDetail,
   postTopic,
+  deleteTopic,
   postComment,
   postReply,
   putReaction,
@@ -38,4 +39,5 @@ export type {
   ReplyResponse,
   TopicDetailResponse,
   TopicResponse,
+  TopicsPage,
 } from './forumApiClient'

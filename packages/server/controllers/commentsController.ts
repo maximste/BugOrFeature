@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
 
 import { getAuthUser } from '../middleware/requireAuth'
-import { Comment, EMOTIONS, Topic } from '../models'
+import { EMOTIONS } from '../models'
+import * as commentsService from '../services/commentsService'
 import { isUuid, MAX_BODY_LENGTH, sanitizeText } from '../utils/sanitize'
 
 export const createComment = async (
@@ -10,7 +11,7 @@ export const createComment = async (
 ): Promise<void> => {
   const { id: topicId } = req.params
 
-  if (!isUuid(topicId) || !(await Topic.findByPk(topicId))) {
+  if (!isUuid(topicId) || !(await commentsService.findTopicById(topicId))) {
     res.status(404).json({ reason: 'Тема не найдена' })
     return
   }
@@ -23,7 +24,7 @@ export const createComment = async (
   }
 
   const author = getAuthUser(req)
-  const comment = await Comment.create({
+  const comment = await commentsService.createComment({
     topicId,
     body,
     authorId: author.id,

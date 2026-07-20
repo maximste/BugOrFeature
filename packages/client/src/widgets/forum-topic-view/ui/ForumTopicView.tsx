@@ -1,11 +1,9 @@
 import { Flex, Heading, Text } from '@chakra-ui/react'
 
-import { CommentCard } from '@/entities/comment'
-import type { Comment } from '@/entities/comment'
+import { CommentCard, type Comment } from '@/entities/comment'
 import type { Emotion } from '@/entities/reaction'
 import type { Reply } from '@/entities/reply'
-import { TopicDetailCard } from '@/entities/topic'
-import type { TopicDetail } from '@/entities/topic'
+import { TopicDetailCard, type TopicDetail } from '@/entities/topic'
 import { AddCommentForm } from '@/features/add-comment'
 import type { CommentResponse } from '@/shared/api'
 import { BackLink } from '@/shared/ui/back-link'

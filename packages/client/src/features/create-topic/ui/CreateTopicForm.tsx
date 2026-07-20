@@ -1,9 +1,9 @@
-import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Text } from '@chakra-ui/react'
 
 import { postTopic } from '@/shared/api'
+import { useAsyncAction } from '@/shared/hooks'
 import { Button } from '@/shared/ui/button'
 import { CardForm } from '@/shared/ui/card'
 import { FormField } from '@/shared/ui/form-field'
@@ -14,8 +14,7 @@ export const CreateTopicForm = () => {
   const navigate = useNavigate()
   const [title, setTitle] = useState('')
   const [body, setBody] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const { loading, error, run, fail } = useAsyncAction()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -24,19 +23,17 @@ export const CreateTopicForm = () => {
     const trimmedBody = body.trim()
 
     if (!trimmedTitle || !trimmedBody) {
-      setError('Заполните заголовок и текст темы')
+      fail('Заполните заголовок и текст темы')
       return
     }
 
-    setError(null)
-    setLoading(true)
+    const topic = await run(
+      () => postTopic({ title: trimmedTitle, body: trimmedBody }),
+      'Не удалось создать тему'
+    )
 
-    try {
-      const topic = await postTopic({ title: trimmedTitle, body: trimmedBody })
+    if (topic) {
       navigate(`/forum/${topic.id}`)
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Не удалось создать тему')
-      setLoading(false)
     }
   }
 
