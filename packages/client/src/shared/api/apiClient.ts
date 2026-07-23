@@ -1,4 +1,4 @@
-import axios, { isAxiosError } from 'axios'
+import axios, { isAxiosError, type AxiosInstance } from 'axios'
 
 import { API_FETCH_BASE_URL } from '@/shared/config/env'
 
@@ -31,14 +31,6 @@ export class ApiError extends Error {
   }
 }
 
-export const api = axios.create({
-  baseURL: API_FETCH_BASE_URL ?? '',
-  withCredentials: true,
-  headers: {
-    'Content-Type': 'application/json',
-  },
-})
-
 const getReason = (data?: ReasonBody) => data?.reason
 
 const toApiError = (err: unknown): ApiError => {
@@ -68,16 +60,28 @@ const toApiError = (err: unknown): ApiError => {
   )
 }
 
-/** Общий helper для запросов к любому axios-инстансу (переиспользуется в forumApiClient) */
+// переиспользуется в forumApiClient для второго инстанса
+export const attachApiErrorInterceptor = (instance: AxiosInstance): void => {
+  instance.interceptors.response.use(
+    response => response,
+    error => Promise.reject(toApiError(error))
+  )
+}
+
+export const api = axios.create({
+  baseURL: API_FETCH_BASE_URL ?? '',
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+})
+attachApiErrorInterceptor(api)
+
 export const request = async <T>(
   call: () => Promise<{ data: T }>
 ): Promise<T> => {
-  try {
-    const { data } = await call()
-    return data
-  } catch (err) {
-    throw toApiError(err)
-  }
+  const { data } = await call()
+  return data
 }
 
 export const postSignIn = (body: SignInBody) =>
@@ -131,10 +135,6 @@ export const putUserPassword = (body: ChangePasswordBody) =>
 
 /** Загрузка картинки (аватар) с cookie сессии — надёжнее, чем <img src> на другой origin */
 export const fetchResourceBlob = async (path: string): Promise<Blob> => {
-  try {
-    const { data } = await api.get<Blob>(path, { responseType: 'blob' })
-    return data
-  } catch (err) {
-    throw toApiError(err)
-  }
+  const { data } = await api.get<Blob>(path, { responseType: 'blob' })
+  return data
 }

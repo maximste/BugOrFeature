@@ -1,10 +1,8 @@
 import type { ReactNode } from 'react'
 import { Box, chakra, HStack, Text, VStack } from '@chakra-ui/react'
 
-import { ReactionBar } from '@/entities/reaction'
-import type { Emotion } from '@/entities/reaction'
-import { ReplyCard } from '@/entities/reply'
-import type { Reply } from '@/entities/reply'
+import { ReactionBar, type Emotion } from '@/entities/reaction'
+import { ReplyCard, type Reply } from '@/entities/reply'
 import { Card } from '@/shared/ui/card'
 
 import type { Comment as CommentItem } from '../model/types'

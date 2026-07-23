@@ -5,16 +5,17 @@ const TEASER_LENGTH = 160
 export const truncate = (text: string, length = TEASER_LENGTH): string =>
   text.length > length ? `${text.slice(0, length).trim()}…` : text
 
-export const toTopicListItem = (topic: Topic) => ({
+export const toTopicListItem = (topic: Topic, currentUserId: number) => ({
   id: topic.id,
   title: topic.title,
   description: truncate(topic.body),
   author: topic.authorName,
   date: topic.createdAt.toISOString(),
+  isOwn: topic.authorId === currentUserId,
 })
 
-export const toTopicDetail = (topic: Topic) => ({
-  ...toTopicListItem(topic),
+export const toTopicDetail = (topic: Topic, currentUserId: number) => ({
+  ...toTopicListItem(topic, currentUserId),
   content: topic.body,
 })
 

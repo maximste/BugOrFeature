@@ -1,9 +1,8 @@
-import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { chakra, HStack, Text } from '@chakra-ui/react'
 
-import { postReply } from '@/shared/api'
-import type { ReplyResponse } from '@/shared/api'
+import { postReply, type ReplyResponse } from '@/shared/api'
+import { useAsyncAction } from '@/shared/hooks'
 import { Button } from '@/shared/ui/button'
 import { Textarea } from '@/shared/ui/textarea'
 
@@ -24,8 +23,7 @@ export const AddReplyForm = ({
   onCancel,
 }: AddReplyFormProps) => {
   const [body, setBody] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const { loading, error, run } = useAsyncAction()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -35,22 +33,18 @@ export const AddReplyForm = ({
       return
     }
 
-    setError(null)
-    setLoading(true)
+    const reply = await run(
+      () =>
+        postReply(commentId, {
+          body: trimmed,
+          parentReplyId: parentReplyId ?? null,
+        }),
+      'Не удалось отправить ответ'
+    )
 
-    try {
-      const reply = await postReply(commentId, {
-        body: trimmed,
-        parentReplyId: parentReplyId ?? null,
-      })
+    if (reply) {
       setBody('')
       onSuccess(reply)
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Не удалось отправить ответ'
-      )
-    } finally {
-      setLoading(false)
     }
   }
 

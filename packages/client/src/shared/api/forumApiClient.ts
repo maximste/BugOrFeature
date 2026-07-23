@@ -2,12 +2,9 @@ import axios from 'axios'
 
 import { API_BASE_URL } from '@/shared/config/env'
 
-import { request } from './apiClient'
+import { attachApiErrorInterceptor, request } from './apiClient'
 
-/**
- * Форум живёт на нашем собственном сервере (не на API Практикума), поэтому
- * ходим сразу на EXTERNAL_SERVER_URL — без прокси через vite/nginx.
- */
+// свой сервер, не API Практикума — ходим напрямую на EXTERNAL_SERVER_URL, без прокси
 const forumApi = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
@@ -15,6 +12,7 @@ const forumApi = axios.create({
     'Content-Type': 'application/json',
   },
 })
+attachApiErrorInterceptor(forumApi)
 
 export type Emotion = 'like' | 'love' | 'laugh' | 'wow' | 'sad'
 
@@ -48,6 +46,7 @@ export type TopicResponse = {
   description: string
   author: string
   date: string
+  isOwn: boolean
 }
 
 export type TopicDetailResponse = TopicResponse & {
@@ -60,14 +59,26 @@ export type ReactionState = {
   myReaction: Emotion | null
 }
 
-export const getTopics = () =>
-  request(() => forumApi.get<TopicResponse[]>('/forum/topics'))
+export type TopicsPage = {
+  items: TopicResponse[]
+  total: number
+  page: number
+  pageSize: number
+}
+
+export const getTopics = (page = 1, pageSize = 10) =>
+  request(() =>
+    forumApi.get<TopicsPage>('/forum/topics', { params: { page, pageSize } })
+  )
 
 export const getTopicDetail = (topicId: string) =>
   request(() => forumApi.get<TopicDetailResponse>(`/forum/topics/${topicId}`))
 
 export const postTopic = (body: { title: string; body: string }) =>
   request(() => forumApi.post<TopicDetailResponse>('/forum/topics', body))
+
+export const deleteTopic = (topicId: string) =>
+  request(() => forumApi.delete<void>(`/forum/topics/${topicId}`))
 
 export const postComment = (topicId: string, body: { body: string }) =>
   request(() =>

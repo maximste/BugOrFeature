@@ -1,7 +1,10 @@
 import { Box, chakra, HStack } from '@chakra-ui/react'
 
-import { EMOTION_EMOJI } from '../model/types'
-import type { Emotion, ReactionSummary } from '../model/types'
+import {
+  EMOTION_EMOJI,
+  type Emotion,
+  type ReactionSummary,
+} from '../model/types'
 
 const ReactionButton = chakra('button')
 

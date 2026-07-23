@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
 import { getAuthUser } from '../middleware/requireAuth'
-import { Comment, Reaction, Reply, Topic } from '../models'
+import * as topicsService from '../services/topicsService'
 import {
   toCommentDto,
   toTopicDetail,
@@ -14,12 +14,30 @@ import {
   sanitizeText,
 } from '../utils/sanitize'
 
-export const getTopics = async (
-  _req: Request,
-  res: Response
-): Promise<void> => {
-  const topics = await Topic.findAll({ order: [['createdAt', 'DESC']] })
-  res.json(topics.map(toTopicListItem))
+const DEFAULT_PAGE_SIZE = 10
+const MAX_PAGE_SIZE = 50
+
+const parsePositiveInt = (value: unknown, fallback: number): number => {
+  const parsed = Number(value)
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback
+}
+
+export const getTopics = async (req: Request, res: Response): Promise<void> => {
+  const page = parsePositiveInt(req.query.page, 1)
+  const pageSize = Math.min(
+    parsePositiveInt(req.query.pageSize, DEFAULT_PAGE_SIZE),
+    MAX_PAGE_SIZE
+  )
+
+  const { items, total } = await topicsService.listTopics(page, pageSize)
+  const currentUserId = getAuthUser(req).id
+
+  res.json({
+    items: items.map(topic => toTopicListItem(topic, currentUserId)),
+    total,
+    page,
+    pageSize,
+  })
 }
 
 export const createTopic = async (
@@ -35,14 +53,14 @@ export const createTopic = async (
   }
 
   const author = getAuthUser(req)
-  const topic = await Topic.create({
+  const topic = await topicsService.createTopic({
     title,
     body,
     authorId: author.id,
     authorName: author.displayName,
   })
 
-  res.status(201).json(toTopicDetail(topic))
+  res.status(201).json(toTopicDetail(topic, author.id))
 }
 
 export const getTopicDetail = async (
@@ -56,31 +74,47 @@ export const getTopicDetail = async (
     return
   }
 
-  const topic = await Topic.findByPk(id)
+  const data = await topicsService.getTopicWithComments(id)
+
+  if (!data) {
+    res.status(404).json({ reason: 'Тема не найдена' })
+    return
+  }
+
+  const { topic, comments, replies, reactions } = data
+  const currentUserId = getAuthUser(req).id
+
+  res.json({
+    ...toTopicDetail(topic, currentUserId),
+    comments: comments.map(comment =>
+      toCommentDto(comment, replies, reactions, currentUserId)
+    ),
+  })
+}
+
+export const deleteTopic = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  const { id } = req.params
+
+  if (!isUuid(id)) {
+    res.status(404).json({ reason: 'Тема не найдена' })
+    return
+  }
+
+  const topic = await topicsService.findTopicById(id)
 
   if (!topic) {
     res.status(404).json({ reason: 'Тема не найдена' })
     return
   }
 
-  const comments = await Comment.findAll({
-    where: { topicId: topic.id },
-    order: [['createdAt', 'ASC']],
-  })
-  const commentIds = comments.map(comment => comment.id)
+  if (topic.authorId !== getAuthUser(req).id) {
+    res.status(403).json({ reason: 'Можно удалять только свои темы' })
+    return
+  }
 
-  const [replies, reactions] = await Promise.all([
-    Reply.findAll({
-      where: { commentId: commentIds },
-      order: [['createdAt', 'ASC']],
-    }),
-    Reaction.findAll({ where: { commentId: commentIds } }),
-  ])
-
-  res.json({
-    ...toTopicDetail(topic),
-    comments: comments.map(comment =>
-      toCommentDto(comment, replies, reactions, getAuthUser(req).id)
-    ),
-  })
+  await topicsService.deleteTopic(topic)
+  res.status(204).end()
 }
