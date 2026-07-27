@@ -3,7 +3,13 @@ import {
   addGameThemes,
   updateUserTheme,
 } from '@/shared/api/themeApiClient'
-import { createContext, useContext, useEffect, useState } from 'react'
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react'
 import type { PropsWithChildren } from 'react'
 
 export type ColorMode = 'light' | 'dark'
@@ -13,6 +19,7 @@ const STORAGE_KEY = 'color-mode'
 type ColorModeContextValue = {
   colorMode: ColorMode
   toggleColorMode: () => void
+  setColorMode: (mode: ColorMode) => void
 }
 
 const ColorModeContext = createContext<ColorModeContextValue | null>(null)
@@ -30,7 +37,13 @@ const getPreferredColorMode = (): ColorMode => {
 }
 
 export const ColorModeProvider = ({ children }: PropsWithChildren) => {
-  const [colorMode, setColorMode] = useState<ColorMode>(getPreferredColorMode)
+  const [colorMode, setColorModeInternal] = useState<ColorMode>(
+    getPreferredColorMode
+  )
+  const setColorMode = useCallback((mode: ColorMode) => {
+    setColorModeInternal(mode)
+  }, [])
+
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -71,11 +84,12 @@ export const ColorModeProvider = ({ children }: PropsWithChildren) => {
   }, [colorMode])
 
   const toggleColorMode = () => {
-    setColorMode(mode => (mode === 'light' ? 'dark' : 'light'))
+    setColorModeInternal(mode => (mode === 'light' ? 'dark' : 'light'))
   }
 
   return (
-    <ColorModeContext.Provider value={{ colorMode, toggleColorMode }}>
+    <ColorModeContext.Provider
+      value={{ colorMode, toggleColorMode, setColorMode }}>
       {children}
     </ColorModeContext.Provider>
   )

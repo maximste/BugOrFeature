@@ -21,22 +21,21 @@ export const addGameThemes = async (themeTitles: string[]) => {
     return await request(() =>
       themeApi.post('/theme/add', { themes: themeTitles })
     )
-  } catch (error) {
-    console.error('Ошибка добавления тем:', error)
+  } catch (_e) {
+    return null
   }
 }
 
 export const getUserTheme = async (): Promise<UserThemeResponse | null> => {
   try {
     const rawData = await request(() => themeApi.get(`/theme`))
-    //console.log(rawData)
+
     if (!rawData || typeof rawData !== 'object' || !('themeCode' in rawData)) {
       return null
     }
 
     return rawData as unknown as UserThemeResponse
   } catch (error) {
-    console.error('Ошибка получения темы:', error)
     return null
   }
 }
@@ -47,7 +46,6 @@ export const updateUserTheme = async (themeTitle: ColorMode) => {
       themeApi.post(`/theme/update`, { themeCode: themeTitle })
     )
   } catch (e) {
-    console.log(e)
     return null
   }
 }

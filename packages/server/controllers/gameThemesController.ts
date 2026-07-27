@@ -41,7 +41,6 @@ export const addGameThemes = async (
       items: themes.map(t => t.toJSON()),
     })
   } catch (error) {
-    console.error('Ошибка массовой вставки тем:', error)
     res.status(500).json({ error: 'Не удалось добавить темы' })
   }
 }
