@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 
 import { getAuthUser } from '../middleware/requireAuth'
-import { Comment, Reply } from '../models'
+import * as repliesService from '../services/repliesService'
 import { isUuid, MAX_BODY_LENGTH, sanitizeText } from '../utils/sanitize'
 
 export const createReply = async (
@@ -10,7 +10,10 @@ export const createReply = async (
 ): Promise<void> => {
   const { id: commentId } = req.params
 
-  if (!isUuid(commentId) || !(await Comment.findByPk(commentId))) {
+  if (
+    !isUuid(commentId) ||
+    !(await repliesService.findCommentById(commentId))
+  ) {
     res.status(404).json({ reason: 'Комментарий не найден' })
     return
   }
@@ -23,7 +26,7 @@ export const createReply = async (
       return
     }
 
-    const parentReply = await Reply.findByPk(parentReplyId)
+    const parentReply = await repliesService.findReplyById(parentReplyId)
 
     if (!parentReply || parentReply.commentId !== commentId) {
       res.status(400).json({ reason: 'Некорректный ответ для цитирования' })
@@ -39,7 +42,7 @@ export const createReply = async (
   }
 
   const author = getAuthUser(req)
-  const reply = await Reply.create({
+  const reply = await repliesService.createReply({
     commentId,
     parentReplyId: parentReplyId ?? null,
     body,

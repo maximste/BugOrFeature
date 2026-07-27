@@ -6,6 +6,7 @@ import { putReaction } from '../controllers/reactionsController'
 import { createReply } from '../controllers/repliesController'
 import {
   createTopic,
+  deleteTopic,
   getTopicDetail,
   getTopics,
 } from '../controllers/topicsController'
@@ -18,6 +19,7 @@ forumRouter.use(requireAuth)
 forumRouter.get('/topics', asyncHandler(getTopics))
 forumRouter.post('/topics', asyncHandler(createTopic))
 forumRouter.get('/topics/:id', asyncHandler(getTopicDetail))
+forumRouter.delete('/topics/:id', asyncHandler(deleteTopic))
 forumRouter.post('/topics/:id/comments', asyncHandler(createComment))
 forumRouter.post('/comments/:id/replies', asyncHandler(createReply))
 forumRouter.put('/comments/:id/reactions', asyncHandler(putReaction))

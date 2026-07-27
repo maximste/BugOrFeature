@@ -1,9 +1,8 @@
-import type { FormEvent } from 'react'
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { chakra, Text } from '@chakra-ui/react'
 
-import { postComment } from '@/shared/api'
-import type { CommentResponse } from '@/shared/api'
+import { postComment, type CommentResponse } from '@/shared/api'
+import { useAsyncAction } from '@/shared/hooks'
 import { Button } from '@/shared/ui/button'
 import { Card } from '@/shared/ui/card'
 import { FormField } from '@/shared/ui/form-field'
@@ -18,8 +17,7 @@ export type AddCommentFormProps = {
 
 export const AddCommentForm = ({ topicId, onSuccess }: AddCommentFormProps) => {
   const [body, setBody] = useState('')
-  const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  const { loading, error, run } = useAsyncAction()
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -29,19 +27,14 @@ export const AddCommentForm = ({ topicId, onSuccess }: AddCommentFormProps) => {
       return
     }
 
-    setError(null)
-    setLoading(true)
+    const comment = await run(
+      () => postComment(topicId, { body: trimmed }),
+      'Не удалось отправить комментарий'
+    )
 
-    try {
-      const comment = await postComment(topicId, { body: trimmed })
+    if (comment) {
       setBody('')
       onSuccess(comment)
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : 'Не удалось отправить комментарий'
-      )
-    } finally {
-      setLoading(false)
     }
   }
 

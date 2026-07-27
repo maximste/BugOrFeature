@@ -1,7 +1,8 @@
 import { Request, Response } from 'express'
 
 import { getAuthUser } from '../middleware/requireAuth'
-import { Comment, EMOTIONS, Emotion, Reaction } from '../models'
+import { EMOTIONS, Emotion } from '../models'
+import * as reactionsService from '../services/reactionsService'
 import { isUuid } from '../utils/sanitize'
 
 const isEmotion = (value: unknown): value is Emotion =>
@@ -13,7 +14,10 @@ export const putReaction = async (
 ): Promise<void> => {
   const { id: commentId } = req.params
 
-  if (!isUuid(commentId) || !(await Comment.findByPk(commentId))) {
+  if (
+    !isUuid(commentId) ||
+    !(await reactionsService.findCommentById(commentId))
+  ) {
     res.status(404).json({ reason: 'Комментарий не найден' })
     return
   }
@@ -26,24 +30,10 @@ export const putReaction = async (
   }
 
   const authorId = getAuthUser(req).id
-  const existing = await Reaction.findOne({ where: { commentId, authorId } })
 
-  if (existing && existing.emotion === emotion) {
-    // повторный клик по той же эмоции — снимаем реакцию
-    await existing.destroy()
-  } else if (existing) {
-    existing.emotion = emotion
-    await existing.save()
-  } else {
-    await Reaction.create({ commentId, authorId, emotion })
-  }
+  await reactionsService.toggleReaction(commentId, authorId, emotion)
 
-  const reactions = await Reaction.findAll({ where: { commentId } })
-  const counts = EMOTIONS.map(e => ({
-    emotion: e,
-    count: reactions.filter(r => r.emotion === e).length,
-  }))
-  const mine = reactions.find(r => r.authorId === authorId)
+  const state = await reactionsService.getReactionState(commentId, authorId)
 
-  res.json({ reactions: counts, myReaction: mine?.emotion ?? null })
+  res.json(state)
 }
