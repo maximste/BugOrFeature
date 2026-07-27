@@ -1,10 +1,10 @@
 import type { FormEvent } from 'react'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Box, Text, Link as ChakraLink, Flex } from '@chakra-ui/react'
+import { Text, Link as ChakraLink, Flex } from '@chakra-ui/react'
 
 import LogoIcon from '@/assets/icons/logo.svg?react'
-import { getOauthYandexServiceId } from '@/shared/api'
+import { getOauthYandexServiceId, getUserTheme } from '@/shared/api'
 import { fetchAuthUser, useDispatch } from '@/app/store'
 import { signIn, toAuthError } from '@/shared/auth'
 import {
@@ -21,6 +21,7 @@ import {
   handleValidationFocus,
   validateForm,
 } from '@/shared/lib/validations'
+import { useColorMode } from '@/app/providers'
 
 export const SignInForm = () => {
   const navigate = useNavigate()
@@ -33,10 +34,22 @@ export const SignInForm = () => {
   const loading = yandexLoading || signInLoading
   const displayError = error
 
+  const { setColorMode } = useColorMode()
+
+  const setUserTheme = async () => {
+    const theme = await getUserTheme()
+    if (theme) {
+      const code = theme.themeCode
+
+      if (code === 'light' || code === 'dark') {
+        setColorMode(code)
+      }
+    }
+  }
+
   const authOrRegisterFromYandex = async () => {
     setError(null)
     setYandexLoading(true)
-
     try {
       const REDIRECT_URI = getYandexOAuthRedirectUri()
       const { service_id: CLIENT_ID } = await getOauthYandexServiceId(
@@ -65,11 +78,13 @@ export const SignInForm = () => {
     try {
       await signIn(login, password)
       await dispatch(fetchAuthUser()).unwrap()
+
       navigate('/', { replace: true })
     } catch (err) {
       setError(err instanceof Error ? err.message : toAuthError(err))
     } finally {
       setSignInLoading(false)
+      setUserTheme()
     }
   }
 

@@ -17,6 +17,7 @@ import { syncModels } from './models'
 import { forumRouter } from './routes/forum'
 import { requireAuth } from './authMiddleware'
 import { createApiProxy, practicumResourcesProxy } from './proxy'
+import { themeRouter } from './routes/theme'
 import { toDbErrorResponse } from './utils/dbErrors'
 
 const app = express()
@@ -61,6 +62,7 @@ app.use('/user', requireAuth, createApiProxy('/user'))
 app.use('/leaderboard', requireAuth, createApiProxy('/leaderboard'))
 app.use('/api/v2/resources', practicumResourcesProxy)
 app.use('/forum', forumRouter)
+app.use('/theme', themeRouter)
 
 const errorHandler: ErrorRequestHandler = (
   err: unknown,
