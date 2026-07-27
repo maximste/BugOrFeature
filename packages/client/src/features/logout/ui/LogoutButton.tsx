@@ -4,11 +4,14 @@ import { useNavigate } from 'react-router-dom'
 import { clearAuth, useDispatch } from '@/app/store'
 import { logout } from '@/shared/auth'
 import { Button } from '@/shared/ui/button'
+import { useColorMode } from '@/app/providers'
 
 export const LogoutButton = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const [loggingOut, setLoggingOut] = useState(false)
+
+  const { setColorMode } = useColorMode()
 
   const handleClick = async () => {
     if (loggingOut) {
@@ -23,6 +26,7 @@ export const LogoutButton = () => {
       navigate('/signin', { replace: true })
     } finally {
       setLoggingOut(false)
+      setColorMode('light')
     }
   }
 

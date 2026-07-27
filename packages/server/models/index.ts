@@ -3,6 +3,9 @@ import { Topic } from './Topic'
 import { Comment } from './Comment'
 import { Reply } from './Reply'
 import { Reaction } from './Reaction'
+//themes
+import { GameTheme } from './GameTheme'
+import { UserTheme } from './UserTheme'
 
 Topic.hasMany(Comment, {
   foreignKey: 'topicId',
@@ -32,11 +35,25 @@ Comment.hasMany(Reaction, {
 })
 Reaction.belongsTo(Comment, { foreignKey: 'commentId', as: 'comment' })
 
+//themes
+UserTheme.belongsTo(GameTheme, {
+  foreignKey: 'themeCode',
+  targetKey: 'themeCode',
+  as: 'theme',
+})
+
 /** Создаёт/обновляет таблицы по моделям. alter — только в dev, в проде нужны миграции. */
+// Убрать force: true как отдебажим
 export const syncModels = async (): Promise<void> => {
-  await sequelize.sync({ alter: process.env.NODE_ENV === 'development' })
+  await sequelize.sync({
+    alter: process.env.NODE_ENV === 'development',
+    force: true,
+  })
 }
 
 export { Topic, Comment, Reply, Reaction }
 export { EMOTIONS } from './Reaction'
 export type { Emotion } from './Reaction'
+
+//theme
+export { GameTheme, UserTheme }
