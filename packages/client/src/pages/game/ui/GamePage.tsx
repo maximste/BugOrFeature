@@ -14,6 +14,7 @@ import { DEFAULT_DIFFICULTY } from '../constants/game'
 import { exitFullscreenMode, setFullscreenMode } from '@/shared/fullscreen'
 import { store } from '@/app/store'
 import { sendResultToLeaderboard } from '@/entities/leaderboard'
+import { GeolocationWidget } from '@/widgets/geolocation-widget'
 
 export const GamePage = () => {
   usePage({ initPage: initGamePage })
@@ -175,6 +176,7 @@ export const GamePage = () => {
           победить (debug)
         </Button>
       </Flex>
+      <GeolocationWidget />
     </>
   )
 }
