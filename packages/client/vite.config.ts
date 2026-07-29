@@ -5,9 +5,13 @@ import { VitePWA } from 'vite-plugin-pwa'
 import dotenv from 'dotenv'
 import path from 'path'
 
+import { buildDevSpaCspHeaderValue, parseOrigin } from './server/csp'
+
 dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
 const BFF_URL = process.env.EXTERNAL_SERVER_URL ?? 'http://localhost:3001'
+const CLIENT_PORT = Number(process.env.CLIENT_PORT) || 3000
+const apiOrigin = parseOrigin(process.env.EXTERNAL_SERVER_URL ?? BFF_URL)
 
 const apiProxy = {
   target: BFF_URL,
@@ -23,7 +27,16 @@ export default defineConfig(({ mode }) => ({
     },
   },
   server: {
-    port: Number(process.env.CLIENT_PORT) || 3000,
+    port: CLIENT_PORT,
+    headers:
+      mode === 'development'
+        ? {
+            'Content-Security-Policy': buildDevSpaCspHeaderValue(
+              apiOrigin,
+              CLIENT_PORT
+            ),
+          }
+        : undefined,
     // В dev (yarn dev:spa) запросы /auth, /user и т.д. идут на BFF (packages/server).
     proxy: {
       '/auth': apiProxy,

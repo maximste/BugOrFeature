@@ -7,16 +7,7 @@
     <meta name="theme-color" content="#ffb6bc" />
     <!--ssr-styles-->
     <!--ssr-helmet-->
-    <script>
-      (function () {
-        var stored = localStorage.getItem('color-mode')
-        var isDark =
-          stored === 'dark' ||
-          (stored !== 'light' &&
-            window.matchMedia('(prefers-color-scheme: dark)').matches)
-        document.documentElement.classList.add(isDark ? 'dark' : 'light')
-      })()
-    </script>
+    <script src="/color-mode-init.js"></script>
   </head>
   <body>
     <!--ssr-initial-state-->
