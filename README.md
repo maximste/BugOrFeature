@@ -46,6 +46,7 @@
 - Архитектура клиента по **Feature-Sliced Design**
 - UI на **Chakra UI** с кастомной темой
 - Docker-окружение для production (nginx + Node + PostgreSQL)
+- **CSP** (Content Security Policy) — HTTP-заголовки безопасности контента
 - Автодеплой статики на Vercel
 
 ## Презентация
@@ -185,6 +186,58 @@ docker compose up --build
 ```bash
 docker compose up postgres -d
 docker compose up server
+```
+
+## Content Security Policy (CSP)
+
+Политика безопасности контента ограничивает, откуда браузер может загружать скрипты, стили, изображения, API-запросы и другие ресурсы. Это снижает риск XSS и несанкционированной загрузки контента.
+
+### Где реализовано
+
+| Файл | Назначение |
+| :--- | :--- |
+| `packages/client/server/csp.ts` | Сборка политики, генерация nonce, middleware |
+| `packages/client/server/index.ts` | Подключение CSP к SSR-серверу, nonce для inline-скриптов |
+| `packages/client/public/color-mode-init.js` | Скрипт темы вынесен из inline в отдельный файл |
+| `packages/client/vite.config.ts` | CSP для режима `yarn dev:spa` |
+| `packages/client/nginx.conf` | Статическая CSP для деплоя через nginx |
+| `packages/client/server/csp.test.ts` | Тесты сборки политики |
+
+Заголовок `Content-Security-Policy` отправляется **с каждым HTTP-ответом** SSR-сервера клиента.
+
+### Директивы (production, SSR)
+
+| Директива | Значение | Зачем |
+| :--- | :--- | :--- |
+| `default-src` | `'self'` | Базовое ограничение — только наш origin |
+| `script-src` | `'self' 'nonce-…'` | Скрипты с origin сайта и с matching nonce |
+| `style-src` | `'self' 'unsafe-inline'` | Стили; `unsafe-inline` нужен для Chakra UI |
+| `font-src` | `'self'` | Локальные шрифты (`/fonts/*.woff2`) |
+| `img-src` | `'self' data: blob: https://ya-praktikum.tech` | Картинки, аватары, blob-превью |
+| `connect-src` | `'self'` + API | XHR/fetch к BFF и API Практикума |
+| `media-src` | `'self'` | Аудио игры |
+| `worker-src` | `'self'` | Service Worker (PWA) |
+| `form-action` | `'self' https://oauth.yandex.ru` | Отправка форм и OAuth |
+| `object-src` | `'none'` | Запрет Flash/Java-плагинов |
+
+`connect-src` дополнительно включает origin из `EXTERNAL_SERVER_URL` (форум, темы, BFF).
+
+### Режимы разработки
+
+- **`yarn dev` (SSR)** — политика с **nonce** на каждый запрос; для Vite HMR добавлен `'unsafe-eval'`.
+- **`yarn dev:spa`** — упрощённая dev-политика через `vite.config.ts` (`'unsafe-inline'`, `'unsafe-eval'`), без per-request nonce.
+
+### Как проверить
+
+1. Запустите `yarn dev` или `yarn preview --scope client`.
+2. Откройте DevTools → **Network** → выберите HTML-документ.
+3. В **Response Headers** должен быть `Content-Security-Policy`.
+4. В **Console** не должно быть ошибок вида `Refused to execute inline script` / `Refused to connect`.
+
+Тесты политики:
+
+```bash
+yarn test --scope=client server/csp.test.ts
 ```
 
 ## Структура клиента (FSD)

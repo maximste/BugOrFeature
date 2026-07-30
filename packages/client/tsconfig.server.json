@@ -8,5 +8,6 @@
     "skipLibCheck": true,
     "lib": ["es2019", "DOM"]
   },
-  "include": ["server/**/*.ts"]
+  "include": ["server/**/*.ts"],
+  "exclude": ["server/**/*.test.ts"]
 }
