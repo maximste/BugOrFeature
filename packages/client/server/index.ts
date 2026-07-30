@@ -18,15 +18,24 @@ import serialize from 'serialize-javascript'
 import cookieParser from 'cookie-parser'
 
 import { resolvePageAuthRedirect } from './auth'
+import { createCspMiddleware, injectScriptNonces, parseOrigin } from './csp'
 
 const port = process.env.CLIENT_PORT
 const clientPath = path.join(__dirname, '..')
 const isDev = process.env.NODE_ENV === 'development'
+const apiOrigin = parseOrigin(process.env.EXTERNAL_SERVER_URL)
 
 async function createServer() {
   const app = express()
 
   app.use(cookieParser())
+  app.use(
+    createCspMiddleware({
+      isDev,
+      apiOrigin,
+      clientPort: port,
+    })
+  )
   let vite: ViteDevServer | undefined
   if (isDev) {
     vite = await createViteServer({
@@ -62,6 +71,8 @@ async function createServer() {
         styleTags: string
       }>
       let template: string
+      const cspNonce = String(res.locals.cspNonce ?? '')
+
       if (vite) {
         template = await fs.readFile(
           path.resolve(clientPath, 'index.html'),
@@ -69,6 +80,7 @@ async function createServer() {
         )
 
         template = await vite.transformIndexHtml(url, template)
+        template = injectScriptNonces(template, cspNonce)
 
         render = (
           await vite.ssrLoadModule(
@@ -80,6 +92,7 @@ async function createServer() {
           path.join(clientPath, 'dist/client/index.html'),
           'utf-8'
         )
+        template = injectScriptNonces(template, cspNonce)
 
         const pathToServer = path.join(
           clientPath,
@@ -106,13 +119,16 @@ async function createServer() {
         .replace(`<!--ssr-outlet-->`, appHtml)
         .replace(
           `<!--ssr-initial-state-->`,
-          `<script>window.APP_INITIAL_STATE = ${serialize(initialState, {
-            isJSON: true,
-          })}</script>`
+          `<script nonce="${cspNonce}">window.APP_INITIAL_STATE = ${serialize(
+            initialState,
+            {
+              isJSON: true,
+            }
+          )}</script>`
         )
         .replace(
           `<!--ssr-router-state-->`,
-          `<script>window.__staticRouterHydrationData = ${serialize(
+          `<script nonce="${cspNonce}">window.__staticRouterHydrationData = ${serialize(
             routerState,
             {
               isJSON: true,

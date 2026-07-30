@@ -28,12 +28,14 @@ services:
         CLIENT_PORT: ${CLIENT_PORT}
         SERVER_PORT: ${SERVER_PORT}
         EXTERNAL_SERVER_URL: ${EXTERNAL_SERVER_URL}
+        CLIENT_ORIGIN: ${CLIENT_ORIGIN}
     restart: always
     ports:
       - "${CLIENT_PORT}:${CLIENT_PORT}"
     environment:
       CLIENT_PORT: ${CLIENT_PORT}
       SERVER_PORT: ${SERVER_PORT}
+      EXTERNAL_SERVER_URL: ${EXTERNAL_SERVER_URL}
     depends_on:
       server:
         condition: service_healthy

@@ -5,9 +5,13 @@ import { VitePWA } from 'vite-plugin-pwa'
 import dotenv from 'dotenv'
 import path from 'path'
 
+import { buildDevSpaCspHeaderValue, parseOrigin } from './server/csp'
+
 dotenv.config({ path: path.resolve(__dirname, '../../.env') })
 
 const BFF_URL = process.env.EXTERNAL_SERVER_URL ?? 'http://localhost:3001'
+const CLIENT_PORT = Number(process.env.CLIENT_PORT) || 3000
+const apiOrigin = parseOrigin(process.env.EXTERNAL_SERVER_URL ?? BFF_URL)
 
 const apiProxy = {
   target: BFF_URL,
@@ -23,7 +27,16 @@ export default defineConfig(({ mode }) => ({
     },
   },
   server: {
-    port: Number(process.env.CLIENT_PORT) || 3000,
+    port: CLIENT_PORT,
+    headers:
+      mode === 'development'
+        ? {
+            'Content-Security-Policy': buildDevSpaCspHeaderValue(
+              apiOrigin,
+              CLIENT_PORT
+            ),
+          }
+        : undefined,
     // В dev (yarn dev:spa) запросы /auth, /user и т.д. идут на BFF (packages/server).
     proxy: {
       '/auth': apiProxy,
@@ -38,6 +51,7 @@ export default defineConfig(({ mode }) => ({
   define: {
     __EXTERNAL_SERVER_URL__: JSON.stringify(process.env.EXTERNAL_SERVER_URL),
     __INTERNAL_SERVER_URL__: JSON.stringify(process.env.INTERNAL_SERVER_URL),
+    __CLIENT_ORIGIN__: JSON.stringify(process.env.CLIENT_ORIGIN ?? ''),
     // В dev (yarn dev:spa) — пустая строка: запросы на /auth/... попадают в proxy ниже.
     // В production-сборке — полный URL из .env.
     __API_FETCH_BASE_URL__: JSON.stringify(
