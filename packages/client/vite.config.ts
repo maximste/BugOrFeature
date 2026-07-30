@@ -51,6 +51,7 @@ export default defineConfig(({ mode }) => ({
   define: {
     __EXTERNAL_SERVER_URL__: JSON.stringify(process.env.EXTERNAL_SERVER_URL),
     __INTERNAL_SERVER_URL__: JSON.stringify(process.env.INTERNAL_SERVER_URL),
+    __CLIENT_ORIGIN__: JSON.stringify(process.env.CLIENT_ORIGIN ?? ''),
     // В dev (yarn dev:spa) — пустая строка: запросы на /auth/... попадают в proxy ниже.
     // В production-сборке — полный URL из .env.
     __API_FETCH_BASE_URL__: JSON.stringify(

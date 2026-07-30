@@ -1,13 +1,22 @@
 /** Базовый URL авторизации Яндекс ID */
 export const YANDEX_OAUTH_AUTHORIZE_URL = 'https://oauth.yandex.ru/authorize'
 
+const normalizeClientOrigin = (origin: string): string =>
+  origin.replace(/\/$/, '')
+
 /**
  * redirect_uri после OAuth.
- * Локально — http://localhost:3000/oauth/, на стенде — {origin}/oauth/
+ * Локально — http://localhost:3000/oauth/.
+ * В production — CLIENT_ORIGIN из .env (если задан), иначе window.location.origin.
  */
 export const getYandexOAuthRedirectUri = (): string => {
   if (import.meta.env.DEV) {
     return 'http://localhost:3000/oauth/'
+  }
+
+  const configuredOrigin = __CLIENT_ORIGIN__
+  if (configuredOrigin) {
+    return `${normalizeClientOrigin(configuredOrigin)}/oauth/`
   }
 
   if (typeof window !== 'undefined') {
