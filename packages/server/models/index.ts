@@ -43,11 +43,9 @@ UserTheme.belongsTo(GameTheme, {
 })
 
 /** Создаёт/обновляет таблицы по моделям. alter — только в dev, в проде нужны миграции. */
-// Убрать force: true как отдебажим
 export const syncModels = async (): Promise<void> => {
   await sequelize.sync({
     alter: process.env.NODE_ENV === 'development',
-    force: true,
   })
 }
 
