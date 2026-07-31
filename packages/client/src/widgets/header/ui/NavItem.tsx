@@ -19,7 +19,9 @@ export const NavItem: FC<TProps> = props => {
       p="8px 16px"
       transition={TRANSITION}
       _hover={active ? undefined : { bg: 'buttonBg/40' }}>
-      <Link to={to}>{label}</Link>
+      <Link to={to} style={{ display: 'block' }}>
+        {label}
+      </Link>
     </List.Item>
   )
 }

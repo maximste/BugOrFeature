@@ -9,6 +9,7 @@ import SunIcon from '@/assets/icons/sun.svg?react'
 import MoonIcon from '@/assets/icons/moon.svg?react'
 
 import { NavItem } from './NavItem'
+import { MobileNav } from './MobileNav'
 import { TRANSITION } from '@/theme'
 
 const NAV_LINKS = [
@@ -30,6 +31,7 @@ export const Header = () => {
   const { pathname } = useLocation()
 
   const isActive = (path: string) => pathname === path
+  const links = isAuthenticated ? NAV_LINKS : GUEST_LINKS
 
   return (
     <Flex
@@ -43,7 +45,8 @@ export const Header = () => {
         width="full"
         mx="auto"
         px={5}
-        py={3}>
+        py={3}
+        gap={3}>
         <Link to="/">
           <Flex align="center" gap={2}>
             <Box bg="pink/40" width="max-content" p={2} borderRadius="full">
@@ -55,35 +58,17 @@ export const Header = () => {
           </Flex>
         </Link>
 
-        <Flex align="center" gap={3}>
-          <Box as="nav">
-            <List.Root flexDirection="row" gap={2}>
+        <Flex align="center" gap={3} flexShrink={0}>
+          <Box as="nav" display={{ base: 'none', md: 'block' }}>
+            <List.Root flexDirection="row" gap={2} alignItems="center">
+              {links.map(({ to, label }) => (
+                <NavItem key={to} to={to} label={label} active={isActive(to)} />
+              ))}
               {isAuthenticated ? (
-                <>
-                  {NAV_LINKS.map(({ to, label }) => (
-                    <NavItem
-                      key={to}
-                      to={to}
-                      label={label}
-                      active={isActive(to)}
-                    />
-                  ))}
-                  <List.Item>
-                    <LogoutButton />
-                  </List.Item>
-                </>
-              ) : (
-                <>
-                  {GUEST_LINKS.map(({ to, label }) => (
-                    <NavItem
-                      key={to}
-                      to={to}
-                      label={label}
-                      active={isActive(to)}
-                    />
-                  ))}
-                </>
-              )}
+                <List.Item>
+                  <LogoutButton />
+                </List.Item>
+              ) : null}
             </List.Root>
           </Box>
 
@@ -116,6 +101,14 @@ export const Header = () => {
               <MoonIcon width={18} height={18} />
             )}
           </Button>
+
+          <Box display={{ base: 'block', md: 'none' }}>
+            <MobileNav
+              links={links}
+              showLogout={isAuthenticated}
+              isActive={isActive}
+            />
+          </Box>
         </Flex>
       </Flex>
     </Flex>
