@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Helmet } from 'react-helmet'
 import { useParams } from 'react-router-dom'
 import { Box } from '@chakra-ui/react'
+import { sanitizeHelmet } from '@/shared/lib/sanitizeHelmet'
 
 import { usePage } from '@/app/hooks/usePage'
 import {
@@ -112,8 +113,8 @@ export const ForumTopicPage = () => {
     <>
       <Helmet>
         <meta charSet="utf-8" />
-        <title>{topic.title} — BugOrFeature</title>
-        <meta name="description" content={topic.description} />
+        <title>{sanitizeHelmet(topic.title)} — BugOrFeature</title>
+        <meta name="description" content={sanitizeHelmet(topic.description)} />
       </Helmet>
       <Box as="section" w="full" maxW="660px" mx="auto">
         {reactionError != null ? <p role="alert">{reactionError}</p> : null}
