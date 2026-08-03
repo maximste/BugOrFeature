@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express'
 
 import { checkAuth, type AuthUser } from '../auth'
+import { sanitizeText } from '../utils/sanitize'
 
 export type ForumAuthUser = {
   id: number
@@ -9,10 +10,16 @@ export type ForumAuthUser = {
 }
 
 const toForumUser = (user: AuthUser): ForumAuthUser => {
-  const displayName =
+  const rawDisplayName =
     user.display_name?.trim() ||
     [user.first_name, user.second_name].filter(Boolean).join(' ').trim() ||
     user.login
+
+  let displayName = sanitizeText(rawDisplayName, 255)
+
+  if (!displayName) {
+    displayName = ''
+  }
 
   return {
     id: user.id,
